@@ -6,11 +6,24 @@ import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import java.time.LocalDate
 
+// Converters
+class Converters {
+    @androidx.room.TypeConverter
+    fun fromTimestamp(value: Long?): LocalDate? {
+        return value?.let { LocalDate.ofEpochDay(it) }
+    }
+
+    @androidx.room.TypeConverter
+    fun dateToTimestamp(date: LocalDate?): Long? {
+        return date?.toEpochDay()
+    }
+}
 @Entity(tableName = "camiones")
 data class Camion(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     @ColumnInfo(name = "created_at") val createdAt: LocalDate,
     @ColumnInfo(name = "chofer_name") val choferName: String,
+    @ColumnInfo(name = "chofer_price") val choferPrice: Double, // Price per unit for the driver
     @ColumnInfo(name = "patente_tractor") val patenteTractor: String,
     @ColumnInfo(name = "patente_jaula") val patenteJaula: String,
     @ColumnInfo(name = "km_service") val kmService: Int
@@ -19,9 +32,10 @@ data class Camion(
 @Entity(tableName = "destinos")
 data class Destino(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    val comisionista: String,
-    val despacho: Double,
-    val localidad: String,
+    @ColumnInfo(name = "comisionista") val comisionista: String,
+    @ColumnInfo(name = "despacho") val despacho: Double,
+    @ColumnInfo(name = "localidad") val localidad: String,
+    @ColumnInfo(name = "distancia") val distancia: Double // Distance to this destination
 )
 
 @Entity(
@@ -49,6 +63,6 @@ data class CamionesRegistro(
     @ColumnInfo(name = "km_carga") val kmCarga: Int,
     @ColumnInfo(name = "km_descarga") val kmDescarga: Int,
     @ColumnInfo(name = "km_surtidor") val kmSurtidor: Int,
-    val litros: Double,
+    @ColumnInfo(name = "litros") val litros: Double,
     @ColumnInfo(name = "precio_gas_oil") val precioGasOil: Double,
 )

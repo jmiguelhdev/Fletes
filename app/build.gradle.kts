@@ -69,4 +69,12 @@ dependencies {
     testImplementation(libs.androidx.room.testing)
     // optional - Paging 3 Integration
     implementation(libs.androidx.room.paging)
+    // Koin dependencies
+    implementation(libs.koin.android)
+
+    // Coroutines Core (Required)
+    implementation(libs.kotlinx.coroutines.core) // Use the latest version
+
+    // Coroutines Android (Highly Recommended for Android)
+    implementation(libs.kotlinx.coroutines.android)
 }

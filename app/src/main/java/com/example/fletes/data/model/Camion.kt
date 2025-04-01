@@ -16,6 +16,8 @@ data class Camion(
     val id: Int,
     val createdAt: LocalDate,
     val choferName: String,
+    val choferPrice: Double,
+    val choferImporte: Double,
     val patenteTractor: String,
     val patenteJaula: String,
     val kmService: Int
@@ -26,4 +28,5 @@ data class Destino(
     val comisionista: String,
     val despacho: Double,
     val localidad: String,
+    val distancia: Double,
 )

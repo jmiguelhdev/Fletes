@@ -6,7 +6,7 @@ data class CamionesRegistro(
     val id: Int,
     val createdAt: LocalDate,
     val kmCarga:Int,
-    val kmDescarga: Int,
+    val kmDescarga: Int ,
     val kmSurtidor: Int,
     val litros: Double,
     val precioGasOil: Double,
@@ -27,6 +27,6 @@ data class Destino(
     val id: Int,
     val comisionista: String? = null,
     val despacho: Int? = null,
-    val localidad: String,
+    val localidad: String? = null,
     val distancia: Double,
 )

@@ -20,7 +20,7 @@ class FakeCamionRepository: CamionRepository {
     override fun getCamionStream(id: Int): Flow<Camion?> = flow { emit(data.find { it.id == id }) }
 
     override suspend fun insertCamion(camion: Camion) {
-        val newId = data.maxOfOrNull { it.id!!.toInt() }?.plus(1) ?: 1
+        val newId = data.maxOfOrNull { it.id.toInt() }?.plus(1) ?: 1
         data.add(camion.copy(id = newId))
     }
 

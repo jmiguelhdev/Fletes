@@ -13,7 +13,7 @@ class FakeCamionesRegistroRepository : CamionesRegistroRepository {
     override fun getCamionesRegistroStream(id: Int): Flow<CamionesRegistro?> = flow { emit(data.find { it.id == id }) }
 
     override suspend fun insertCamionesRegistro(camionesRegistro: CamionesRegistro) {
-        val newId = data.maxOfOrNull { it.id }?.plus(1) ?: 1
+        val newId = data.maxOfOrNull { it.id!!.toInt() }?.plus(1) ?: 1
         data.add(camionesRegistro.copy(id = newId))
     }
 

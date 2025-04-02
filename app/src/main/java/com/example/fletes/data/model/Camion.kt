@@ -25,8 +25,8 @@ data class Camion(
 
 data class Destino(
     val id: Int,
-    val comisionista: String,
-    val despacho: Double,
+    val comisionista: String? = null,
+    val despacho: Int? = null,
     val localidad: String,
     val distancia: Double,
 )

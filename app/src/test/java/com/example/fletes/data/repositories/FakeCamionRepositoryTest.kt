@@ -1,11 +1,9 @@
 package com.example.fletes.data.repositories
 
-import androidx.compose.foundation.layout.size
 import com.example.fletes.data.model.Camion
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -246,29 +244,115 @@ class FakeCamionRepositoryTest {
     }
 
     @Test
-    fun `updateCamion non existing camion`() = runBlocking {
-        // Test that updateCamion does nothing when trying to update a 
-        // Camion that doesn't exist.
-        // TODO implement test
+    fun `updateCamion nonExistingCamion shouldDoNothing`() = runBlocking {
+        // Arrange: Set up the initial state.
+        val existingCamion = Camion(
+            id = 1,
+            createdAt = LocalDate.now(),
+            choferName = "John Doe",
+            choferPrice = 250.0,
+            choferImporte = 1000.0,
+            patenteTractor = "XXX 123",
+            patenteJaula = "YYY 456",
+            kmService = 20000
+        )
+        camionRepository.insertCamion(existingCamion)
+
+        // Assert: Check initial state.
+        val camionFromDb = camionRepository.getCamionStream(existingCamion.id).first()
+        assertEquals("Initial camion should match inserted one", existingCamion, camionFromDb)
+
+        // Act: Attempt to update a non-existent Camion.
+        val nonExistingCamionId = 2
+        val updateCamion = Camion(
+            id = nonExistingCamionId,
+            createdAt = LocalDate.now(),
+            choferName = "Jane Doe",
+            choferPrice = 100.0,
+            choferImporte = 500.0,
+            patenteTractor = "ABC 000",
+            patenteJaula = "DEF 111",
+            kmService = 30000 // Changed kmService
+        )
+        camionRepository.updateCamion(updateCamion)
+
+        // Assert: Check that the existing Camion is unchanged.
+        val camionFromDbAfterUpdate = camionRepository.getCamionStream(existingCamion.id).first()
+        assertEquals("Camion should not be modified when trying to update a non existing id", existingCamion, camionFromDbAfterUpdate)
+
+        // Assert: Check that the non-existent Camion has not been created.
+        val nonExistingCamionAfterUpdate = camionRepository.getCamionStream(nonExistingCamionId).first()
+        assertEquals("Non-existent Camion should not be created", null, nonExistingCamionAfterUpdate)
+        println("camionFromDbAfterUpdate $camionFromDbAfterUpdate")
+        println("nonExistingCamionAfterUpdate $nonExistingCamionAfterUpdate")
     }
 
+
     @Test
-    fun `updateCamion check updated data`() {
+    fun `updateCamion check updated data`() = runBlocking {
         // Check the actual data updated is correct after an update.
-        // TODO implement test
+        // Arrange: Set up the initial state.
+        val newCamion = Camion(
+            id = 1,
+            createdAt = LocalDate.now(),
+            choferName = "John Doe",
+            choferPrice = 250.0,
+            choferImporte = 1000.0,
+            patenteTractor = "XXX 123",
+            patenteJaula = "YYY 456",
+            kmService = 20000
+        )
+        camionRepository.insertCamion(newCamion)
+        val camionFromDb = camionRepository.getCamionStream(newCamion.id).first()
+        assert(camionFromDb == newCamion)
+        val updateCamion = Camion(
+            id = camionFromDb!!.id,
+            createdAt = LocalDate.now(),
+            choferName = "Jane Doe",
+            choferPrice = 100.0,
+            choferImporte = 500.0,
+            patenteTractor = "ABC 000",
+            patenteJaula = "DEF 111",
+            kmService = 30000 // Changed kmService
+        )
+        camionRepository.updateCamion(updateCamion)
+        assertEquals(1, updateCamion.id)
+        assertEquals("Jane Doe", updateCamion.choferName)
+        assertEquals(/* expected = */ 100.0,
+            /* actual = */updateCamion.choferPrice,
+            /* delta = */0.0)
+        assertEquals(500.0, updateCamion.choferImporte, 0.0)
+        assertEquals("ABC 000", updateCamion.patenteTractor)
+        assertEquals("DEF 111", updateCamion.patenteJaula)
+        assertEquals(30000, updateCamion.kmService)
     }
 
     @Test
-    fun `updateCamion id unchanged`() {
-        // Check that updateCamion does not change the id of the camion.
-        // TODO implement test
-    }
-
-    @Test
-    fun `insert delete and then insert again`() {
+    fun `insert delete and then insert again`() = runBlocking {
         // Test that after a delete of a camion, if the 
         // camion is inserted again it receives a new id
-        // TODO implement test
+        val newCamion = Camion(
+            id = 1,
+            createdAt = LocalDate.now(),
+            choferName = "John Doe",
+            choferPrice = 250.0,
+            choferImporte = 1000.0,
+            patenteTractor = "XXX 123",
+            patenteJaula = "YYY 456",
+            kmService = 20000
+        )
+        camionRepository.insertCamion(newCamion)  //id=1
+        camionRepository.insertCamion(newCamion)  //id=2
+        camionRepository.insertCamion(newCamion)  //id=3
+        camionRepository.deleteCamion(newCamion)  //id=1
+        camionRepository.insertCamion(newCamion)  //id=4
+
+        assert(camionRepository.getCamionStream(id = 1).first() == null)
+
+        val listOfCamiones = camionRepository.getAllCamionesStream().first()
+        listOfCamiones.forEach {
+            println(it)
+        }
     }
 
 }

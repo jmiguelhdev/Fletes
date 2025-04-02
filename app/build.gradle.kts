@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("com.google.devtools.ksp")
+    id("org.jetbrains.kotlin.plugin.serialization")
 }
 
 android {
@@ -77,4 +78,7 @@ dependencies {
 
     // Coroutines Android (Highly Recommended for Android)
     implementation(libs.kotlinx.coroutines.android)
+
+    //serializable
+    implementation(libs.kotlinx.serialization.json)
 }

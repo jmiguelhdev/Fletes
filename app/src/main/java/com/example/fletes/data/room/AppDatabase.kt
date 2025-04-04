@@ -2,6 +2,7 @@ package com.example.fletes.data.room
 
 import androidx.room.Dao
 import androidx.room.Database
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -26,6 +27,12 @@ interface AppDao {
     // Camion
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCamion(camion: Camion)
+
+    @Delete
+    suspend fun deleteCamion(camion: Camion)
+
+    @Query("DELETE FROM camiones")
+    suspend fun deleteAlllCamiones()
 
     @Query("SELECT * FROM camiones WHERE id = :id")
     suspend fun getCamionById(id: Int): Camion?

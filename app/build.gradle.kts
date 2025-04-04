@@ -39,19 +39,32 @@ android {
     buildFeatures {
         compose = true
     }
+    sourceSets {
+        getByName("androidTest").java.srcDirs("src/androidTest/java")
+    }
 }
 
 dependencies {
 
+    implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
-    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.koin.android)
+    implementation(libs.kotlinx.coroutines.android)
     testImplementation(libs.junit)
+    testImplementation(libs.androidx.core)
+    testImplementation(libs.koin.test) // Use the same koin version
+    testImplementation(libs.androidx.room.testing)
+    testImplementation(libs.kotlinx.coroutines.test) // Use the same version
+    androidTestImplementation(libs.androidx.core)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -59,29 +72,17 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     //room
-    implementation(libs.androidx.room.runtime)
-
-    // If this project uses any Kotlin source, use Kotlin Symbol Processing (KSP)
-    // See [Add the KSP plugin to your project](/build/migrate-to-ksp#add-ksp)
     ksp(libs.androidx.room.compiler)
-    // optional - Kotlin Extensions and Coroutines support for Room
-    implementation(libs.androidx.room.ktx)
+    testFixturesImplementation(libs.koin.test.junit4)
+
+
+
     // optional - Test helpers
-    testImplementation(libs.androidx.room.testing)
     // optional - Paging 3 Integration
     implementation(libs.androidx.room.paging)
-    // Koin dependencies
-    implementation(libs.koin.android)
 
-    // Coroutines Core (Required)
-    implementation(libs.kotlinx.coroutines.core) // Use the latest version
-
-    // Coroutines Android (Highly Recommended for Android)
-    implementation(libs.kotlinx.coroutines.android)
 
     //serializable
     implementation(libs.kotlinx.serialization.json)
 
-    //navigation
-    implementation(libs.androidx.navigation.compose)
 }

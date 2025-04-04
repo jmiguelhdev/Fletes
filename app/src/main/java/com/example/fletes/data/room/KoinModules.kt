@@ -23,7 +23,9 @@ val appDatabaseModule = module {
     }
 
     // Provide Repositories
-    single<CamionRepository> { CamionRepositoryImpl(get()) }
+    single<CamionRepository> {
+        CamionRepositoryImpl(get())
+    }
 }
 
 val camionModule = module {

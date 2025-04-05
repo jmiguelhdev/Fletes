@@ -9,6 +9,14 @@ class CamionRepositoryImpl(private val appDao: AppDao): CamionRepository {
         return appDao.insertCamion(camion)
     }
 
+    override suspend fun deleteCamion(camion: Camion) {
+        return appDao.deleteCamion(camion)
+    }
+
+    override suspend fun deleteAlllCamiones() {
+        return appDao.deleteAlllCamiones()
+    }
+
     override suspend fun getCamionById(id: Int): Camion? {
         return appDao.getCamionById(id)
     }

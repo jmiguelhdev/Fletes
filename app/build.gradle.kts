@@ -84,5 +84,13 @@ dependencies {
 
     //serializable
     implementation(libs.kotlinx.serialization.json)
+    // Optional: Material 3 Window Size Class (useful for adaptive layouts)
+    implementation(libs.androidx.material3.window.size.class1)
+
+    // Optional: Material 3 Adaptive Navigation Suite
+    implementation(libs.androidx.material3.adaptive.navigation.suite)
+
+    implementation(libs.material3)
+
 
 }

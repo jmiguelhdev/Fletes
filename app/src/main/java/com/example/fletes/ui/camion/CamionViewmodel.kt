@@ -30,4 +30,11 @@ class CamionViewModel(private val camionRepository: CamionRepository): ViewModel
             Log.d("CamionViewModel", "Camion inserted $camionToInsert")
         }
     }
+
+    fun deleteAllCamiones() {
+        viewModelScope.launch {
+            camionRepository.deleteAlllCamiones()
+            Log.d("CamionViewModel", "All camiones deleted")
+        }
+    }
 }

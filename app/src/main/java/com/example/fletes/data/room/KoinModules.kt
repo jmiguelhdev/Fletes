@@ -15,7 +15,8 @@ val appDatabaseModule = module {
             androidContext(), // Use the context provided by Koin
             AppDatabase::class.java,
             "fletes_database" // Name of your database
-        ).build()
+        ).fallbackToDestructiveMigration()
+            .build()
     }
     // Provide AppDao
     single {

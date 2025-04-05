@@ -9,11 +9,14 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -32,60 +35,48 @@ import java.time.LocalDate
 fun CamionScreen(viewModel: CamionViewModel) {
     val camiones = viewModel.camiones.collectAsStateWithLifecycle()
     Scaffold(
-        content = {
+        topBar = {
+            TopBar(
+                onInsertCamion = { viewModel.insertCamion() },
+                onDeleteAllCamions = { viewModel.deleteAllCamiones() },
+                onBack = {}
+            )
+        },
+        content = { paddingValues ->
             ListOfCamionesScreen(
                 camiones = camiones.value,
-                onInsertCamion = { viewModel.insertCamion() },
-                onDeleteAllCamions = {viewModel.deleteAllCamiones()},
                 ondeleteCamion = { viewModel.deleteCamion(it) },
-                modifier = Modifier.padding(it)
-            )
+                modifier = Modifier
+                    .padding(paddingValues)
+                )
+
+        },
+        bottomBar = {
+
         }
     )
 }
 
 
+
+
 @Composable
 fun ListOfCamionesScreen(
     camiones: List<Camion>,
-    onInsertCamion: () -> Unit,
-    onDeleteAllCamions: () -> Unit,
     ondeleteCamion: (Int) -> Unit,
     modifier: Modifier
 ) {
-    Column(modifier = modifier,
+    Column(
+        modifier = Modifier,
         verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         LazyColumn(modifier = Modifier.weight(1f)) {
             items(camiones) { camion ->
                 CamionCard(
-                    camion = camion,
+                    camion =camion ,
                     ondeleteCamion = ondeleteCamion,
-                    modifier = modifier
-                )
-            }
-        }
-        Row(modifier=Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-            Button(
-                onClick = {
-                    onInsertCamion()
-                    Log.d("CamionViewModel", "Camion inserted")
-                },
-                modifier = modifier
-
-            ) {
-                Text(text = "Insertar Camion")
-            }
-            Button(
-                onClick = {
-                    onDeleteAllCamions()
-                    Log.d("CamionViewModel", "Deleted all camiones")
-                },
-                modifier = modifier
-
-            ) {
-                Text(text = "Borrar Todos")
+                    modifier= Modifier)
             }
         }
     }
@@ -98,14 +89,14 @@ fun CamionCard(
     modifier: Modifier
 ) {
     Card(
-        modifier = modifier
-            .padding(4.dp)
+        modifier = Modifier
+            .padding(2.dp)
             .fillMaxWidth()
     ) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = modifier.padding(8.dp).weight(1f)
+                modifier = Modifier.padding(8.dp).weight(1f)
             ) {
                 Text(
                     text = "Chofer: ${camion.choferName}",
@@ -127,14 +118,16 @@ fun CamionCard(
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
-             Column(
-                 modifier = Modifier.fillMaxHeight().padding(top= 4.dp,end =8.dp),
-                 horizontalAlignment = Alignment.End,
-                 verticalArrangement = Arrangement.Bottom
-             ){
-                 Text(text = "ID: ${camion.id}", style = MaterialTheme.typography.bodyMedium)
-                 Icon(
-                     painter = painterResource(id = R.drawable.ic_delete_outline_24),
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .padding(top = 4.dp, end = 8.dp),
+                horizontalAlignment = Alignment.End,
+                verticalArrangement = Arrangement.Bottom
+            ) {
+                Text(text = "ID: ${camion.id}", style = MaterialTheme.typography.bodyMedium)
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_delete_outline_24),
                      contentDescription = "Delete",
                      modifier = Modifier.clickable { ondeleteCamion(camion.id) }
                  )
@@ -142,6 +135,46 @@ fun CamionCard(
         }
     }
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TopBar(
+    onInsertCamion: () -> Unit,
+    onDeleteAllCamions: () -> Unit,
+    onBack: () -> Unit,
+) {
+    CenterAlignedTopAppBar(
+        title = { Text("Camiones") },
+        navigationIcon = {
+            IconButton(onClick = onBack) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_arrow_back_24),
+                    contentDescription = "Atras"
+                )
+            }
+        },
+        actions = {
+            IconButton(onClick = {
+                onInsertCamion()
+                Log.d("CamionViewModel", "Camion inserted")
+            }) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_add_24),
+                    contentDescription = "Añadir"
+                )
+            }
+            IconButton(onClick = {
+                onDeleteAllCamions()
+                Log.d("CamionViewModel", "Deleted all camiones")
+            }) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_delete_24),
+                    contentDescription = "Borrar"
+                )
+            }
+        })
+}
+
 @Preview(showBackground = true)
 @Composable
 fun ListOfCamionesScreenPreview() {
@@ -178,10 +211,18 @@ fun ListOfCamionesScreenPreview() {
     Column {
         ListOfCamionesScreen(
             camiones = camiones,
-            onInsertCamion = { },
-            onDeleteAllCamions = {},
             ondeleteCamion = {},
-            modifier = Modifier.padding(8.dp)
+            modifier = Modifier
         )
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun TopBarPreview() {
+    TopBar(
+        onInsertCamion = { },
+        onDeleteAllCamions = { },
+        onBack = { }
+    )
 }

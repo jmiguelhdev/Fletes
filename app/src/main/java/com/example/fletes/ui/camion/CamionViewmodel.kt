@@ -5,10 +5,22 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fletes.data.repositories.CamionRepository
 import com.example.fletes.data.room.Camion
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+
+data class CamionUiState(
+    val choferName: String = "",
+    val choferDni: Int = 0,
+    val patenteTractor: String = "",
+    val patenteJaula: String = "",
+    val kmService: Int = 20000
+)
+
 
 class CamionViewModel(private val camionRepository: CamionRepository) : ViewModel() {
     val camiones = camionRepository.getAllCamiones().stateIn(
@@ -16,13 +28,59 @@ class CamionViewModel(private val camionRepository: CamionRepository) : ViewMode
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = emptyList()
     )
+    private val _uiState = MutableStateFlow(CamionUiState())
+    val uiState = _uiState.asStateFlow()
+
+    fun onChoferNameValueChange(newValue: String) {
+        _uiState.update { it.copy(choferName = newValue) }
+    }
+
+    fun onChoferDniVaueChange(newValue: String) {
+        val intValue = newValue.toIntOrNull() ?: 0
+        val validValue = intValue in 20_000_000..99_000_000
+        _uiState.value = _uiState.value.copy(
+            choferDni = if (validValue) intValue else _uiState.value.choferDni
+        )
+    }
+
+    fun onPatenteTractorValueChange(newValue: String) {
+        val uppercaseValue = newValue.uppercase()
+        val formattedValue = if (uppercaseValue.length <= 6 && uppercaseValue.length > 2) {
+            uppercaseValue.substring(
+                0,
+                2
+            ) + if (uppercaseValue.length >= 3) uppercaseValue.substring(2)
+                .filter { it.isDigit() } else ""
+        } else uppercaseValue
+        val validValue = formattedValue.matches(Regex("[A-Z]{2}[0-9]{3}[A-Z]{2}|[A-Z]{3}[0-9]{3}"))
+        _uiState.update {
+            it.copy(
+                patenteTractor = if (validValue) formattedValue else _uiState.value.patenteTractor
+            )
+        }
+    }
+
+    fun onPatenteJaulaValueChange(newValue: String) {
+        val uppercaseValue = newValue.uppercase()
+        val formattedValue = if (uppercaseValue.length <= 6 && uppercaseValue.length > 2) {
+            uppercaseValue.substring(
+                0,
+                2
+            ) + if (uppercaseValue.length >= 3) uppercaseValue.substring(2)
+                .filter { it.isDigit() } else ""
+        } else uppercaseValue
+        val validValue = formattedValue.matches(Regex("[A-Z]{2}[0-9]{3}[A-Z]{2}|[A-Z]{3}[0-9]{3}"))
+        _uiState.value = _uiState.value.copy(
+            patenteJaula = if (validValue) formattedValue else _uiState.value.patenteJaula
+        )
+    }
 
     fun insertCamion() {
         viewModelScope.launch {
             val camionToInsert = Camion(
                 createdAt = LocalDate.now(),
                 choferName = "John Doe",
-                choferPrice = 100.0,
+                choferDni = 12345678,
                 patenteTractor = "AA123BB",
                 patenteJaula = "CC456DD",
                 kmService = 10000

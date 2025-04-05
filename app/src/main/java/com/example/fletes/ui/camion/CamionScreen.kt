@@ -1,6 +1,7 @@
 package com.example.fletes.ui.camion
 
 import android.util.Log
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,9 +19,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Icon
+import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.fletes.data.room.Camion
 import java.time.LocalDate
+import com.example.fletes.R
 
 @Composable
 fun CamionScreen(viewModel: CamionViewModel) {
@@ -31,6 +35,7 @@ fun CamionScreen(viewModel: CamionViewModel) {
                 camiones = camiones.value,
                 onInsertCamion = { viewModel.insertCamion() },
                 onDeleteAllCamions = {viewModel.deleteAllCamiones()},
+                ondeleteCamion = { viewModel.deleteCamion(it) },
                 modifier = Modifier.padding(it)
             )
         }
@@ -43,6 +48,7 @@ fun ListOfCamionesScreen(
     camiones: List<Camion>,
     onInsertCamion: () -> Unit,
     onDeleteAllCamions: () -> Unit,
+    ondeleteCamion: (Int) -> Unit,
     modifier: Modifier
 ) {
     Column(modifier = modifier,
@@ -51,7 +57,7 @@ fun ListOfCamionesScreen(
     ) {
         LazyColumn(modifier = Modifier.weight(1f)) {
             items(camiones) { camion ->
-                CamionCard(camion = camion, modifier = modifier)
+                CamionCard(camion = camion, ondeleteCamion = ondeleteCamion, modifier = modifier)
             }
         }
         Row {
@@ -80,7 +86,11 @@ fun ListOfCamionesScreen(
 }
 
 @Composable
-fun CamionCard(camion: Camion, modifier: Modifier) {
+fun CamionCard(
+    camion: Camion,
+    ondeleteCamion: (Int) -> Unit,
+    modifier: Modifier
+) {
     Card(
         modifier = Modifier
             .padding(8.dp)
@@ -89,7 +99,18 @@ fun CamionCard(camion: Camion, modifier: Modifier) {
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
-            Text(text = "ID: ${camion.id}", style = MaterialTheme.typography.bodyMedium)
+            Row {
+                Text(text = "ID: ${camion.id}", style = MaterialTheme.typography.bodyMedium)
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_delete_outline_24),
+                    contentDescription = "Delete",
+                    modifier = Modifier.padding(start = 8.dp).clickable{
+                        //delete camion
+                        Log.d("CamionCard", "Deleting camion with ID: ${camion.id}")
+                        ondeleteCamion(camion.id)
+                    }
+                )
+            }
             Text(text = "Chofer: ${camion.choferName}", style = MaterialTheme.typography.bodyMedium)
             Text(
                 text = "Patente Tractor: ${camion.patenteTractor}",
@@ -141,6 +162,7 @@ fun ListOfCamionesScreenPreview() {
             camiones = camiones,
             onInsertCamion = { },
             onDeleteAllCamions = {},
+            ondeleteCamion = {},
             modifier = Modifier.padding(8.dp)
         )
     }

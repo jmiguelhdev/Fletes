@@ -10,12 +10,13 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
-class CamionViewModel(private val camionRepository: CamionRepository): ViewModel() {
+class CamionViewModel(private val camionRepository: CamionRepository) : ViewModel() {
     val camiones = camionRepository.getAllCamiones().stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = emptyList()
     )
+
     fun insertCamion() {
         viewModelScope.launch {
             val camionToInsert = Camion(
@@ -35,6 +36,16 @@ class CamionViewModel(private val camionRepository: CamionRepository): ViewModel
         viewModelScope.launch {
             camionRepository.deleteAlllCamiones()
             Log.d("CamionViewModel", "All camiones deleted")
+        }
+    }
+
+    fun deleteCamion(id: Int) {
+        viewModelScope.launch {
+            val camionToDelete = camionRepository.getCamionById(id)
+            if (camionToDelete != null) {
+                camionRepository.deleteCamion(camionToDelete)
+                Log.d("CamionViewModel", "Camion deleted $camionToDelete")
+            }
         }
     }
 }

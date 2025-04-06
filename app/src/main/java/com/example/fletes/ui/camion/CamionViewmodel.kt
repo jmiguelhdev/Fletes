@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fletes.data.repositories.CamionRepository
 import com.example.fletes.data.room.Camion
+import com.example.fletes.domain.DniValidationResult
+import com.example.fletes.domain.DniValidator
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,7 +17,8 @@ import java.time.LocalDate
 
 data class CamionUiState(
     val choferName: String = "",
-    val choferDni: Int = 0,
+    val choferDni: Int? = 0,
+    val choferDniError: String? = "",
     val patenteTractor: String = "",
     val patenteJaula: String = "",
     val kmService: Int = 20000,
@@ -23,7 +26,10 @@ data class CamionUiState(
 )
 
 
-class CamionViewModel(private val camionRepository: CamionRepository) : ViewModel() {
+class CamionViewModel(
+    private val camionRepository: CamionRepository,
+    private val dniValidator: DniValidator
+) : ViewModel() {
     val camiones = camionRepository.getAllCamiones().stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
@@ -44,12 +50,12 @@ class CamionViewModel(private val camionRepository: CamionRepository) : ViewMode
         _uiState.update { it.copy(choferName = newValue) }
     }
 
-    fun onChoferDniVaueChange(newValue: String) {
-        val intValue = newValue.toIntOrNull() ?: 0
-        val validValue = intValue in 20_000_000..99_000_000
+    fun onChoferDniValueChange(newValue: String) {
+        val validationResult: DniValidationResult = dniValidator.validateDni(newValue)
         _uiState.update {
             it.copy(
-                choferDni = if (validValue) intValue else _uiState.value.choferDni
+                choferDni = validationResult.dni,
+                choferDniError = validationResult.error
             )
         }
     }
@@ -91,7 +97,7 @@ class CamionViewModel(private val camionRepository: CamionRepository) : ViewMode
             val camionToInsert = Camion(
                 createdAt = LocalDate.now(),
                 choferName = _uiState.value.choferName,
-                choferDni = _uiState.value.choferDni,
+                choferDni = _uiState.value.choferDni!!,
                 patenteTractor = _uiState.value.patenteTractor,
                 patenteJaula = _uiState.value.patenteJaula,
                 kmService = 20000

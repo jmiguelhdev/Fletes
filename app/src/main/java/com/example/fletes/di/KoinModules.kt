@@ -4,6 +4,7 @@ import androidx.room.Room
 import com.example.fletes.data.repositories.CamionRepository
 import com.example.fletes.data.repositories.CamionRepositoryImpl
 import com.example.fletes.data.room.AppDatabase
+import com.example.fletes.domain.DniValidator
 import com.example.fletes.ui.camion.CamionViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -30,5 +31,12 @@ val appDatabaseModule = module {
 }
 
 val camionModule = module {
-    viewModel { CamionViewModel(get()) }
+    viewModel { CamionViewModel(
+        camionRepository = get(),
+        dniValidator = get()
+    ) }
+}
+
+val domainModule = module {
+    single { DniValidator() } // Provide DniValidator as a singleton
 }

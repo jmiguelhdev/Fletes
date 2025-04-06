@@ -18,7 +18,8 @@ data class CamionUiState(
     val choferDni: Int = 0,
     val patenteTractor: String = "",
     val patenteJaula: String = "",
-    val kmService: Int = 20000
+    val kmService: Int = 20000,
+    val showDialog: Boolean = false
 )
 
 
@@ -31,6 +32,14 @@ class CamionViewModel(private val camionRepository: CamionRepository) : ViewMode
     private val _uiState = MutableStateFlow(CamionUiState())
     val uiState = _uiState.asStateFlow()
 
+    fun showDialog() {
+        _uiState.update { it.copy(showDialog = true) }
+    }
+
+    fun hideDialog() {
+        _uiState.update { it.copy(showDialog = false) }
+    }
+
     fun onChoferNameValueChange(newValue: String) {
         _uiState.update { it.copy(choferName = newValue) }
     }
@@ -38,9 +47,11 @@ class CamionViewModel(private val camionRepository: CamionRepository) : ViewMode
     fun onChoferDniVaueChange(newValue: String) {
         val intValue = newValue.toIntOrNull() ?: 0
         val validValue = intValue in 20_000_000..99_000_000
-        _uiState.value = _uiState.value.copy(
-            choferDni = if (validValue) intValue else _uiState.value.choferDni
-        )
+        _uiState.update {
+            it.copy(
+                choferDni = if (validValue) intValue else _uiState.value.choferDni
+            )
+        }
     }
 
     fun onPatenteTractorValueChange(newValue: String) {
@@ -55,7 +66,7 @@ class CamionViewModel(private val camionRepository: CamionRepository) : ViewMode
         val validValue = formattedValue.matches(Regex("[A-Z]{2}[0-9]{3}[A-Z]{2}|[A-Z]{3}[0-9]{3}"))
         _uiState.update {
             it.copy(
-                patenteTractor = if (validValue) formattedValue else _uiState.value.patenteTractor
+                patenteTractor = newValue//if (validValue) formattedValue else _uiState.value.patenteTractor
             )
         }
     }
@@ -79,15 +90,16 @@ class CamionViewModel(private val camionRepository: CamionRepository) : ViewMode
         viewModelScope.launch {
             val camionToInsert = Camion(
                 createdAt = LocalDate.now(),
-                choferName = "John Doe",
-                choferDni = 12345678,
-                patenteTractor = "AA123BB",
-                patenteJaula = "CC456DD",
-                kmService = 10000
+                choferName = _uiState.value.choferName,
+                choferDni = _uiState.value.choferDni,
+                patenteTractor = _uiState.value.patenteTractor,
+                patenteJaula = _uiState.value.patenteJaula,
+                kmService = 20000
             )
             camionRepository.insertCamion(camionToInsert)
             Log.d("CamionViewModel", "Camion inserted $camionToInsert")
         }
+        hideDialog()
     }
 
     fun deleteAllCamiones() {

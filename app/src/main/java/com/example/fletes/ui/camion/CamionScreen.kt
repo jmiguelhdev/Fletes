@@ -34,10 +34,11 @@ import java.time.LocalDate
 @Composable
 fun CamionScreen(viewModel: CamionViewModel) {
     val camiones = viewModel.camiones.collectAsStateWithLifecycle()
+    val uiState = viewModel.uiState.collectAsStateWithLifecycle()
     Scaffold(
         topBar = {
             TopBar(
-                onInsertCamion = { viewModel.insertCamion() },
+                onInsertCamion = { viewModel.showDialog() },
                 onDeleteAllCamions = { viewModel.deleteAllCamiones() },
                 onBack = {}
             )
@@ -49,7 +50,14 @@ fun CamionScreen(viewModel: CamionViewModel) {
                 modifier = Modifier
                     .padding(paddingValues)
                 )
-
+            if (uiState.value.showDialog) {
+                CamionDialog(
+                    camionUiState = uiState.value,
+                    camionViewModel = viewModel,
+                    onDismiss = { viewModel.hideDialog() },
+                    onConfirm = { viewModel.insertCamion() }
+                )
+            }
         },
         bottomBar = {
 

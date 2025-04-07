@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fletes.data.repositories.CamionRepository
 import com.example.fletes.data.room.Camion
-import com.example.fletes.domain.DniValidationResult
 import com.example.fletes.domain.DniValidator
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -17,8 +16,8 @@ import java.time.LocalDate
 
 data class CamionUiState(
     val choferName: String = "",
-    val choferDni: Int? = 0,
-    val choferDniError: String? = "",
+    val choferDni: String = "",
+    val choferDniError: String? = "Insert Dni",
     val patenteTractor: String = "",
     val patenteJaula: String = "",
     val kmService: Int = 20000,
@@ -51,13 +50,9 @@ class CamionViewModel(
     }
 
     fun onChoferDniValueChange(newValue: String) {
-        val validationResult: DniValidationResult = dniValidator.validateDni(newValue)
-        _uiState.update {
-            it.copy(
-                choferDni = validationResult.dni,
-                choferDniError = validationResult.error
-            )
-        }
+        val validationResult = dniValidator.validateDni(newValue)
+        Log.d("CamionViewModel", "Validation result: $validationResult")
+        _uiState.update { it.copy(choferDni = newValue, choferDniError = validationResult.error) }
     }
 
     fun onPatenteTractorValueChange(newValue: String) {
@@ -72,7 +67,7 @@ class CamionViewModel(
         val validValue = formattedValue.matches(Regex("[A-Z]{2}[0-9]{3}[A-Z]{2}|[A-Z]{3}[0-9]{3}"))
         _uiState.update {
             it.copy(
-                patenteTractor = newValue//if (validValue) formattedValue else _uiState.value.patenteTractor
+                patenteTractor = if (validValue) formattedValue else _uiState.value.patenteTractor
             )
         }
     }
@@ -97,7 +92,7 @@ class CamionViewModel(
             val camionToInsert = Camion(
                 createdAt = LocalDate.now(),
                 choferName = _uiState.value.choferName,
-                choferDni = _uiState.value.choferDni!!,
+                choferDni = _uiState.value.choferDni.toInt(),
                 patenteTractor = _uiState.value.patenteTractor,
                 patenteJaula = _uiState.value.patenteJaula,
                 kmService = 20000

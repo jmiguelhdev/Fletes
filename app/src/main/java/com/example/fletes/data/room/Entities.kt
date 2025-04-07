@@ -23,7 +23,7 @@ data class Camion(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     @ColumnInfo(name = "created_at") val createdAt: LocalDate,
     @ColumnInfo(name = "chofer_name") val choferName: String,
-    @ColumnInfo(name = "chofer_dni") val choferDni: Int, // Price per unit for the driver
+    @ColumnInfo(name = "chofer_dni") val choferDni: Int,
     @ColumnInfo(name = "patente_tractor") val patenteTractor: String,
     @ColumnInfo(name = "patente_jaula") val patenteJaula: String,
     @ColumnInfo(name = "km_service") val kmService: Int

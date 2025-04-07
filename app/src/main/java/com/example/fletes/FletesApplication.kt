@@ -17,7 +17,12 @@ class FletesApplication : Application() {
         startKoin {
             androidLogger() // Optional: To see Koin logs
             androidContext(this@FletesApplication) // Provide the application context
-            modules(appDatabaseModule, camionModule, domainModule) // Your module with database
+            modules(
+                appDatabaseModule,
+                camionModule,
+                domainModule
+
+            ) // Your module with database
             // ... other modules
         }
     }

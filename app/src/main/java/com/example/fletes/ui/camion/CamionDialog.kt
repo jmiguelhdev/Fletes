@@ -31,6 +31,7 @@ fun CamionDialog(
                 input3 = camionUiState.patenteTractor,
                 label3 = "Truck License Plate",
                 onValueChange3 = { camionViewModel.onPatenteTractorValueChange(it) },
+                error3 = camionUiState.patenteError,
                 input4 = camionUiState.patenteJaula,
                 label4 = "Trailer License Plate",
                 onValueChange4 = { camionViewModel.onPatenteJaulaValueChange(it) }

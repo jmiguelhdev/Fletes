@@ -44,5 +44,5 @@ val camionModule = module {
 
 val domainModule = module {
     single { DniValidator() } // Provide DniValidator as a singleton
-    single { PatenteValidator() } // Provide StringValidatorResult as a singleton
+    single { PatenteValidator() }
 }

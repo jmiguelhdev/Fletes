@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.fletes.data.repositories.CamionRepository
 import com.example.fletes.data.room.Camion
 import com.example.fletes.domain.DniValidator
+import com.example.fletes.domain.PatenteValidator
+import com.example.fletes.domain.StringValidatorResult
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,6 +22,7 @@ data class CamionUiState(
     val choferDniError: String? = "Insert Dni",
     val patenteTractor: String = "",
     val patenteJaula: String = "",
+    val patenteError: String? = null,
     val kmService: Int = 20000,
     val showDialog: Boolean = false
 )
@@ -27,7 +30,8 @@ data class CamionUiState(
 
 class CamionViewModel(
     private val camionRepository: CamionRepository,
-    private val dniValidator: DniValidator
+    private val dniValidator: DniValidator,
+    private val licenseStringValidatorResult: PatenteValidator
 ) : ViewModel() {
     val camiones = camionRepository.getAllCamiones().stateIn(
         scope = viewModelScope,
@@ -56,18 +60,11 @@ class CamionViewModel(
     }
 
     fun onPatenteTractorValueChange(newValue: String) {
-        val uppercaseValue = newValue.uppercase()
-        val formattedValue = if (uppercaseValue.length <= 6 && uppercaseValue.length > 2) {
-            uppercaseValue.substring(
-                0,
-                2
-            ) + if (uppercaseValue.length >= 3) uppercaseValue.substring(2)
-                .filter { it.isDigit() } else ""
-        } else uppercaseValue
-        val validValue = formattedValue.matches(Regex("[A-Z]{2}[0-9]{3}[A-Z]{2}|[A-Z]{3}[0-9]{3}"))
+        val validatorResult = licenseStringValidatorResult.validatePatente(newValue)
         _uiState.update {
             it.copy(
-                patenteTractor = if (validValue) formattedValue else _uiState.value.patenteTractor
+                patenteTractor = validatorResult.value ?: _uiState.value.patenteTractor,
+                patenteError = validatorResult.error
             )
         }
     }

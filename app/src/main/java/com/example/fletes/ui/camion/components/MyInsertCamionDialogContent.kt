@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -21,7 +20,7 @@ fun MyInsertCamionDialogContent(
     onValueChange1: (String) -> Unit,
     input2: String,
     label2: String = "Input Driver License",
-    error: String? = "",
+    error2: String? = null,
     onValueChange2: (String) -> Unit,
     input3: String,
     label3: String = "Input Truck License Plate",
@@ -43,12 +42,9 @@ fun MyInsertCamionDialogContent(
         Spacer(modifier = Modifier.height(4.dp))
         MyTextField(
             input = input2,
-            label = error ?: label2,
+            label = error2 ?: label2,
             onValueChange = onValueChange2
         )
-//        if (error != null) {
-//            Text(text = error)
-//        }
         Spacer(modifier = Modifier.height(4.dp))
         MyTextField(
             input = input3,
@@ -66,7 +62,7 @@ fun MyInsertCamionDialogContent(
 
 @Preview(showBackground = true)
 @Composable
-fun MyDialogContentPreview(){
+fun MyDialogContentPreview() {
     val state1 = remember { mutableStateOf("") }
     val state2 = remember { mutableStateOf("") }
     val state3 = remember { mutableStateOf("") }

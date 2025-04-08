@@ -1,29 +1,30 @@
 package com.example.fletes.domain
 
 
-data class DniValidationResult(
-    val isValid: Boolean,
-    val dni: Int? = null,
-    val error: String? = null
-)
-
+/**
+ * DniValidator is a utility class responsible for validating DNI (Documento Nacional de Identidad) strings.
+ * It checks if the provided string is a valid DNI based on the following criteria:
+ *   - It must not be empty.
+ *   - It must contain only digits.
+ *   - It must be within the valid DNI range (20,000,000 to 99,000,000).
+ */
 class DniValidator {
 
-    fun validateDni(newValue: String): DniValidationResult {
+    fun validateDni(newValue: String): StringValidatorResult {
         if (newValue.isEmpty()) {
-            return DniValidationResult(isValid = true, dni = null, error = "Insert DNI")
+            return StringValidatorResult(isValid = true, value = null, error = "Insert DNI")
         }
         if (!newValue.all { it.isDigit() }) {
-            return DniValidationResult(isValid = false, dni = null, error = "DNI must contain only digits")
+            return StringValidatorResult(isValid = false, value =  null, error = "DNI must contain only digits")
         }
 
         val intValue = newValue.toIntOrNull()
         val isValidDni = intValue?.let { it in MIN_DNI_VALUE..MAX_DNI_VALUE } ?: false
 
         return if (isValidDni) {
-            DniValidationResult(isValid = true, dni = intValue, error = "Dni correct")
+            StringValidatorResult(isValid = true, value = intValue.toString(), error = "Dni correct")
         } else {
-            DniValidationResult(isValid = false, dni = null, error = "Invalid DNI number")
+            StringValidatorResult(isValid = false, value = null, error = "Invalid DNI number")
         }
     }
 

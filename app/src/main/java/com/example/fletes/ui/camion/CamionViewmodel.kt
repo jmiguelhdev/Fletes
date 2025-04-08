@@ -63,7 +63,7 @@ class CamionViewModel(
         val validatorResult = licenseStringValidatorResult.validatePatente(newValue)
         _uiState.update {
             it.copy(
-                patenteTractor = validatorResult.value ?: _uiState.value.patenteTractor,
+                patenteTractor = newValue,
                 patenteError = validatorResult.error
             )
         }

@@ -21,8 +21,11 @@ data class CamionUiState(
     val driverDniErrorMessage: String? = "Insert Dni",
     val isValidDni: Boolean = true,
     val patenteTractor: String = "",
+    val patenteTractorErrorMessage: String? = null,
+    val isValidPatenteTractor: Boolean = true,
     val patenteJaula: String = "",
-    val patenteError: String? = null,
+    val patenteJaulaErrorMessage: String? = null,
+    val isValidPatenteJaula: Boolean = true,
     val kmService: Int = 20000,
     val showDialog: Boolean = false
 )
@@ -69,24 +72,21 @@ class CamionViewModel(
         _uiState.update {
             it.copy(
                 patenteTractor = newValue,
-                patenteError = validatorResult.errorMessage
+                patenteTractorErrorMessage = validatorResult.errorMessage,
+                isValidPatenteTractor = validatorResult.isValid
             )
         }
     }
 
     fun onPatenteJaulaValueChange(newValue: String) {
-        val uppercaseValue = newValue.uppercase()
-        val formattedValue = if (uppercaseValue.length <= 6 && uppercaseValue.length > 2) {
-            uppercaseValue.substring(
-                0,
-                2
-            ) + if (uppercaseValue.length >= 3) uppercaseValue.substring(2)
-                .filter { it.isDigit() } else ""
-        } else uppercaseValue
-        val validValue = formattedValue.matches(Regex("[A-Z]{2}[0-9]{3}[A-Z]{2}|[A-Z]{3}[0-9]{3}"))
-        _uiState.value = _uiState.value.copy(
-            patenteJaula = if (validValue) formattedValue else _uiState.value.patenteJaula
-        )
+        val validatorResult = licenseStringValidatorResult.validatePatente(newValue)
+        _uiState.update {
+            it.copy(
+                patenteJaula = newValue,
+                patenteJaulaErrorMessage = validatorResult.errorMessage,
+                isValidPatenteJaula = validatorResult.isValid
+            )
+        }
     }
 
     fun insertCamion() {

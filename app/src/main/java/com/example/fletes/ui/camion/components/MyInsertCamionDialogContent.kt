@@ -25,10 +25,13 @@ fun MyInsertCamionDialogContent(
     onValueChange2: (String) -> Unit,
     input3: String,
     label3: String = "Input Truck License Plate",
-    error3: String? = null,
+    error3msg: String? = null,
+    isValid3: Boolean = true,
     onValueChange3: (String) -> Unit,
     input4: String,
     label4: String = "Input Trailer License Plate",
+    error4msg: String? = null,
+    isValid4: Boolean = true,
     onValueChange4: (String) -> Unit,
 ) {
     Column(
@@ -51,14 +54,16 @@ fun MyInsertCamionDialogContent(
         Spacer(modifier = Modifier.height(4.dp))
         MyTextField(
             input = input3,
-            label = error3 ?: label3,
-            onValueChange = onValueChange3
+            label = error3msg ?: label3,
+            onValueChange = onValueChange3,
+            isValid = isValid3
         )
         Spacer(modifier = Modifier.height(4.dp))
         MyTextField(
             input = input4,
-            label = label4,
-            onValueChange = onValueChange4
+            label = error4msg ?: label4,
+            onValueChange = onValueChange4,
+            isValid = isValid4
         )
     }
 }

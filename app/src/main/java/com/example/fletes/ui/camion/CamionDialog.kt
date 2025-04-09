@@ -24,17 +24,23 @@ fun CamionDialog(
                 input1 = camionUiState.choferName,
                 label1 = "Driver Name",
                 onValueChange1 = { camionViewModel.onChoferNameValueChange(it) } ,
+
                 input2 = camionUiState.choferDni.toString(),
                 label2 = "Driver License",
                 isValid2 = camionUiState.isValidDni,
                 error2msg = camionUiState.driverDniErrorMessage.toString(),
                 onValueChange2 = { camionViewModel.onChoferDniValueChange(it) },
+
                 input3 = camionUiState.patenteTractor,
                 label3 = "Truck License Plate",
+                isValid3 = camionUiState.isValidPatenteTractor ,
+                error3msg = camionUiState.patenteTractorErrorMessage,
                 onValueChange3 = { camionViewModel.onPatenteTractorValueChange(it) },
-                error3 = camionUiState.patenteError,
+
                 input4 = camionUiState.patenteJaula,
                 label4 = "Trailer License Plate",
+                isValid4 = camionUiState.isValidPatenteJaula,
+                error4msg = camionUiState.patenteJaulaErrorMessage,
                 onValueChange4 = { camionViewModel.onPatenteJaulaValueChange(it) }
             )
         },

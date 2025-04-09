@@ -137,8 +137,6 @@ class CamionViewModel(
                     patenteJaula = _uiState.value.patenteJaula,
                     kmService = 20000
                 )
-                updateCamion(camionEdited)
-                Log.d("CamionViewModel", "Camion edited $camionEdited")
             }
         }
     }

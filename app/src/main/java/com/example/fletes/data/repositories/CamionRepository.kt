@@ -9,6 +9,7 @@ interface CamionRepository {
     // Camion
     suspend fun insertCamion(camion: Camion)
     suspend fun deleteCamion(camion: Camion)
+    suspend fun updateCamion(camion: Camion)
     suspend fun deleteAlllCamiones()
     suspend fun getCamionById(id: Int): Camion?
     fun getAllCamiones(): Flow<List<Camion>>

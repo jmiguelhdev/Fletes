@@ -8,6 +8,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 
 // Database
@@ -27,6 +28,9 @@ interface AppDao {
     // Camion
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCamion(camion: Camion)
+
+    @Update
+    suspend fun updateCamion(camion: Camion)
 
     @Delete
     suspend fun deleteCamion(camion: Camion)

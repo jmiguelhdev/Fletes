@@ -13,6 +13,9 @@ class CamionRepositoryImpl(private val appDao: AppDao): CamionRepository {
         return appDao.deleteCamion(camion)
     }
 
+    override suspend fun updateCamion(camion: Camion) {
+        return appDao.updateCamion(camion)
+    }
     override suspend fun deleteAlllCamiones() {
         return appDao.deleteAlllCamiones()
     }

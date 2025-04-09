@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -48,15 +47,24 @@ fun CamionScreen(viewModel: CamionViewModel) {
             ListOfCamionesScreen(
                 camiones = camiones.value,
                 ondeleteCamion = { viewModel.deleteCamion(it) },
+                onEditCamion = { viewModel.onShowEditDialog(it) },
                 modifier = Modifier
                     .padding(paddingValues)
             )
-            if (uiState.value.showDialog) {
+            if (uiState.value.showInsertDialog) {
                 CamionDialog(
                     camionUiState = uiState.value,
                     camionViewModel = viewModel,
                     onDismiss = { viewModel.hideDialog() },
                     onConfirm = { viewModel.insertCamion() }
+                )
+            }
+            if (uiState.value.showEditDialog) {
+                CamionDialog(
+                    camionUiState = uiState.value,
+                    camionViewModel = viewModel,
+                    onDismiss = { viewModel.hideDialog() },
+                    onConfirm = { viewModel.updateCamion() }
                 )
             }
         },
@@ -71,6 +79,7 @@ fun CamionScreen(viewModel: CamionViewModel) {
 fun ListOfCamionesScreen(
     camiones: List<Camion>,
     ondeleteCamion: (Int) -> Unit,
+    onEditCamion: (Int) -> Unit,
     modifier: Modifier
 ) {
     Column(
@@ -83,7 +92,7 @@ fun ListOfCamionesScreen(
                 CamionCard(
                     camion = camion,
                     onDeleteCamion = ondeleteCamion,
-                    onEditCamion = { },
+                    onEditCamion = onEditCamion,
                     modifier = Modifier
                 )
             }
@@ -153,33 +162,30 @@ private fun InteractColum(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun InteractColumPreview() {
-    val mockCamion = Camion(
-        id = 1,
-        createdAt = LocalDate.now(),
-        choferName = "Jonh Doe",
-        choferDni = 123456789,
-        patenteTractor = "AA123BB",
-        patenteJaula = "CC456DD",
-        kmService = 20000,
-    )
-    InteractColum(camion = mockCamion, onDeleteCamion = {}, onEditCamion = {})
-}
 
 @Composable
 fun CamionDetailsColumn(camion: Camion, modifier: Modifier = Modifier) {
-    Column(modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        DetailRow(label = "Chofer", value = camion.choferName, style = MaterialTheme.typography.titleMedium)
-        DetailRow(label = "DNI", value = camion.choferDni.toString(), )
-        DetailRow(label = "Patente Tractor", value = camion.patenteTractor, )
-        DetailRow(label = "Patente Jaula", value = camion.patenteJaula, )
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        DetailRow(
+            label = "Chofer",
+            value = camion.choferName,
+            style = MaterialTheme.typography.titleMedium
+        )
+        DetailRow(label = "DNI", value = camion.choferDni.toString())
+        DetailRow(label = "Patente Tractor", value = camion.patenteTractor)
+        DetailRow(label = "Patente Jaula", value = camion.patenteJaula)
     }
 }
+
 @Composable
-fun DetailRow(label: String, value: String, style: TextStyle = MaterialTheme.typography.bodyMedium) {
+fun DetailRow(
+    label: String,
+    value: String,
+    style: TextStyle = MaterialTheme.typography.bodyMedium
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Center
@@ -232,6 +238,34 @@ fun TopBar(
 
 @Preview(showBackground = true)
 @Composable
+fun TopBarPreview() {
+    TopBar(
+        onInsertCamion = { },
+        onDeleteAllCamions = { },
+        onBack = { }
+    )
+}
+@Preview(showBackground = true)
+@Composable
+fun CamionCardPreview() {
+    val mockCamion = Camion(
+        id = 1,
+        choferName = "John Doe",
+        choferDni = 12345678,
+        patenteTractor = "AB123CD",
+        patenteJaula = "EF456GH",
+        createdAt = LocalDate.now(),
+        kmService = 20000
+    )
+    CamionCard(
+        camion = mockCamion,
+        onDeleteCamion = {},
+        onEditCamion = {},
+        modifier = Modifier
+    )
+}
+@Preview(showBackground = true)
+@Composable
 fun ListOfCamionesScreenPreview() {
     val camiones = listOf(
         Camion(
@@ -267,37 +301,26 @@ fun ListOfCamionesScreenPreview() {
         ListOfCamionesScreen(
             camiones = camiones,
             ondeleteCamion = {},
+            onEditCamion = {},
             modifier = Modifier
         )
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun TopBarPreview() {
-    TopBar(
-        onInsertCamion = { },
-        onDeleteAllCamions = { },
-        onBack = { }
-    )
-}
+
+
 
 @Preview(showBackground = true)
 @Composable
-fun CamionCardPreview() {
+fun InteractColumPreview() {
     val mockCamion = Camion(
         id = 1,
-        choferName = "John Doe",
-        choferDni = 12345678,
-        patenteTractor = "AB123CD",
-        patenteJaula = "EF456GH",
         createdAt = LocalDate.now(),
-        kmService = 20000
+        choferName = "Jonh Doe",
+        choferDni = 123456789,
+        patenteTractor = "AA123BB",
+        patenteJaula = "CC456DD",
+        kmService = 20000,
     )
-    CamionCard(
-        camion = mockCamion,
-        onDeleteCamion = {},
-        onEditCamion = {},
-        modifier = Modifier
-    )
+    InteractColum(camion = mockCamion, onDeleteCamion = {}, onEditCamion = {})
 }

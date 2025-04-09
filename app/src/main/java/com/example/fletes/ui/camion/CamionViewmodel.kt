@@ -27,7 +27,8 @@ data class CamionUiState(
     val patenteJaulaErrorMessage: String? = null,
     val isValidPatenteJaula: Boolean = true,
     val kmService: Int = 20000,
-    val showDialog: Boolean = false
+    val showInsertDialog: Boolean = false,
+    val showEditDialog: Boolean = false
 )
 
 
@@ -45,11 +46,11 @@ class CamionViewModel(
     val uiState = _uiState.asStateFlow()
 
     fun showDialog() {
-        _uiState.update { it.copy(showDialog = true) }
+        _uiState.update { it.copy(showInsertDialog = true) }
     }
 
     fun hideDialog() {
-        _uiState.update { it.copy(showDialog = false) }
+        _uiState.update { it.copy(showInsertDialog = false) }
     }
 
     fun onChoferNameValueChange(newValue: String) {
@@ -59,11 +60,13 @@ class CamionViewModel(
     fun onChoferDniValueChange(newValue: String) {
         val validationResult = dniValidator.validateDni(newValue)
         Log.d("CamionViewModel", "Validation result: $validationResult")
-        _uiState.update { it.copy(
-            choferDni = newValue,
-            driverDniErrorMessage = validationResult.errorMessage,
-            isValidDni = validationResult.isValid
-        ) }
+        _uiState.update {
+            it.copy(
+                choferDni = newValue,
+                driverDniErrorMessage = validationResult.errorMessage,
+                isValidDni = validationResult.isValid
+            )
+        }
 
     }
 
@@ -121,4 +124,29 @@ class CamionViewModel(
             }
         }
     }
+
+    fun onShowEditDialog(id: Int) {
+        _uiState.update { it.copy(showEditDialog = true) }
+        viewModelScope.launch {
+            val camionToEdit = camionRepository.getCamionById(id)
+            if (camionToEdit != null) {
+                val camionEdited = camionToEdit.copy(
+                    choferName = _uiState.value.choferName,
+                    choferDni = _uiState.value.choferDni.toInt(),
+                    patenteTractor = _uiState.value.patenteTractor,
+                    patenteJaula = _uiState.value.patenteJaula,
+                    kmService = 20000
+                )
+                updateCamion(camionEdited)
+                Log.d("CamionViewModel", "Camion edited $camionEdited")
+            }
+        }
+    }
+
+    fun updateCamion(camion: Camion) {
+        viewModelScope.launch {
+            camionRepository.updateCamion(camion)
+        }
+    }
+
 }

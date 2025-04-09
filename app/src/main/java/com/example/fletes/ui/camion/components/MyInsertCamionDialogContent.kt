@@ -20,7 +20,8 @@ fun MyInsertCamionDialogContent(
     onValueChange1: (String) -> Unit,
     input2: String,
     label2: String = "Input Driver License",
-    error2: String? = null,
+    error2msg: String? = null,
+    isValid2: Boolean = true,
     onValueChange2: (String) -> Unit,
     input3: String,
     label3: String = "Input Truck License Plate",
@@ -43,8 +44,9 @@ fun MyInsertCamionDialogContent(
         Spacer(modifier = Modifier.height(4.dp))
         MyTextField(
             input = input2,
-            label = error2 ?: label2,
-            onValueChange = onValueChange2
+            label = error2msg ?: label2,
+            onValueChange = onValueChange2,
+            isValid = isValid2
         )
         Spacer(modifier = Modifier.height(4.dp))
         MyTextField(

@@ -12,19 +12,19 @@ class DniValidator {
 
     fun validateDni(newValue: String): StringValidatorResult {
         if (newValue.isEmpty()) {
-            return StringValidatorResult(isValid = true, value = null, error = "Insert DNI")
+            return StringValidatorResult(isValid = true, value = null, errorMessage = "Insert DNI")
         }
         if (!newValue.all { it.isDigit() }) {
-            return StringValidatorResult(isValid = false, value =  null, error = "DNI must contain only digits")
+            return StringValidatorResult(isValid = false, value =  null, errorMessage = "DNI must contain only digits")
         }
 
         val intValue = newValue.toIntOrNull()
         val isValidDni = intValue?.let { it in MIN_DNI_VALUE..MAX_DNI_VALUE } ?: false
 
         return if (isValidDni) {
-            StringValidatorResult(isValid = true, value = intValue.toString(), error = "Dni correct")
+            StringValidatorResult(isValid = true, value = intValue.toString(), errorMessage = "Dni correct")
         } else {
-            StringValidatorResult(isValid = false, value = null, error = "Invalid DNI number")
+            StringValidatorResult(isValid = false, value = null, errorMessage = "Invalid DNI number")
         }
     }
 

@@ -7,7 +7,6 @@ import com.example.fletes.data.repositories.CamionRepository
 import com.example.fletes.data.room.Camion
 import com.example.fletes.domain.DniValidator
 import com.example.fletes.domain.PatenteValidator
-import com.example.fletes.domain.StringValidatorResult
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,7 +18,8 @@ import java.time.LocalDate
 data class CamionUiState(
     val choferName: String = "",
     val choferDni: String = "",
-    val choferDniError: String? = "Insert Dni",
+    val driverDniErrorMessage: String? = "Insert Dni",
+    val isValidDni: Boolean = true,
     val patenteTractor: String = "",
     val patenteJaula: String = "",
     val patenteError: String? = null,
@@ -56,7 +56,12 @@ class CamionViewModel(
     fun onChoferDniValueChange(newValue: String) {
         val validationResult = dniValidator.validateDni(newValue)
         Log.d("CamionViewModel", "Validation result: $validationResult")
-        _uiState.update { it.copy(choferDni = newValue, choferDniError = validationResult.error) }
+        _uiState.update { it.copy(
+            choferDni = newValue,
+            driverDniErrorMessage = validationResult.errorMessage,
+            isValidDni = validationResult.isValid
+        ) }
+
     }
 
     fun onPatenteTractorValueChange(newValue: String) {
@@ -64,7 +69,7 @@ class CamionViewModel(
         _uiState.update {
             it.copy(
                 patenteTractor = newValue,
-                patenteError = validatorResult.error
+                patenteError = validatorResult.errorMessage
             )
         }
     }

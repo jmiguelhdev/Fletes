@@ -3,13 +3,13 @@ package com.example.fletes.ui.camion
 import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
@@ -24,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -49,7 +50,7 @@ fun CamionScreen(viewModel: CamionViewModel) {
                 ondeleteCamion = { viewModel.deleteCamion(it) },
                 modifier = Modifier
                     .padding(paddingValues)
-                )
+            )
             if (uiState.value.showDialog) {
                 CamionDialog(
                     camionUiState = uiState.value,
@@ -66,8 +67,6 @@ fun CamionScreen(viewModel: CamionViewModel) {
 }
 
 
-
-
 @Composable
 fun ListOfCamionesScreen(
     camiones: List<Camion>,
@@ -82,9 +81,11 @@ fun ListOfCamionesScreen(
         LazyColumn(modifier = Modifier.weight(1f)) {
             items(camiones) { camion ->
                 CamionCard(
-                    camion =camion ,
-                    ondeleteCamion = ondeleteCamion,
-                    modifier= Modifier)
+                    camion = camion,
+                    onDeleteCamion = ondeleteCamion,
+                    onEditCamion = { },
+                    modifier = Modifier
+                )
             }
         }
     }
@@ -93,54 +94,100 @@ fun ListOfCamionesScreen(
 @Composable
 fun CamionCard(
     camion: Camion,
-    ondeleteCamion: (Int) -> Unit,
+    onDeleteCamion: (Int) -> Unit,
+    onEditCamion: (Int) -> Unit,
     modifier: Modifier
 ) {
     Card(
-        modifier = Modifier
+        modifier = modifier
             .padding(2.dp)
             .fillMaxWidth()
     ) {
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.padding(8.dp).weight(1f)
+        Box(modifier = Modifier.fillMaxWidth()) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = "Chofer: ${camion.choferName}",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Spacer(modifier = Modifier.padding(2.dp))
-                Text(
-                    text = "DNI: ${camion.choferDni}",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Spacer(modifier = Modifier.padding(2.dp))
-                Text(
-                    text = "Patente Tractor: ${camion.patenteTractor}",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Spacer(modifier = Modifier.padding(2.dp))
-                Text(
-                    text = "Patente Jaula: ${camion.patenteJaula}",
-                    style = MaterialTheme.typography.bodyMedium
+                CamionDetailsColumn(camion = camion, modifier = Modifier.weight(1f))
+                InteractColum(
+                    camion = camion,
+                    onDeleteCamion = onDeleteCamion,
+                    onEditCamion = onEditCamion
                 )
             }
-            Column(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .padding(top = 4.dp, end = 8.dp),
-                horizontalAlignment = Alignment.End,
-                verticalArrangement = Arrangement.Bottom
-            ) {
-                Text(text = "ID: ${camion.id}", style = MaterialTheme.typography.bodyMedium)
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_delete_outline_24),
-                     contentDescription = "Delete",
-                     modifier = Modifier.clickable { ondeleteCamion(camion.id) }
-                 )
-             }
         }
+    }
+}
+
+@Composable
+private fun InteractColum(
+    camion: Camion,
+    onDeleteCamion: (Int) -> Unit,
+    onEditCamion: (Int) -> Unit
+) {
+    Column(
+        modifier = Modifier,
+        verticalArrangement = Arrangement.SpaceEvenly
+    ) {
+        Text(text = "ID: ${camion.id}", style = MaterialTheme.typography.bodyMedium)
+        Spacer(Modifier.padding(vertical = 8.dp))
+        Icon(
+            painter = painterResource(id = R.drawable.ic_delete_outline_24),
+            contentDescription = "Delete",
+            modifier = Modifier.clickable { onDeleteCamion(camion.id) }
+        )
+        Spacer(Modifier.padding(vertical = 8.dp))
+        Icon(
+            painter = painterResource(R.drawable.edit_edit_24),
+            tint = MaterialTheme.colorScheme.primary,
+            contentDescription = "Edit",
+            modifier = Modifier
+                .clickable {
+                    Log.d("CamionViewModel", "Edit camion ${camion.id}")
+                    onEditCamion(camion.id)
+                }
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun InteractColumPreview() {
+    val mockCamion = Camion(
+        id = 1,
+        createdAt = LocalDate.now(),
+        choferName = "Jonh Doe",
+        choferDni = 123456789,
+        patenteTractor = "AA123BB",
+        patenteJaula = "CC456DD",
+        kmService = 20000,
+    )
+    InteractColum(camion = mockCamion, onDeleteCamion = {}, onEditCamion = {})
+}
+
+@Composable
+fun CamionDetailsColumn(camion: Camion, modifier: Modifier = Modifier) {
+    Column(modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        DetailRow(label = "Chofer", value = camion.choferName, style = MaterialTheme.typography.titleMedium)
+        DetailRow(label = "DNI", value = camion.choferDni.toString(), )
+        DetailRow(label = "Patente Tractor", value = camion.patenteTractor, )
+        DetailRow(label = "Patente Jaula", value = camion.patenteJaula, )
+    }
+}
+@Composable
+fun DetailRow(label: String, value: String, style: TextStyle = MaterialTheme.typography.bodyMedium) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = "$label: $value",
+            style = style
+        )
     }
 }
 
@@ -232,5 +279,25 @@ fun TopBarPreview() {
         onInsertCamion = { },
         onDeleteAllCamions = { },
         onBack = { }
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun CamionCardPreview() {
+    val mockCamion = Camion(
+        id = 1,
+        choferName = "John Doe",
+        choferDni = 12345678,
+        patenteTractor = "AB123CD",
+        patenteJaula = "EF456GH",
+        createdAt = LocalDate.now(),
+        kmService = 20000
+    )
+    CamionCard(
+        camion = mockCamion,
+        onDeleteCamion = {},
+        onEditCamion = {},
+        modifier = Modifier
     )
 }

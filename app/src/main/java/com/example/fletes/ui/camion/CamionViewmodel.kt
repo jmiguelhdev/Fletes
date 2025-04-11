@@ -51,9 +51,11 @@ class CamionViewModel(
 
     fun hideDialog() {
         _uiState.update { it.copy(showInsertDialog = false) }
+        _uiState.update { it.copy(showEditDialog = false) }
     }
 
     fun onChoferNameValueChange(newValue: String) {
+        Log.d("CamionViewModel", "Chofer name changed to $newValue")
         _uiState.update { it.copy(choferName = newValue) }
     }
 
@@ -128,23 +130,38 @@ class CamionViewModel(
     fun onShowEditDialog(id: Int) {
         _uiState.update { it.copy(showEditDialog = true) }
         viewModelScope.launch {
-            val camionToEdit = camionRepository.getCamionById(id)
-            if (camionToEdit != null) {
-                val camionEdited = camionToEdit.copy(
-                    choferName = _uiState.value.choferName,
-                    choferDni = _uiState.value.choferDni.toInt(),
-                    patenteTractor = _uiState.value.patenteTractor,
-                    patenteJaula = _uiState.value.patenteJaula,
-                    kmService = 20000
-                )
+            val camionToUpdate = camionRepository.getCamionById(id)
+            if (camionToUpdate != null) {
+                _uiState.update {
+                    it.copy(
+                        choferName = camionToUpdate.choferName,
+                        choferDni = camionToUpdate.choferDni.toString(),
+                        patenteTractor = camionToUpdate.patenteTractor,
+                        patenteJaula = camionToUpdate.patenteJaula,
+                    )
+                }
             }
         }
     }
 
-    fun updateCamion(camion: Camion) {
+    fun updateCamion(id: Int) {
         viewModelScope.launch {
-            camionRepository.updateCamion(camion)
+            val camionToUpdate = camionRepository.getCamionById(id)
+            Log.d("CamionViewModel", "name ${_uiState.value.choferName}")
+            if (camionToUpdate != null) {
+                val updatedCamion = camionToUpdate.copy(
+                    choferName = _uiState.value.choferName,
+                    choferDni = _uiState.value.choferDni.toInt(),
+                    patenteTractor = _uiState.value.patenteTractor,
+                    patenteJaula = _uiState.value.patenteJaula,
+                    kmService = 30000
+                )
+                camionRepository.updateCamion(updatedCamion)
+            }
+            Log.d("CamionViewModel", "Camion updated $camionToUpdate")
         }
+        _uiState.update { it.copy(showEditDialog = false) }
     }
+
 
 }

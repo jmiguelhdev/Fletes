@@ -3,10 +3,12 @@ package com.example.fletes.ui.camion
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import com.example.fletes.data.room.Camion
 import com.example.fletes.ui.camion.components.MyInsertCamionDialogContent
+import com.example.fletes.ui.theme.FletesTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -19,12 +21,12 @@ fun CamionDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Ingrese Camion") },
+        title = { Text("Insert Truck") },
         text = {
             MyInsertCamionDialogContent(
                 input1 = camionUiState.choferName,
                 label1 = "Driver Name",
-                onValueChange1 = { camionViewModel.onChoferNameValueChange(it) } ,
+                onValueChange1 = { camionViewModel.onChoferNameValueChange(it) },
 
                 input2 = camionUiState.choferDni.toString(),
                 label2 = "Driver License",
@@ -34,7 +36,7 @@ fun CamionDialog(
 
                 input3 = camionUiState.patenteTractor,
                 label3 = "Truck License Plate",
-                isValid3 = camionUiState.isValidPatenteTractor ,
+                isValid3 = camionUiState.isValidPatenteTractor,
                 error3msg = camionUiState.patenteTractorErrorMessage,
                 onValueChange3 = { camionViewModel.onPatenteTractorValueChange(it) },
 
@@ -61,6 +63,7 @@ fun CamionDialog(
         }
     )
 }
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CamionUpdateDialog(
@@ -72,13 +75,14 @@ fun CamionUpdateDialog(
 ) {
 
     AlertDialog(
+        containerColor = MaterialTheme.colorScheme.secondaryContainer,
         onDismissRequest = onDismiss,
-        title = { Text("Ingrese Camion") },
+        title = { Text("Edit Truck") },
         text = {
             MyInsertCamionDialogContent(
                 input1 = camionUiState.choferName,
                 label1 = "Driver Name",
-                onValueChange1 = { camionViewModel.onChoferNameValueChange(it) } ,
+                onValueChange1 = { camionViewModel.onChoferNameValueChange(it) },
 
                 input2 = camionUiState.choferDni.toString(),
                 label2 = "Driver License",
@@ -88,7 +92,7 @@ fun CamionUpdateDialog(
 
                 input3 = camionUiState.patenteTractor,
                 label3 = "Truck License Plate",
-                isValid3 = camionUiState.isValidPatenteTractor ,
+                isValid3 = camionUiState.isValidPatenteTractor,
                 error3msg = camionUiState.patenteTractorErrorMessage,
                 onValueChange3 = { camionViewModel.onPatenteTractorValueChange(it) },
 

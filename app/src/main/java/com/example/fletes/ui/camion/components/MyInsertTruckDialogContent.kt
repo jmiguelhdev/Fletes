@@ -14,7 +14,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun MyInsertCamionDialogContent(
+fun MyInsertTruckDialogContent(
     input1: String,
     label1: String = "Input Driver Name",
     onValueChange1: (String) -> Unit,
@@ -75,7 +75,7 @@ fun MyDialogContentPreview() {
     val state2 = remember { mutableStateOf("") }
     val state3 = remember { mutableStateOf("") }
     val state4 = remember { mutableStateOf("") }
-    MyInsertCamionDialogContent(
+    MyInsertTruckDialogContent(
         input1 = state1.value,
         onValueChange1 = { state1.value = it },
         input2 = state2.value,

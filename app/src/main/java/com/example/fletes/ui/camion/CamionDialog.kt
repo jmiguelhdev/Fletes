@@ -7,8 +7,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import com.example.fletes.data.room.Camion
-import com.example.fletes.ui.camion.components.MyInsertCamionDialogContent
-import com.example.fletes.ui.theme.FletesTheme
+import com.example.fletes.ui.camion.components.MyInsertTruckDialogContent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -23,7 +22,7 @@ fun CamionDialog(
         onDismissRequest = onDismiss,
         title = { Text("Insert Truck") },
         text = {
-            MyInsertCamionDialogContent(
+            MyInsertTruckDialogContent(
                 input1 = camionUiState.choferName,
                 label1 = "Driver Name",
                 onValueChange1 = { camionViewModel.onChoferNameValueChange(it) },
@@ -79,7 +78,7 @@ fun CamionUpdateDialog(
         onDismissRequest = onDismiss,
         title = { Text("Edit Truck") },
         text = {
-            MyInsertCamionDialogContent(
+            MyInsertTruckDialogContent(
                 input1 = camionUiState.choferName,
                 label1 = "Driver Name",
                 onValueChange1 = { camionViewModel.onChoferNameValueChange(it) },

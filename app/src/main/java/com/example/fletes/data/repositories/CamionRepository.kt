@@ -25,9 +25,11 @@ interface DestinoRepository {
 interface CamionesRegistroRepository {
     // CamionesRegistro
     suspend fun insertCamionesRegistro(camionesRegistro: CamionesRegistro)
+    suspend fun updateCamionRegistro(camionesRegistro: CamionesRegistro)
     suspend fun getCamionesRegistroById(id: Int): CamionesRegistro?
     fun getAllCamionesRegistros(): Flow<List<CamionesRegistro>>
     fun getRegistrationsForTruck(camionId: Int): Flow<List<CamionesRegistro>>
     fun getRegistrationsForDestination(destinoId: Int): Flow<List<CamionesRegistro>>
     fun getAllRegistrations():Flow<List<CamionesRegistro>>
+    fun getLastTripByCamionId(id: Int): CamionesRegistro
 }

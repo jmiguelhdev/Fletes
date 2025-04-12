@@ -28,5 +28,4 @@ data class Destino(
     val comisionista: String? = null,
     val despacho: Int? = null,
     val localidad: String? = null,
-    val distancia: Double,
 )

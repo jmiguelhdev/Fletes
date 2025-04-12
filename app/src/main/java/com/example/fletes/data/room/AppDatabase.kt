@@ -58,8 +58,19 @@ interface AppDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCamionesRegistro(camionesRegistro: CamionesRegistro)
 
+    @Update
+    suspend fun updateCamionRegistro(camionesRegistro: CamionesRegistro)
+
     @Query("SELECT * FROM camiones_registro WHERE id = :id")
     suspend fun getCamionesRegistroById(id: Int): CamionesRegistro?
+
+    //Example of how to get the last 7 rendimiento for a given camionId
+    @Query("SELECT * FROM camiones_registro WHERE camion_id = :camionId ORDER BY created_at DESC LIMIT 7")
+    fun getLast7RendimientoByCamionId(camionId:Int): Flow<List<CamionesRegistro>>
+
+    @Query("SELECT * FROM camiones_registro WHERE camion_id = :camionId ORDER BY created_at DESC LIMIT 1")
+    fun getLastTripByCamionId(camionId: Int): CamionesRegistro
+
 
     @Query("SELECT * FROM camiones_registro")
     fun getAllCamionesRegistros(): Flow<List<CamionesRegistro>>

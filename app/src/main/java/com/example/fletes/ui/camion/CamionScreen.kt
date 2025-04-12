@@ -34,7 +34,7 @@ import com.example.fletes.data.room.Camion
 import java.time.LocalDate
 
 @Composable
-fun CamionScreen(viewModel: CamionViewModel) {
+fun CamionScreen(viewModel: CamionViewModel, onNavBack: () -> Unit) {
     val camiones = viewModel.camiones.collectAsStateWithLifecycle()
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
     Scaffold(

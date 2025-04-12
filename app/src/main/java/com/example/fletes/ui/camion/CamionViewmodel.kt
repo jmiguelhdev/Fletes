@@ -1,9 +1,9 @@
 package com.example.fletes.ui.camion
 
+import CamionRepository
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.fletes.data.repositories.CamionRepository
 import com.example.fletes.data.room.Camion
 import com.example.fletes.domain.DniValidator
 import com.example.fletes.domain.PatenteValidator

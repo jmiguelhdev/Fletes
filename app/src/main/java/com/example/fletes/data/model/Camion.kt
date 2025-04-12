@@ -10,6 +10,8 @@ data class CamionesRegistro(
     val kmSurtidor: Int,
     val litros: Double,
     val precioGasOil: Double,
+    val rendimiento: Double,
+    val isLast: Boolean,
 )
 
 data class Camion(

@@ -1,10 +1,14 @@
 package com.example.fletes.data.repositories
 
+import CamionRepository
 import com.example.fletes.data.room.AppDao
 import com.example.fletes.data.room.Camion
+
 import kotlinx.coroutines.flow.Flow
 
 class CamionRepositoryImpl(private val appDao: AppDao): CamionRepository {
+
+
     override suspend fun insertCamion(camion: Camion) {
         return appDao.insertCamion(camion)
     }
@@ -13,11 +17,12 @@ class CamionRepositoryImpl(private val appDao: AppDao): CamionRepository {
         return appDao.deleteCamion(camion)
     }
 
-    override suspend fun updateCamion(camion: Camion) {
-        return appDao.updateCamion(camion)
-    }
     override suspend fun deleteAlllCamiones() {
         return appDao.deleteAlllCamiones()
+    }
+
+    override suspend fun updateCamion(camion: Camion) {
+        return appDao.updateCamion(camion)
     }
 
     override suspend fun getCamionById(id: Int): Camion? {

@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.Flow
 // Database
 @Database(
     entities = [Camion::class, Destino::class, CamionesRegistro::class],
-    version = 3,
+    version = 4,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -45,14 +45,26 @@ interface AppDao {
     fun getAllCamiones(): Flow<List<Camion>>
 
     // Destino
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertDestino(destino: Destino)
+
+    @Delete
+    suspend fun deleteDestino(destino: Destino)
+
+    @Update
+    suspend fun updateDestino(destino: Destino)
 
     @Query("SELECT * FROM destinos WHERE id = :id")
     suspend fun getDestinoById(id: Int): Destino?
 
     @Query("SELECT * FROM destinos")
     fun getAllDestinos(): Flow<List<Destino>>
+
+    @Query("SELECT DISTINCT comisionista FROM destinos WHERE comisionista LIKE '%' || :query || '%'")
+    fun searchComisionista(query: String): Flow<List<String>>
+
+    @Query("SELECT DISTINCT localidad FROM destinos WHERE localidad LIKE '%' || :query || '%'")
+    fun searchLocalidad(query: String): Flow<List<String>>
 
     // CamionesRegistro
     @Insert(onConflict = OnConflictStrategy.REPLACE)

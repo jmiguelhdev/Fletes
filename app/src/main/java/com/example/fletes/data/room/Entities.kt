@@ -34,6 +34,7 @@ data class Camion(
 @Entity(tableName = "destinos")
 data class Destino(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    @ColumnInfo(name = "created_at") val createdAt: LocalDate = LocalDate.now(),
     @ColumnInfo(name = "comisionista") val comisionista: String,
     @ColumnInfo(name = "despacho") val despacho: Double = 0.0,
     @ColumnInfo(name = "localidad") val localidad: String

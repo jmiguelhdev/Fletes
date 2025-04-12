@@ -1,22 +1,28 @@
-package com.example.fletes.data.model
 
+
+import com.example.fletes.data.room.Camion
+import com.example.fletes.data.room.CamionesRegistro
+import com.example.fletes.data.room.Destino
 import kotlinx.coroutines.flow.Flow
 
 //Interfaces
 interface CamionRepository {
-    fun getAllCamionesStream(): Flow<List<Camion>>
-    fun getCamionStream(id: Int): Flow<Camion?>
     suspend fun insertCamion(camion: Camion)
     suspend fun deleteCamion(camion: Camion)
+    suspend fun deleteAlllCamiones()
     suspend fun updateCamion(camion: Camion)
+    suspend fun getCamionById(id: Int): Camion?
+    fun getAllCamiones(): Flow<List<Camion>>
 }
 
 interface DestinoRepository {
-    fun getAllDestinosStream(): Flow<List<Destino>>
-    fun getDestinoStream(id: Int): Flow<Destino?>
     suspend fun insertDestino(destino: Destino)
     suspend fun deleteDestino(destino: Destino)
     suspend fun updateDestino(destino: Destino)
+    suspend fun getDestinoStream(id: Int): Destino?
+    fun getAllDestinosStream(): Flow<List<Destino>>
+    fun searchComisionista(query: String): Flow<List<String>>
+    fun searchLocalidad(query: String): Flow<List<String>>
 }
 
 interface CamionesRegistroRepository {

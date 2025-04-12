@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.Flow
 // Database
 @Database(
     entities = [Camion::class, Destino::class, CamionesRegistro::class],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 @TypeConverters(Converters::class)

@@ -1,35 +1,34 @@
 package com.example.fletes.data.repositories
 
 import CamionRepository
-import com.example.fletes.data.room.AppDao
 import com.example.fletes.data.room.Camion
-
+import com.example.fletes.data.room.TruckDAo
 import kotlinx.coroutines.flow.Flow
 
-class CamionRepositoryImpl(private val appDao: AppDao): CamionRepository {
+class CamionRepositoryImpl(private val truckDao: TruckDAo): CamionRepository {
 
 
     override suspend fun insertCamion(camion: Camion) {
-        return appDao.insertCamion(camion)
+        return truckDao.insertTruck(camion)
     }
 
     override suspend fun deleteCamion(camion: Camion) {
-        return appDao.deleteCamion(camion)
+        return truckDao.deleteCamion(camion)
     }
 
     override suspend fun deleteAlllCamiones() {
-        return appDao.deleteAlllCamiones()
+        return truckDao.deleteAllTrucks()
     }
 
     override suspend fun updateCamion(camion: Camion) {
-        return appDao.updateCamion(camion)
+        return truckDao.updateTruck(camion)
     }
 
     override suspend fun getCamionById(id: Int): Camion? {
-        return appDao.getCamionById(id)
+        return truckDao.getTruckById(id)
     }
 
     override fun getAllCamiones(): Flow<List<Camion>> {
-       return appDao.getAllCamiones()
+       return truckDao.getAllTrucks()
     }
 }

@@ -1,36 +1,36 @@
 package com.example.fletes.data.repositories
 
 import DestinoRepository
-import com.example.fletes.data.room.AppDao
+import com.example.fletes.data.room.DestinationDao
 import com.example.fletes.data.room.Destino
 import kotlinx.coroutines.flow.Flow
 
-class DestinationsRepoImp(private val appDao: AppDao) : DestinoRepository {
+class DestinationsRepoImp(private val destinationsDao: DestinationDao) : DestinoRepository {
     override suspend fun insertDestino(destino: Destino) {
-        return appDao.insertDestino(destino)
+        return destinationsDao.insertDestino(destino)
     }
 
     override suspend fun deleteDestino(destino: Destino) {
-        return appDao.deleteDestino(destino)
+        return destinationsDao.deleteDestino(destino)
     }
 
     override suspend fun updateDestino(destino: Destino) {
-        return appDao.updateDestino(destino)
+        return destinationsDao.updateDestino(destino)
     }
 
     override fun getDestinoStream(id: Int): Flow<Destino?> {
-        return appDao.getDestinoById(id)
+        return destinationsDao.getDestinoById(id)
     }
 
     override fun getAllDestinosStream(): Flow<List<Destino>> {
-        return appDao.getAllDestinos()
+        return destinationsDao.getAllDestinos()
     }
 
     override fun searchComisionista(query: String): Flow<List<String>> {
-        return appDao.searchComisionista(query)
+        return destinationsDao.searchComisionista(query)
     }
 
     override fun searchLocalidad(query: String): Flow<List<String>> {
-        return appDao.searchLocalidad(query)
+        return destinationsDao.searchLocalidad(query)
     }
 }

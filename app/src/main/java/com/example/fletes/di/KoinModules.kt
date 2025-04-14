@@ -22,7 +22,9 @@ val appDatabaseModule = module {
     }
     // Provide AppDao
     single {
-        get<AppDatabase>().appDao()
+        get<AppDatabase>().truckDao()
+        get<AppDatabase>().destinationDao()
+        get<AppDatabase>().trucksRegistrationDao()
     }
 
     // Provide Repositories

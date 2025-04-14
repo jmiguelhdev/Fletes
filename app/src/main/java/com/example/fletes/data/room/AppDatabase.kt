@@ -1,15 +1,11 @@
 package com.example.fletes.data.room
 
-import androidx.room.Dao
 import androidx.room.Database
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import androidx.room.Update
-import kotlinx.coroutines.flow.Flow
+import com.example.fletes.data.room.interfacesDao.DestinationDao
+import com.example.fletes.data.room.interfacesDao.TruckDao
+import com.example.fletes.data.room.interfacesDao.TrucksRegistrationDao
 
 // Database
 @Database(
@@ -19,7 +15,7 @@ import kotlinx.coroutines.flow.Flow
 )
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun truckDao(): TruckDAo
+    abstract fun truckDao(): TruckDao
     abstract fun destinationDao(): DestinationDao
     abstract fun trucksRegistrationDao(): TrucksRegistrationDao
 }

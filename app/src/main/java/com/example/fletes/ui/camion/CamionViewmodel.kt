@@ -1,12 +1,12 @@
 package com.example.fletes.ui.camion
 
-import CamionRepository
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.fletes.data.repositories.implementations.TruckRepositoryImpl
 import com.example.fletes.data.room.Camion
-import com.example.fletes.domain.DniValidator
-import com.example.fletes.domain.PatenteValidator
+import com.example.fletes.domain.validators.DniValidator
+import com.example.fletes.domain.validators.PatenteValidator
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -33,7 +33,7 @@ data class CamionUiState(
 
 
 class CamionViewModel(
-    private val camionRepository: CamionRepository,
+    private val camionRepository: TruckRepositoryImpl,
     private val dniValidator: DniValidator,
     private val licenseStringValidatorResult: PatenteValidator
 ) : ViewModel() {

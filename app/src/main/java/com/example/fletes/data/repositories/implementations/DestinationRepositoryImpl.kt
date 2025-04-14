@@ -1,11 +1,11 @@
-package com.example.fletes.data.repositories
+package com.example.fletes.data.repositories.implementations
 
-import DestinoRepository
-import com.example.fletes.data.room.DestinationDao
+import com.example.fletes.data.repositories.interfaces.DestinationRepositoryInterface
 import com.example.fletes.data.room.Destino
+import com.example.fletes.data.room.interfacesDao.DestinationDao
 import kotlinx.coroutines.flow.Flow
 
-class DestinationsRepoImp(private val destinationsDao: DestinationDao) : DestinoRepository {
+class DestinationRepositoryImpl(private val destinationsDao: DestinationDao) : DestinationRepositoryInterface {
     override suspend fun insertDestino(destino: Destino) {
         return destinationsDao.insertDestino(destino)
     }

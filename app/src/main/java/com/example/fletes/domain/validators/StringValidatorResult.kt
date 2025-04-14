@@ -1,4 +1,4 @@
-package com.example.fletes.domain
+package com.example.fletes.domain.validators
 
 data class StringValidatorResult(
     val isValid: Boolean = false,

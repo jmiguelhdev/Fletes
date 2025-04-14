@@ -1,4 +1,4 @@
-package com.example.fletes.data.room
+package com.example.fletes.data.room.interfacesDao
 
 import androidx.room.Dao
 import androidx.room.Delete
@@ -6,12 +6,13 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import com.example.fletes.data.room.Camion
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface TruckDAo {
+interface TruckDao {
     // Camion
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
     suspend fun insertTruck(camion: Camion)
 
     @Update

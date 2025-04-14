@@ -1,6 +1,6 @@
-package com.example.fletes.domain
+package com.example.fletes.domain.validators
 
-
+import com.example.fletes.domain.validators.StringValidatorResult
 
 class PatenteValidator {
     /**
@@ -22,7 +22,11 @@ class PatenteValidator {
         val validValue = uppercaseValue.matches(Regex("[A-Z]{2}[0-9]{3}[A-Z]{2}|[A-Z]{3}[0-9]{3}"))
         val formattedValue = if(validValue) uppercaseValue  else  ""
         return if (validValue) {
-            StringValidatorResult(isValid = true, value = formattedValue, errorMessage = "Valid License Plate")
+            StringValidatorResult(
+                isValid = true,
+                value = formattedValue,
+                errorMessage = "Valid License Plate"
+            )
         } else {
             StringValidatorResult(isValid = false, value = null, errorMessage = "Invalid patente")
         }

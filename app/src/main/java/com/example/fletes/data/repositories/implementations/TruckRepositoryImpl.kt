@@ -1,11 +1,11 @@
-package com.example.fletes.data.repositories
+package com.example.fletes.data.repositories.implementations
 
-import CamionRepository
+import com.example.fletes.data.repositories.interfaces.TruckRepositoryInterface
 import com.example.fletes.data.room.Camion
-import com.example.fletes.data.room.TruckDAo
+import com.example.fletes.data.room.interfacesDao.TruckDao
 import kotlinx.coroutines.flow.Flow
 
-class CamionRepositoryImpl(private val truckDao: TruckDAo): CamionRepository {
+class TruckRepositoryImpl(private val truckDao: TruckDao): TruckRepositoryInterface {
 
 
     override suspend fun insertCamion(camion: Camion) {

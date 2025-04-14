@@ -1,16 +1,17 @@
-package com.example.fletes.data.room
+package com.example.fletes.data.room.interfacesDao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import com.example.fletes.data.room.CamionesRegistro
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TrucksRegistrationDao {
     // CamionesRegistro
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
     suspend fun insertCamionesRegistro(camionesRegistro: CamionesRegistro)
 
     @Update
@@ -37,5 +38,5 @@ interface TrucksRegistrationDao {
     fun getRegistrationsForDestination(destinoId: Int): Flow<List<CamionesRegistro>>
 
     @Query("SELECT * FROM camiones_registro")
-    fun getAllRegistrations():Flow<List<CamionesRegistro>>
+    fun getAllRegistrations(): Flow<List<CamionesRegistro>>
 }

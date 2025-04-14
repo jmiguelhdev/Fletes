@@ -1,5 +1,6 @@
-package com.example.fletes.domain
+package com.example.fletes.domain.validators
 
+import com.example.fletes.domain.validators.StringValidatorResult
 
 /**
  * DniValidator is a utility class responsible for validating DNI (Documento Nacional de Identidad) strings.
@@ -15,16 +16,28 @@ class DniValidator {
             return StringValidatorResult(isValid = true, value = null, errorMessage = "Insert DNI")
         }
         if (!newValue.all { it.isDigit() }) {
-            return StringValidatorResult(isValid = false, value =  null, errorMessage = "DNI must contain only digits")
+            return StringValidatorResult(
+                isValid = false,
+                value = null,
+                errorMessage = "DNI must contain only digits"
+            )
         }
 
         val intValue = newValue.toIntOrNull()
         val isValidDni = intValue?.let { it in MIN_DNI_VALUE..MAX_DNI_VALUE } ?: false
 
         return if (isValidDni) {
-            StringValidatorResult(isValid = true, value = intValue.toString(), errorMessage = "Dni correct")
+            StringValidatorResult(
+                isValid = true,
+                value = intValue.toString(),
+                errorMessage = "Dni correct"
+            )
         } else {
-            StringValidatorResult(isValid = false, value = null, errorMessage = "Invalid DNI number")
+            StringValidatorResult(
+                isValid = false,
+                value = null,
+                errorMessage = "Invalid DNI number"
+            )
         }
     }
 

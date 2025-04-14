@@ -1,11 +1,12 @@
 package com.example.fletes.di
 
-import CamionRepository
 import androidx.room.Room
-import com.example.fletes.data.repositories.CamionRepositoryImpl
+import com.example.fletes.data.repositories.implementations.DestinationRepositoryImpl
+import com.example.fletes.data.repositories.implementations.TruckRepositoryImpl
+import com.example.fletes.data.repositories.implementations.TrucksJourneyRepositoryImp
 import com.example.fletes.data.room.AppDatabase
-import com.example.fletes.domain.DniValidator
-import com.example.fletes.domain.PatenteValidator
+import com.example.fletes.domain.validators.DniValidator
+import com.example.fletes.domain.validators.PatenteValidator
 import com.example.fletes.ui.camion.CamionViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -28,8 +29,14 @@ val appDatabaseModule = module {
     }
 
     // Provide Repositories
-    single<CamionRepository> {
-        CamionRepositoryImpl(get())
+    single<TruckRepositoryImpl> {
+        TruckRepositoryImpl(get())
+    }
+    single<DestinationRepositoryImpl> {
+        DestinationRepositoryImpl(get())
+    }
+    single<TrucksJourneyRepositoryImp> {
+        TrucksJourneyRepositoryImp(get())
     }
 }
 

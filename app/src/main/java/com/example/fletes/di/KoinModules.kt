@@ -1,9 +1,7 @@
 package com.example.fletes.di
 
 import androidx.room.Room
-import com.example.fletes.data.repositories.implementations.DestinationRepositoryImpl
 import com.example.fletes.data.repositories.implementations.TruckRepositoryImpl
-import com.example.fletes.data.repositories.implementations.TrucksJourneyRepositoryImp
 import com.example.fletes.data.room.AppDatabase
 import com.example.fletes.domain.validators.DniValidator
 import com.example.fletes.domain.validators.PatenteValidator
@@ -24,19 +22,17 @@ val appDatabaseModule = module {
     // Provide AppDao
     single {
         get<AppDatabase>().truckDao()
+    }
+    single {
         get<AppDatabase>().destinationDao()
+    }
+    single {
         get<AppDatabase>().trucksRegistrationDao()
     }
 
     // Provide Repositories
     single<TruckRepositoryImpl> {
         TruckRepositoryImpl(get())
-    }
-    single<DestinationRepositoryImpl> {
-        DestinationRepositoryImpl(get())
-    }
-    single<TrucksJourneyRepositoryImp> {
-        TrucksJourneyRepositoryImp(get())
     }
 }
 

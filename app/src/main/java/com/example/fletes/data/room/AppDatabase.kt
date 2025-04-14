@@ -55,7 +55,7 @@ interface AppDao {
     suspend fun updateDestino(destino: Destino)
 
     @Query("SELECT * FROM destinos WHERE id = :id")
-    suspend fun getDestinoById(id: Int): Destino?
+    fun getDestinoById(id: Int): Flow<Destino?>
 
     @Query("SELECT * FROM destinos")
     fun getAllDestinos(): Flow<List<Destino>>
@@ -74,14 +74,14 @@ interface AppDao {
     suspend fun updateCamionRegistro(camionesRegistro: CamionesRegistro)
 
     @Query("SELECT * FROM camiones_registro WHERE id = :id")
-    suspend fun getCamionesRegistroById(id: Int): CamionesRegistro?
+    fun getCamionesRegistroById(id: Int): Flow<CamionesRegistro?>
 
     //Example of how to get the last 7 rendimiento for a given camionId
     @Query("SELECT * FROM camiones_registro WHERE camion_id = :camionId ORDER BY created_at DESC LIMIT 7")
     fun getLast7RendimientoByCamionId(camionId:Int): Flow<List<CamionesRegistro>>
 
     @Query("SELECT * FROM camiones_registro WHERE camion_id = :camionId ORDER BY created_at DESC LIMIT 1")
-    fun getLastTripByCamionId(camionId: Int): CamionesRegistro
+    fun getLastTripByCamionId(camionId: Int): Flow<CamionesRegistro>
 
 
     @Query("SELECT * FROM camiones_registro")

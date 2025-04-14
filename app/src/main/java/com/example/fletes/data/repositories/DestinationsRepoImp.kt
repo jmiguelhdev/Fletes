@@ -18,7 +18,7 @@ class DestinationsRepoImp(private val appDao: AppDao) : DestinoRepository {
         return appDao.updateDestino(destino)
     }
 
-    override suspend fun getDestinoStream(id: Int): Destino? {
+    override fun getDestinoStream(id: Int): Flow<Destino?> {
         return appDao.getDestinoById(id)
     }
 

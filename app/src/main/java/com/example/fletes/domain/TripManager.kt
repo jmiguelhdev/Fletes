@@ -1,17 +1,18 @@
 package com.example.fletes.domain
 
+import CamionesRegistroRepository
 import android.util.Log
-import com.example.fletes.data.repositories.CamionesRegistroRepository
 import com.example.fletes.data.room.CamionesRegistro
+import kotlinx.coroutines.flow.first
 
 class TripManager(
     private val trucksRepository: CamionesRegistroRepository
 ) {
     suspend fun saveNewTrip(camionesRegistro: CamionesRegistro) {
-        val previousTrip = trucksRepository.getLastTripByCamionId(camionesRegistro.camionId)
+        val previousTrip = trucksRepository.getLastTripByCamionId(camionesRegistro.camionId).first()
         if (previousTrip != null) {
             val updatedPreviousTrip = previousTrip.copy(isLast = false)
-            trucksRepository.updateCamionRegistro(updatedPreviousTrip)
+            trucksRepository.updateCamionesRegistro(updatedPreviousTrip)
         }
         val newTrip = calculateRendimiento(previousTrip, camionesRegistro)
         trucksRepository.insertCamionesRegistro(newTrip.copy(isLast = true))

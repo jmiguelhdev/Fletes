@@ -19,17 +19,18 @@ interface DestinoRepository {
     suspend fun insertDestino(destino: Destino)
     suspend fun deleteDestino(destino: Destino)
     suspend fun updateDestino(destino: Destino)
-    suspend fun getDestinoStream(id: Int): Destino?
+    fun getDestinoStream(id: Int): Flow<Destino?>
     fun getAllDestinosStream(): Flow<List<Destino>>
     fun searchComisionista(query: String): Flow<List<String>>
     fun searchLocalidad(query: String): Flow<List<String>>
 }
 
 interface CamionesRegistroRepository {
-    fun getAllCamionesRegistrosStream(): Flow<List<CamionesRegistro>>
-    fun getCamionesRegistroStream(id: Int): Flow<CamionesRegistro?>
     suspend fun insertCamionesRegistro(camionesRegistro: CamionesRegistro)
     suspend fun deleteCamionesRegistro(camionesRegistro: CamionesRegistro)
     suspend fun updateCamionesRegistro(camionesRegistro: CamionesRegistro)
+    fun getAllCamionesRegistrosStream(): Flow<List<CamionesRegistro>>
+    fun getCamionesRegistroStream(id: Int): Flow<CamionesRegistro?>
+    fun getLastTripByCamionId(camionId: Int): Flow<CamionesRegistro?>
     fun getCamionesRegistroByCamionIdStream(camionId: Int): Flow<List<CamionesRegistro>>
 }

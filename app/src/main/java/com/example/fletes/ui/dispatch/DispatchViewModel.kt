@@ -1,5 +1,6 @@
 package com.example.fletes.ui.destino
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fletes.data.repositories.interfaces.DestinationRepositoryInterface
@@ -60,9 +61,12 @@ class DispatchViewModel(
         viewModelScope.launch {
             getAllDestinosUseCase().catch {
                 // Handle any exception during data loading
+                Log.e("DispatchViewModel", "Error loading data", it)
             }.collect { allDestinos ->
                 val comisionistas = allDestinos.map { it.comisionista }.distinct()
                 val localidades = allDestinos.map { it.localidad }.distinct()
+                Log.d("DispatchViewModel", "Loaded comisionistas: $comisionistas")
+                Log.d("DispatchViewModel", "Loaded localidades: $localidades")
                 _uiState.update { currentState ->
                     currentState.copy(
                         comisionistaSuggestions = comisionistas,
@@ -72,40 +76,46 @@ class DispatchViewModel(
             }
         }
     }
-    private suspend fun combineSuggestions() {
-        _comisionistaQuery.flatMapLatest { query ->
-            if (query.isBlank()) {
-                flowOf(emptyList())
-            } else {
-                searchComisionistaUseCase(query)
-            }
-        }.collect { suggestions ->
-            _uiState.update { currentState ->
-                currentState.copy(comisionistaSuggestions = suggestions)
-            }
-        }
 
-        _localidadQuery.flatMapLatest { query ->
-            if (query.isBlank()) {
-                flowOf(emptyList())
-            } else {
-                searchLocalidadUseCase(query)
+    private fun combineSuggestions() {
+        viewModelScope.launch {
+            _comisionistaQuery.flatMapLatest { query ->
+                Log.d("DispatchViewModel", "Localidad query changed: $query")
+                if (query.isBlank()) {
+                    flowOf(emptyList())
+                } else {
+                    searchComisionistaUseCase(query)
+                }
+            }.collect { suggestions ->
+                _uiState.update { currentState ->
+                    currentState.copy(comisionistaSuggestions = suggestions)
+                }
             }
-        }.collect { suggestions ->
-            _uiState.update { currentState ->
-                currentState.copy(localidadSuggestions = suggestions)
+            Log.d("DispatchViewModel", "Comisionista suggestions updated")
+            _localidadQuery.flatMapLatest { query ->
+                if (query.isBlank()) {
+                    flowOf(emptyList())
+                } else {
+                    searchLocalidadUseCase(query)
+                }
+            }.collect { suggestions ->
+                _uiState.update { currentState ->
+                    currentState.copy(localidadSuggestions = suggestions)
+                }
             }
         }
     }
 
 
 
-    fun onComisionistaQueryChange(query: String) {
+     fun onComisionistaQueryChange(query: String) {
         _comisionistaQuery.update { query }
+        combineSuggestions()
     }
 
-    fun onLocalidadQueryChange(query: String) {
+     fun onLocalidadQueryChange(query: String) {
         _localidadQuery.update { query }
+        combineSuggestions()
     }
 
     // Insert new Destino

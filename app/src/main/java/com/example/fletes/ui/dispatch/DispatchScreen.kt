@@ -8,10 +8,12 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -32,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.fletes.R
 import org.koin.androidx.compose.koinViewModel
@@ -47,6 +50,7 @@ fun DispatchScreen(
 //    val localidadSuggestions by viewModel.localidades.collectAsState()
 
     Scaffold(
+        modifier = Modifier.imePadding(),
         topBar = {
             TopAppBar(
                 title = { Text(text = "Time to Leave") },
@@ -63,6 +67,16 @@ fun DispatchScreen(
                 .padding(paddingValues)
                 .padding(16.dp)
         ) {
+            DecimalTextField(
+                value = if (uiState.despacho == null)"" else uiState.despacho.toString(),
+                onValueChange = viewModel::updateDespacho,
+                label = "Despacho",
+                errorMessage = uiState.despachoErrorMessage,
+                modifier = Modifier.fillMaxWidth()
+                )
+
+            Spacer(modifier = Modifier.padding(8.dp))
+
             AutoCompleteTextField(
                 value = uiState.comisionista,
                 onValueChange = { viewModel.updateComisionista(it) },
@@ -187,5 +201,39 @@ fun SuggestionItem(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(text = suggestion)
+    }
+}
+
+@Composable
+fun DecimalTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    label: String,
+    errorMessage: String?,
+    modifier: Modifier = Modifier
+) {
+    OutlinedTextField(
+        modifier = modifier,
+        value = value,
+        onValueChange = { newText ->
+            if (newText.matches(Regex("[0-9.,]*"))) { // Allow digits, comma, and period
+                val dotCount = newText.count { it == '.' }
+                val commaCount = newText.count { it == ',' }
+
+                if (dotCount <= 1 && commaCount <= 1) { // Allow only one decimal separator
+                    val hasLeadingSeparator = newText.startsWith(".") || newText.startsWith(",")
+                    val hasTrailingSeparator = newText.endsWith(".") || newText.endsWith(",")
+                    if (!hasLeadingSeparator && !hasTrailingSeparator) { // prevent leading or trailing separator
+                        onValueChange(newText)
+                    }
+                }
+            }
+        },
+        label = { Text(label) },
+        isError = errorMessage != null,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal), // Show decimal keyboard
+    )
+    if (errorMessage != null) {
+        Text(text = errorMessage, color = MaterialTheme.colorScheme.error)
     }
 }

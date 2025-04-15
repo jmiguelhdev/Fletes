@@ -22,6 +22,9 @@ data class DispatchUiState(
     val comisionista: String = "",
     val comisionistaErrorMessage: String? = null,
     val isValidComisionista: Boolean = true,
+    val despacho: Double = 0.0,
+    val isValidDespacho: Boolean = true,
+    val despachoErrorMessage: String? = null,
     val localidad: String = "",
     val localidadErrorMessage: String? = null,
     val isValidLocalidad: Boolean = true,
@@ -45,6 +48,7 @@ class DispatchViewModel(
 
     // Comisionista StateFlows
     private val _comisionistaQuery = MutableStateFlow("")
+
     // Localidad StateFlows
     private val _localidadQuery = MutableStateFlow("")
 
@@ -54,9 +58,11 @@ class DispatchViewModel(
             loadInitialData()
         }
     }
-    private fun loadInitialData(){
+
+    private fun loadInitialData() {
         loadComisionistasAndLocalidades()
     }
+
     private fun loadComisionistasAndLocalidades() {
         viewModelScope.launch {
             getAllDestinosUseCase().catch {
@@ -107,13 +113,12 @@ class DispatchViewModel(
     }
 
 
-
-     fun onComisionistaQueryChange(query: String) {
+    fun onComisionistaQueryChange(query: String) {
         _comisionistaQuery.update { query }
         combineSuggestions()
     }
 
-     fun onLocalidadQueryChange(query: String) {
+    fun onLocalidadQueryChange(query: String) {
         _localidadQuery.update { query }
         combineSuggestions()
     }
@@ -148,6 +153,32 @@ class DispatchViewModel(
             currentState.copy(comisionista = value)
         }
         validateComisionista(value)
+        updateInsertButton()
+    }
+
+    fun updateDespacho(despacho: String) {
+        val cleanDespacho = despacho.replace(",", ".")
+        _uiState.update { currentState ->
+            var newDespacho: Double? = null
+            var errorMessage: String? = null
+            var isValid: Boolean = true
+            if (cleanDespacho.isNotEmpty()) {
+                try {
+                    newDespacho = cleanDespacho.toDouble()
+                    isValid = true
+                } catch (e: NumberFormatException) {
+                    errorMessage = "Debe ingresar un número válido"
+                    isValid = false
+                    newDespacho = null
+                }
+            }
+            currentState.copy(
+                despacho = newDespacho ?: 0.0,
+                isValidDespacho = isValid,
+                despachoErrorMessage = errorMessage
+            )
+        }
+
         updateInsertButton()
     }
 
@@ -194,7 +225,8 @@ class DispatchViewModel(
     private fun updateInsertButton() {
         _uiState.update { currentState ->
             currentState.copy(
-                isInsertButtonEnabled = currentState.isValidComisionista && currentState.isValidLocalidad
+                isInsertButtonEnabled = currentState.isValidComisionista
+                        && currentState.isValidLocalidad && currentState.isValidDespacho
             )
         }
     }

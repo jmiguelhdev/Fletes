@@ -75,7 +75,7 @@ dependencies {
     ksp(libs.androidx.room.compiler)
     testFixturesImplementation(libs.koin.test.junit4)
 
-
+    implementation(libs.koin.androidx.compose)
 
     // optional - Test helpers
     // optional - Paging 3 Integration

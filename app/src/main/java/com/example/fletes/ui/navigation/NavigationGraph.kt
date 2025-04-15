@@ -5,17 +5,23 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.fletes.ui.camion.CamionScreen
-import com.example.fletes.ui.camion.CamionViewModel
+import com.example.fletes.ui.destino.DispatchScreen
 
 @Composable
-fun MyNavHost(navController: NavHostController, camionViewModel: CamionViewModel) {
-    NavHost(navController = navController, startDestination = TruckScreenRoute) {
+fun MyNavHost(
+    navController: NavHostController,
+    ) {
+    NavHost(navController = navController, startDestination = DestinationScreenRoute) {
         composable<TruckScreenRoute> {
-            CamionScreen(camionViewModel) {
+            CamionScreen() {
                 navController.popBackStack()
             }
         }
-        composable<DestinationScreenRoute> { }
+        composable<DestinationScreenRoute> {
+            DispatchScreen(){
+                navController.popBackStack()
+            }
+        }
     }
 }
 

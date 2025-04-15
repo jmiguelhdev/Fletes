@@ -4,6 +4,7 @@ package com.example.fletes
 import android.app.Application
 import com.example.fletes.di.appDatabaseModule
 import com.example.fletes.di.camionModule
+import com.example.fletes.di.dispatchModule
 import com.example.fletes.di.domainModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -20,7 +21,8 @@ class FletesApplication : Application() {
             modules(
                 appDatabaseModule,
                 camionModule,
-                domainModule
+                domainModule,
+                dispatchModule
 
             ) // Your module with database
             // ... other modules

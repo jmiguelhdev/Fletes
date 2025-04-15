@@ -38,7 +38,6 @@ data class Destino(
     @ColumnInfo(name = "comisionista") val comisionista: String,
     @ColumnInfo(name = "despacho") val despacho: Double = 0.0,
     @ColumnInfo(name = "localidad") val localidad: String
-    // distancia is removed!
 )
 
 @Entity(

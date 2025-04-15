@@ -9,7 +9,6 @@ import com.example.fletes.domain.validators.DniValidator
 import com.example.fletes.domain.validators.PatenteValidator
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -43,7 +42,11 @@ class CamionViewModel(
         initialValue = emptyList()
     )
     private val _uiState = MutableStateFlow(CamionUiState())
-    val uiState = _uiState.asStateFlow()
+    val uiState = _uiState.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = CamionUiState()
+    )
 
     fun showDialog() {
         _uiState.update { it.copy(showInsertDialog = true) }

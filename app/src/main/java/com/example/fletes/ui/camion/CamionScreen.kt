@@ -31,10 +31,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.fletes.R
 import com.example.fletes.data.room.Camion
+import org.koin.androidx.compose.koinViewModel
 import java.time.LocalDate
 
 @Composable
-fun CamionScreen(viewModel: CamionViewModel, onNavBack: () -> Unit) {
+fun CamionScreen(
+    viewModel: CamionViewModel = koinViewModel(),
+    onNavBack: () -> Unit) {
     val camiones = viewModel.camiones.collectAsStateWithLifecycle()
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
     Scaffold(

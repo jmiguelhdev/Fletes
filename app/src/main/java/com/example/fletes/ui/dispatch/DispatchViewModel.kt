@@ -56,7 +56,6 @@ class DispatchViewModel(
 
     init {
         viewModelScope.launch {
-            combineSuggestions()
             loadInitialData()
         }
     }
@@ -85,10 +84,10 @@ class DispatchViewModel(
         }
     }
 
-    private fun combineSuggestions() {
+    private fun combineComisionistaSuggestions() {
         viewModelScope.launch {
             _comisionistaQuery.flatMapLatest { query ->
-                Log.d("DispatchViewModel", "Localidad query changed: $query")
+                Log.d("DispatchViewModel", "Comisionista query changed: $query")
                 if (query.isBlank()) {
                     flowOf(emptyList())
                 } else {
@@ -99,12 +98,16 @@ class DispatchViewModel(
                     currentState.copy(comisionistaSuggestions = suggestions)
                 }
             }
-            Log.d("DispatchViewModel", "Comisionista suggestions updated")
-            _localidadQuery.flatMapLatest { query ->
-                if (query.isBlank()) {
+        }
+    }
+    private fun combineLocalidadSuggestions() {
+        viewModelScope.launch {
+            _localidadQuery.flatMapLatest { queryLocalidad ->
+                Log.d("DispatchViewModel", "Localidad query changed: $queryLocalidad")
+                if (queryLocalidad.isBlank()) {
                     flowOf(emptyList())
                 } else {
-                    searchLocalidadUseCase(query)
+                    searchLocalidadUseCase(queryLocalidad)
                 }
             }.collect { suggestions ->
                 _uiState.update { currentState ->
@@ -117,13 +120,13 @@ class DispatchViewModel(
 
     fun onComisionistaQueryChange(query: String) {
         _comisionistaQuery.update { query }
-        combineSuggestions()
-    }
+        combineComisionistaSuggestions()
+     }
 
     fun onLocalidadQueryChange(query: String) {
         _localidadQuery.update { query }
-        combineSuggestions()
-    }
+        combineLocalidadSuggestions()
+     }
 
     // Insert new Destino
     fun insertNewDestino() {

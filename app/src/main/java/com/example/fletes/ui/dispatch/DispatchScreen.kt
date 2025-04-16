@@ -95,7 +95,7 @@ fun DispatchScreen(
         ) {
             DecimalTextField(
                 value = if (uiState.despacho == null)"" else uiState.despacho.toString(),
-                onValueChange = viewModel::updateDespacho,
+                onValueChange = viewModel::onValueChangeDespacho,
                 label = "Despacho",
                 errorMessage = uiState.despachoErrorMessage,
                 modifier = Modifier.fillMaxWidth()
@@ -105,11 +105,11 @@ fun DispatchScreen(
 
             AutoCompleteTextField(
                 value = uiState.comisionista,
-                onValueChange = { viewModel.updateComisionista(it) },
+                onValueChange = { viewModel.onValueChangeComisionista(it) },
                 label = "Comisionista",
                 suggestions = uiState.comisionistaSuggestions,
                 onSuggestionSelected = {
-                    viewModel.updateComisionista(it)
+                    viewModel.onValueChangeComisionista(it)
                 },
                 errorMessage = uiState.comisionistaErrorMessage,
                 onQueryChange = {
@@ -122,10 +122,10 @@ fun DispatchScreen(
 
             AutoCompleteTextField(
                 value = uiState.localidad,
-                onValueChange = { viewModel.updateLocalidad(it) },
+                onValueChange = { viewModel.onValueChangeLocalidad(it) },
                 label = "Destino",
                 suggestions = uiState.localidadSuggestions,
-                onSuggestionSelected = { viewModel.updateLocalidad(it) },
+                onSuggestionSelected = { viewModel.onValueChangeLocalidad(it) },
                 errorMessage = uiState.localidadErrorMessage,
                 onQueryChange = {
                     viewModel.onLocalidadQueryChange(it)

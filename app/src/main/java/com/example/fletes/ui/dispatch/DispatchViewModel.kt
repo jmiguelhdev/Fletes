@@ -10,11 +10,12 @@ import com.example.fletes.domain.InsertDestinoUseCase
 import com.example.fletes.domain.SearchComisionistaUseCase
 import com.example.fletes.domain.SearchLocalidadUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -46,7 +47,11 @@ class DispatchViewModel(
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(DispatchUiState())
-    val uiState: StateFlow<DispatchUiState> = _uiState.asStateFlow()
+    val uiState: StateFlow<DispatchUiState> = _uiState.stateIn(
+        scope = viewModelScope,
+        started = WhileSubscribed(5000),
+        initialValue = DispatchUiState()
+    )
 
     // Comisionista StateFlows
     private val _comisionistaQuery = MutableStateFlow("")
@@ -165,7 +170,7 @@ class DispatchViewModel(
     }
 
     // Update UiState
-    fun updateComisionista(value: String) {
+    fun onValueChangeComisionista(value: String) {
         _uiState.update { currentState ->
             currentState.copy(comisionista = value)
         }
@@ -173,7 +178,7 @@ class DispatchViewModel(
         updateInsertButton()
     }
 
-    fun updateDespacho(despacho: String) {
+    fun onValueChangeDespacho(despacho: String) {
         val cleanDespacho = despacho.replace(",", ".")
         _uiState.update { currentState ->
             var newDespacho: Double? = null
@@ -199,7 +204,7 @@ class DispatchViewModel(
         updateInsertButton()
     }
 
-    fun updateLocalidad(value: String) {
+    fun onValueChangeLocalidad(value: String) {
         _uiState.update { currentState ->
             currentState.copy(localidad = value)
         }

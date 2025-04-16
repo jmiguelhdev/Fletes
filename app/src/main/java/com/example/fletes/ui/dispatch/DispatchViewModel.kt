@@ -133,7 +133,8 @@ class DispatchViewModel(
                 insertDestinoUseCase(
                     Destino(
                         comisionista = _uiState.value.comisionista,
-                        localidad = _uiState.value.localidad
+                        localidad = _uiState.value.localidad,
+                        despacho = _uiState.value.despacho
                     )
                 )
                 _uiState.update {

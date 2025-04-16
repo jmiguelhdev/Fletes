@@ -32,7 +32,9 @@ data class DispatchUiState(
     val comisionistaSuggestions: List<String> = emptyList(),
     val localidadSuggestions: List<String> = emptyList(),
     val isInsertButtonEnabled: Boolean = false,
-    val isLoading: Boolean = false
+    val isLoading: Boolean = false,
+    val showSnackbar: Boolean = false,
+    val snackbarMessage: String = ""
 )
 
 class DispatchViewModel(
@@ -138,13 +140,24 @@ class DispatchViewModel(
                     )
                 )
                 _uiState.update {
-                    it.copy(isLoading = false, showInsertDialog = false)
+                    it.copy(
+                        isLoading = false,
+                        showInsertDialog = false,
+                        showSnackbar = true,
+                        snackbarMessage = "Destino insertado correctamente"
+                    )
                 }
             }
         } else {
             _uiState.update {
                 it.copy(isLoading = false)
             }
+        }
+    }
+
+    fun snackbarShown() {
+        _uiState.update {
+            it.copy(showSnackbar = false, snackbarMessage = "")
         }
     }
 

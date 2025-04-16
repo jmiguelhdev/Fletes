@@ -71,11 +71,19 @@ fun DispatchScreen(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
-                title = { Text(text = "Time to Leave") },
+                title = {
+                    Text(text = "Time to Leave")
+                        //tal vez ponga un contador de destinos activos
+                        //para lo cual creo que tengo que agregar un campo en la base de datos
+                        // que tenga en cuenta cuando un ddespacho esta finalizado o no
+                        },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(painter = painterResource(R.drawable.ic_time_to_leave_24), contentDescription = "Back")
                     }
+                },
+                actions = {
+                    //agregar o cambiar el botton de insertar aqui
                 }
             )
         }

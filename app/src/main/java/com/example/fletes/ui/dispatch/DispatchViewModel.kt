@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 data class DispatchUiState(
+    val isActive: Boolean = true,
     val comisionista: String = "",
     val comisionistaErrorMessage: String? = null,
     val isValidComisionista: Boolean = true,
@@ -51,6 +52,18 @@ class DispatchViewModel(
         scope = viewModelScope,
         started = WhileSubscribed(5000),
         initialValue = DispatchUiState()
+    )
+
+    val activeDispatch = destinationRepository.getActiveDestinosStream().stateIn(
+        scope = viewModelScope,
+        started = WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
+
+    val activeDispatchCount = destinationRepository.getActiveDestinosCountStream().stateIn(
+        scope = viewModelScope,
+        started = WhileSubscribed(5000),
+        initialValue = 0
     )
 
     // Comisionista StateFlows

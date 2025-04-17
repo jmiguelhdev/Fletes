@@ -37,7 +37,8 @@ data class Destino(
     @ColumnInfo(name = "created_at") val createdAt: LocalDate = LocalDate.now(),
     @ColumnInfo(name = "comisionista") val comisionista: String,
     @ColumnInfo(name = "despacho") val despacho: Double = 0.0,
-    @ColumnInfo(name = "localidad") val localidad: String
+    @ColumnInfo(name = "localidad") val localidad: String,
+    @ColumnInfo(name = "is_active") val isActive: Boolean = true,
 )
 
 @Entity(

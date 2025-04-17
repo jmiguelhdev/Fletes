@@ -51,6 +51,7 @@ fun DispatchScreen(
     onBackClick: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val activeDispatchCount by viewModel.activeDispatchCount.collectAsState(0)
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
@@ -72,7 +73,7 @@ fun DispatchScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = "Time to Leave")
+                    Text(text = "Time to Leave Active Dispatchs: $activeDispatchCount")
                         //tal vez ponga un contador de destinos activos
                         //para lo cual creo que tengo que agregar un campo en la base de datos
                         // que tenga en cuenta cuando un ddespacho esta finalizado o no

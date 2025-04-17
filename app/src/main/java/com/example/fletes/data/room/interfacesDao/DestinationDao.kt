@@ -27,6 +27,12 @@ interface DestinationDao {
     @Query("SELECT * FROM destinos")
     fun getAllDestinos(): Flow<List<Destino>>
 
+    @Query("SELECT * FROM destinos WHERE is_active = 1")
+    fun getActiveDestinos(): Flow<List<Destino>>
+
+    @Query("SELECT COUNT(*) FROM destinos WHERE is_active = 1")
+    fun getActiveDestinosCount(): Flow<Int>
+
     @Query("SELECT DISTINCT comisionista FROM destinos WHERE comisionista LIKE '%' || :query || '%'")
     fun searchComisionista(query: String): Flow<List<String>>
 

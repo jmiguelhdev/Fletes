@@ -8,6 +8,8 @@ interface DestinationRepositoryInterface {
     suspend fun deleteDestino(destino: Destino)
     suspend fun updateDestino(destino: Destino)
     fun getDestinoStream(id: Int): Flow<Destino?>
+    fun getActiveDestinosStream(): Flow<List<Destino>>
+    fun getActiveDestinosCountStream(): Flow<Int>
     fun getAllDestinosStream(): Flow<List<Destino>>
     fun searchComisionista(query: String): Flow<List<String>>
     fun searchLocalidad(query: String): Flow<List<String>>

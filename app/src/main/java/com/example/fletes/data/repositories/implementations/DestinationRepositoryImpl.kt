@@ -22,6 +22,14 @@ class DestinationRepositoryImpl(private val destinationsDao: DestinationDao) : D
         return destinationsDao.getDestinoById(id)
     }
 
+    override fun getActiveDestinosStream(): Flow<List<Destino>> {
+        return destinationsDao.getActiveDestinos()
+    }
+
+    override fun getActiveDestinosCountStream(): Flow<Int> {
+        return destinationsDao.getActiveDestinosCount()
+    }
+
     override fun getAllDestinosStream(): Flow<List<Destino>> {
         return destinationsDao.getAllDestinos()
     }

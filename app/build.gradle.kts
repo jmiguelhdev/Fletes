@@ -71,6 +71,8 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    implementation(libs.accompanist.pager)
+    implementation("com.google.accompanist:accompanist-pager-indicators:0.34.0")
     //room
     ksp(libs.androidx.room.compiler)
     testFixturesImplementation(libs.koin.test.junit4)

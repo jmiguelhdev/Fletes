@@ -37,7 +37,8 @@ import java.time.LocalDate
 @Composable
 fun CamionScreen(
     viewModel: CamionViewModel = koinViewModel(),
-    onNavBack: () -> Unit) {
+    onNavBack: () -> Unit
+) {
     val camiones = viewModel.camiones.collectAsStateWithLifecycle()
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
     Scaffold(

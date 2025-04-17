@@ -4,14 +4,19 @@ import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
@@ -20,7 +25,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -36,13 +44,17 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.fletes.R
+import com.example.fletes.data.room.Destino
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
+
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,6 +64,7 @@ fun DispatchScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val activeDispatchCount by viewModel.activeDispatchCount.collectAsState(0)
+    val activeDispatch by viewModel.activeDispatch.collectAsState(emptyList())
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
@@ -74,13 +87,16 @@ fun DispatchScreen(
             TopAppBar(
                 title = {
                     Text(text = "Time to Leave Active Dispatchs: $activeDispatchCount")
-                        //tal vez ponga un contador de destinos activos
-                        //para lo cual creo que tengo que agregar un campo en la base de datos
-                        // que tenga en cuenta cuando un ddespacho esta finalizado o no
-                        },
+                    //tal vez ponga un contador de destinos activos
+                    //para lo cual creo que tengo que agregar un campo en la base de datos
+                    // que tenga en cuenta cuando un ddespacho esta finalizado o no
+                },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(painter = painterResource(R.drawable.ic_time_to_leave_24), contentDescription = "Back")
+                        Icon(
+                            painter = painterResource(R.drawable.ic_time_to_leave_24),
+                            contentDescription = "Back"
+                        )
                     }
                 },
                 actions = {
@@ -92,72 +108,97 @@ fun DispatchScreen(
         Column(
             modifier = Modifier
                 .padding(paddingValues)
-                .padding(16.dp)
-        ) {
-            DecimalTextField(
-                value = if (uiState.despacho == null)"" else uiState.despacho.toString(),
-                onValueChange = viewModel::onValueChangeDespacho,
-                label = "Despacho",
-                errorMessage = uiState.despachoErrorMessage,
-                modifier = Modifier.fillMaxWidth()
+                .wrapContentHeight()
+        ){
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .wrapContentHeight()
+            ){
+                LazyRow (
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    items(activeDispatch) { destino ->
+                        DestinoCard(
+                            destino = destino,
+                            onDeleteClick = {
+                                //TODO
+                                Log.d("DispatchScreen", "Delete clicked for id: ${destino.id}")
+                            }
+                        )
+                    }
+                }
+            }
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+            ) {
+                DecimalTextField(
+                    value = if (uiState.despacho == null) "" else uiState.despacho.toString(),
+                    onValueChange = viewModel::onValueChangeDespacho,
+                    label = "Despacho",
+                    errorMessage = uiState.despachoErrorMessage,
+                    modifier = Modifier.fillMaxWidth()
                 )
 
-            Spacer(modifier = Modifier.padding(8.dp))
+                Spacer(modifier = Modifier.padding(8.dp))
 
-            AutoCompleteTextField(
-                value = uiState.comisionista,
-                onValueChange = { viewModel.onValueChangeComisionista(it) },
-                label = "Comisionista",
-                suggestions = uiState.comisionistaSuggestions,
-                onSuggestionSelected = {
-                    viewModel.onValueChangeComisionista(it)
-                },
-                errorMessage = uiState.comisionistaErrorMessage,
-                onQueryChange = {
-                    viewModel.onComisionistaQueryChange(it)
-                    Log.d("DispatchScreen", "Query changed: $it")
-                }
-            )
-
-            Spacer(modifier = Modifier.padding(8.dp))
-
-            AutoCompleteTextField(
-                value = uiState.localidad,
-                onValueChange = { viewModel.onValueChangeLocalidad(it) },
-                label = "Destino",
-                suggestions = uiState.localidadSuggestions,
-                onSuggestionSelected = { viewModel.onValueChangeLocalidad(it) },
-                errorMessage = uiState.localidadErrorMessage,
-                onQueryChange = {
-                    viewModel.onLocalidadQueryChange(it)
-                }
-            )
-
-            Spacer(modifier = Modifier.padding(16.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Button(
-                    onClick = {
-                        viewModel.validateComisionista(uiState.comisionista)
-                        viewModel.validateLocalidad(uiState.localidad)
-                        viewModel.insertNewDestino()
+                AutoCompleteTextField(
+                    value = uiState.comisionista,
+                    onValueChange = { viewModel.onValueChangeComisionista(it) },
+                    label = "Comisionista",
+                    suggestions = uiState.comisionistaSuggestions,
+                    onSuggestionSelected = {
+                        viewModel.onValueChangeComisionista(it)
                     },
-                    enabled = uiState.isInsertButtonEnabled
+                    errorMessage = uiState.comisionistaErrorMessage,
+                    onQueryChange = {
+                        viewModel.onComisionistaQueryChange(it)
+                        Log.d("DispatchScreen", "Query changed: $it")
+                    }
+                )
+
+                Spacer(modifier = Modifier.padding(8.dp))
+
+                AutoCompleteTextField(
+                    value = uiState.localidad,
+                    onValueChange = { viewModel.onValueChangeLocalidad(it) },
+                    label = "Destino",
+                    suggestions = uiState.localidadSuggestions,
+                    onSuggestionSelected = { viewModel.onValueChangeLocalidad(it) },
+                    errorMessage = uiState.localidadErrorMessage,
+                    onQueryChange = {
+                        viewModel.onLocalidadQueryChange(it)
+                    }
+                )
+
+                Spacer(modifier = Modifier.padding(16.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
                 ) {
-                    if (uiState.isLoading) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.width(24.dp),
-                            color = MaterialTheme.colorScheme.onPrimary
-                        )
-                    } else {
-                        Text(text = "Insertar")
+                    Button(
+                        onClick = {
+                            viewModel.validateComisionista(uiState.comisionista)
+                            viewModel.validateLocalidad(uiState.localidad)
+                            viewModel.insertNewDestino()
+                        },
+                        enabled = uiState.isInsertButtonEnabled
+                    ) {
+                        if (uiState.isLoading) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.width(24.dp),
+                                color = MaterialTheme.colorScheme.onPrimary
+                            )
+                        } else {
+                            Text(text = "Insertar")
+                        }
                     }
                 }
             }
         }
+
     }
 }
 
@@ -205,12 +246,16 @@ fun AutoCompleteTextField(
                             onSuggestionSelected(it)
                         }
                     )
-                    HorizontalDivider(modifier = Modifier, thickness = 4.dp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f))
+                    HorizontalDivider(
+                        modifier = Modifier,
+                        thickness = 4.dp,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
+                    )
                 }
             }
         }
     }
-    LaunchedEffect(Unit){
+    LaunchedEffect(Unit) {
         focusRequester.requestFocus()
     }
 }
@@ -264,3 +309,33 @@ fun DecimalTextField(
         Text(text = errorMessage, color = MaterialTheme.colorScheme.error)
     }
 }
+
+@Composable
+fun DestinoCard(destino: Destino, onDeleteClick: () -> Unit) {
+    Card(
+        modifier = Modifier
+           .width(IntrinsicSize.Max)
+           .height(IntrinsicSize.Min)
+            .padding(0.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Row(modifier = Modifier.padding(16.dp)) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(text = "Id: ${destino.id}")
+                Text(text = "Date: ${destino.createdAt}")
+                Text(text = "Despacho: ${destino.despacho}")
+                Text(text = "Comisionista: ${destino.comisionista}")
+                Text(text = "Destino: ${destino.localidad}")
+            }
+            IconButton(onClick = { onDeleteClick() }) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_delete_24),
+                    contentDescription = "Delete"
+                )
+            }
+        }
+
+    }
+}
+
+

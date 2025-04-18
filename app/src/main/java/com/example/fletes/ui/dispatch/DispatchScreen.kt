@@ -212,12 +212,10 @@ fun AutoCompleteTextField(
     errorMessage: String?,
     onQueryChange: (String) -> Unit,
 ) {
-    val focusRequester = FocusRequester()
     Column {
         OutlinedTextField(
             modifier = Modifier
-                .fillMaxWidth()
-                .focusRequester(focusRequester),
+                .fillMaxWidth(),
             value = value,
             onValueChange = {
                 onValueChange(it)
@@ -254,9 +252,6 @@ fun AutoCompleteTextField(
                 }
             }
         }
-    }
-    LaunchedEffect(Unit) {
-        focusRequester.requestFocus()
     }
 }
 

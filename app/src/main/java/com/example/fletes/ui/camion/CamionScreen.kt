@@ -36,26 +36,26 @@ import java.time.LocalDate
 
 @Composable
 fun CamionScreen(
-    viewModel: CamionViewModel = koinViewModel(),
+    camionViewModel: CamionViewModel = koinViewModel(),
     onNavBack: () -> Unit
 ) {
-    val camiones = viewModel.camiones.collectAsStateWithLifecycle()
-    val uiState = viewModel.uiState.collectAsStateWithLifecycle()
+    val camiones = camionViewModel.camiones.collectAsStateWithLifecycle()
+    val uiState = camionViewModel.uiState.collectAsStateWithLifecycle()
     Scaffold(
         modifier = Modifier.imePadding(),
         topBar = {
             TopBar(
-                onInsertCamion = { viewModel.showDialog() },
-                onDeleteAllCamions = { viewModel.deleteAllCamiones() },
-                onBack = {}
+                onInsertCamion = { camionViewModel.showDialog() },
+                onDeleteAllCamions = { camionViewModel.deleteAllCamiones() },
+                onBack = onNavBack
             )
         },
         content = { paddingValues ->
             ListOfCamionesScreen(
                 camiones = camiones.value,
-                ondeleteCamion = { viewModel.deleteCamion(it) },
+                ondeleteCamion = { camionViewModel.deleteCamion(it) },
                 onEditCamion = {
-                    viewModel.onShowEditDialog(it)
+                    camionViewModel.onShowEditDialog(it)
                 },
                 modifier = Modifier
                     .padding(paddingValues)
@@ -64,25 +64,26 @@ fun CamionScreen(
             if (uiState.value.showInsertDialog) {
                 CamionDialog(
                     camionUiState = uiState.value,
-                    camionViewModel = viewModel,
-                    onDismiss = { viewModel.hideDialog() },
-                    onConfirm = { viewModel.insertCamion() }
+                    camionViewModel = camionViewModel,
+                    onDismiss = { camionViewModel.hideDialog() },
+                    onConfirm = { camionViewModel.insertCamion() }
                 )
             }
             if (uiState.value.showEditDialog) {
                 CamionUpdateDialog(
                     camion = camiones.value.first(),
                     camionUiState = uiState.value,
-                    camionViewModel = viewModel,
-                    onDismiss = { viewModel.hideDialog() },
+                    camionViewModel = camionViewModel,
+                    onDismiss = { camionViewModel.hideDialog() },
                     onConfirm = {
-                        viewModel.updateCamion(id = it) }
+                        camionViewModel.updateCamion(id = it) }
                 )
             }
         },
         bottomBar = {
 
-        }
+        },
+
     )
 }
 

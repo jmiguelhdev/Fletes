@@ -1,49 +1,35 @@
 package com.example.fletes.ui.navigation
 
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.fletes.ui.navigation.Screen.DestinationScreenRoute
+import com.example.fletes.ui.camion.CamionScreen
+import com.example.fletes.ui.camion.CamionViewModel
+import com.example.fletes.ui.destino.DispatchScreen
 
 @Composable
 fun MyNavHost(
     navController: NavHostController,
-    startDestination: String,
-    paddingValues: PaddingValues
     ) {
     NavHost(
         navController = navController,
-        startDestination = startDestination,
-        modifier = Modifier.padding(paddingValues)
+        startDestination = TruckScreenRoute,
     ) {
-        composable(ScreenSRoutes.Screen1.route) {
-//            CamionScreen() {
-//                navController.popBackStack()
-//            }
-            Scren1()
+        composable<TruckScreenRoute> {
+            CamionScreen {
+                navController.navigate(DispatchScreenRoute)
+            }
         }
-        composable(ScreenSRoutes.Screen2.route) {
-//            DispatchScreen(){
-//                navController.popBackStack()
-//            }
-            Scren2()
+        composable<DispatchScreenRoute> {
+            DispatchScreen {
+
+            }
         }
     }
 }
 
-@Composable
-fun Scren1(modifier: Modifier = Modifier) {
-    Text("Screen 1")
-}
-@Composable
-fun Scren2(modifier: Modifier = Modifier) {
-    Text("Screen 2")
-}
+
 
 
 

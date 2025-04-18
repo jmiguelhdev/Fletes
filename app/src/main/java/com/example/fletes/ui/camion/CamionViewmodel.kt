@@ -27,7 +27,9 @@ data class CamionUiState(
     val isValidPatenteJaula: Boolean = true,
     val kmService: Int = 20000,
     val showInsertDialog: Boolean = false,
-    val showEditDialog: Boolean = false
+    val showEditDialog: Boolean = false,
+    val showSnackbar: Boolean = false,
+    val snackbarMessage: String = ""
 )
 
 
@@ -50,6 +52,12 @@ class CamionViewModel(
 
     fun showDialog() {
         _uiState.update { it.copy(showInsertDialog = true) }
+    }
+
+    fun snackbarShown() {
+        _uiState.update {
+            it.copy(showSnackbar = false, snackbarMessage = "")
+        }
     }
 
     fun hideDialog() {
@@ -110,6 +118,9 @@ class CamionViewModel(
             camionRepository.insertCamion(camionToInsert)
             Log.d("CamionViewModel", "Camion inserted $camionToInsert")
         }
+        _uiState.update { it.copy(
+            showSnackbar = true,
+            snackbarMessage = "Camión insertado correctamente") }
         hideDialog()
     }
 
@@ -163,7 +174,10 @@ class CamionViewModel(
             }
             Log.d("CamionViewModel", "Camion updated $camionToUpdate")
         }
-        _uiState.update { it.copy(showEditDialog = false) }
+        _uiState.update { it.copy(
+            showEditDialog = false,
+            showSnackbar = true,
+            snackbarMessage = "Camión actualizado correctamente") }
     }
 
 

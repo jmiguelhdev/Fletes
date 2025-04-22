@@ -37,7 +37,11 @@ data class DispatchUiState(
     val isLoading: Boolean = false,
     val showSnackbar: Boolean = false,
     val snackbarMessage: String = ""
-)
+) {
+    val isFormValid: Boolean
+        get() = isValidComisionista && isValidLocalidad && isValidDespacho
+                && comisionista.isNotBlank() && localidad.isNotBlank() && despacho >= 0
+}
 
 class DispatchViewModel(
     private val destinationRepository: DestinationRepositoryInterface,
@@ -151,7 +155,7 @@ class DispatchViewModel(
         _uiState.update {
             it.copy(isLoading = true)
         }
-        if (_uiState.value.isValidComisionista && _uiState.value.isValidLocalidad) {
+        if (_uiState.value.isFormValid) {
             viewModelScope.launch {
                 insertDestinoUseCase(
                     Destino(
@@ -260,8 +264,7 @@ class DispatchViewModel(
     private fun updateInsertButton() {
         _uiState.update { currentState ->
             currentState.copy(
-                isInsertButtonEnabled = currentState.isValidComisionista
-                        && currentState.isValidLocalidad && currentState.isValidDespacho
+                isInsertButtonEnabled = currentState.isFormValid
             )
         }
     }

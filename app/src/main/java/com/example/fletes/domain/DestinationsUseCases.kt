@@ -28,3 +28,9 @@ class InsertDestinoUseCase(private val repository: DestinationRepositoryInterfac
         repository.insertDestino(destino)
     }
 }
+
+class DeleteDestinoUseCase(private val repository: DestinationRepositoryInterface){
+    suspend operator fun invoke(destino: Destino){
+        repository.deleteDestino(destino)
+    }
+}

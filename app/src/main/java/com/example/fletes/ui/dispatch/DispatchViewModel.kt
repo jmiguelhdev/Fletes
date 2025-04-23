@@ -8,6 +8,7 @@ import com.example.fletes.data.room.Destino
 import com.example.fletes.domain.GetAllDestinosUseCase
 import com.example.fletes.domain.InsertDestinoUseCase
 import com.example.fletes.domain.SearchComisionistaUseCase
+import com.example.fletes.domain.DeleteDestinoUseCase
 import com.example.fletes.domain.SearchLocalidadUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,7 +32,7 @@ data class DispatchUiState(
     val localidad: String = "",
     val localidadErrorMessage: String? = null,
     val isValidLocalidad: Boolean = true,
-    val showInsertDialog: Boolean = false,
+    val showDeleteDialog: Boolean = false,
     val comisionistaSuggestions: List<String> = emptyList(),
     val localidadSuggestions: List<String> = emptyList(),
     val isInsertButtonEnabled: Boolean = false,
@@ -49,7 +50,8 @@ class DispatchViewModel(
     private val searchComisionistaUseCase: SearchComisionistaUseCase,
     private val searchLocalidadUseCase: SearchLocalidadUseCase,
     private val getAllDestinosUseCase: GetAllDestinosUseCase,
-    private val insertDestinoUseCase: InsertDestinoUseCase
+    private val insertDestinoUseCase: InsertDestinoUseCase,
+    private val deleteDestinoUseCase: DeleteDestinoUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(DispatchUiState())
@@ -178,7 +180,7 @@ class DispatchViewModel(
                 _uiState.update {
                     it.copy(
                         isLoading = false,
-                        showInsertDialog = false,
+                        showDeleteDialog = false,
                         showSnackbar = true,
                         snackbarMessage = "Destino insertado correctamente"
                     )
@@ -217,7 +219,7 @@ class DispatchViewModel(
         _uiState.update { currentState ->
             var newDespacho: Double? = null
             var errorMessage: String? = null
-            var isValid: Boolean = true
+            var isValid = true
             if (cleanDespacho.isNotEmpty()) {
                 try {
                     newDespacho = cleanDespacho.toDouble()
@@ -246,11 +248,7 @@ class DispatchViewModel(
         updateInsertButton()
     }
 
-    fun showInsertDialog(value: Boolean) {
-        _uiState.update { currentState ->
-            currentState.copy(showInsertDialog = value)
-        }
-    }
+
 
     private fun validateComisionista(value: String) {
         _uiState.update { currentState ->
@@ -278,6 +276,31 @@ class DispatchViewModel(
             currentState.copy(
                 isInsertButtonEnabled = currentState.isFormValid
             )
+        }
+    }
+
+    fun showDeleteDialog() {
+        _uiState.update { currentState ->
+            currentState.copy(showDeleteDialog = true)
+        }
+    }
+    fun hideDeleteDialog() {
+        _uiState.update { currentState ->
+            currentState.copy(showDeleteDialog = false)
+        }
+    }
+    fun deleteDetino(destino: Destino){
+        viewModelScope.launch {
+            try {
+                deleteDestinoUseCase(destino)
+            }catch (e:Exception){
+                _uiState.update {
+                    it.copy(
+                        showSnackbar = true,
+                        snackbarMessage = "Error al eliminar el destino: ${e.message}"
+                    )
+                }
+            }
         }
     }
 }

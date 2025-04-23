@@ -5,6 +5,7 @@ import com.example.fletes.data.repositories.implementations.DestinationRepositor
 import com.example.fletes.data.repositories.implementations.TruckRepositoryImpl
 import com.example.fletes.data.repositories.interfaces.DestinationRepositoryInterface
 import com.example.fletes.data.room.AppDatabase
+import com.example.fletes.domain.DeleteDestinoUseCase
 import com.example.fletes.domain.GetAllDestinosUseCase
 import com.example.fletes.domain.InsertDestinoUseCase
 import com.example.fletes.domain.SearchComisionistaUseCase
@@ -63,6 +64,7 @@ val domainModule = module {
     single { GetAllDestinosUseCase(get()) }
     single { SearchComisionistaUseCase(get()) }
     single { SearchLocalidadUseCase(get()) }
+    single { DeleteDestinoUseCase(get()) }
 
 }
 
@@ -73,7 +75,8 @@ val dispatchModule = module {
             searchComisionistaUseCase = get(),
             searchLocalidadUseCase = get(),
             getAllDestinosUseCase = get(),
-            insertDestinoUseCase = get()
+            insertDestinoUseCase = get(),
+            deleteDestinoUseCase = get()
         )
     }
 }

@@ -9,26 +9,25 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -43,9 +42,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -53,7 +49,6 @@ import com.example.fletes.R
 import com.example.fletes.data.room.Destino
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
-
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -122,10 +117,17 @@ fun DispatchScreen(
                         DestinoCard(
                             destino = destino,
                             onDeleteClick = {
-                                //TODO
+                                viewModel.showDeleteDialog()
                                 Log.d("DispatchScreen", "Delete clicked for id: ${destino.id}")
                             }
                         )
+                        if (uiState.showDeleteDialog) {
+                            DeleteDestinoAlertDialog(
+                                destino = destino,
+                                onDismissRequest = viewModel::hideDeleteDialog,
+                                onConfirm = viewModel::deleteDetino
+                            )
+                        }
                     }
                 }
             }
@@ -304,11 +306,13 @@ fun DecimalTextField(
 }
 
 @Composable
-fun DestinoCard(destino: Destino, onDeleteClick: () -> Unit) {
+fun DestinoCard(
+    destino: Destino,
+    onDeleteClick: () -> Unit) {
     Card(
         modifier = Modifier
-           .width(IntrinsicSize.Max)
-           .height(IntrinsicSize.Min)
+            .width(IntrinsicSize.Max)
+            .height(IntrinsicSize.Min)
             .padding(0.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
@@ -329,6 +333,44 @@ fun DestinoCard(destino: Destino, onDeleteClick: () -> Unit) {
         }
 
     }
+}
+
+@Composable
+fun DeleteDestinoAlertDialog(
+    destino: Destino,
+    onDismissRequest: () -> Unit,
+    onConfirm: (destino: Destino) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    AlertDialog(
+        onDismissRequest = onDismissRequest,
+        confirmButton = {
+            Button(onClick = { onConfirm(destino) }) {
+                Text(text = "Confirm Delete")
+            }
+        },
+        dismissButton = {
+            Button(onClick = onDismissRequest) {
+                Text(text = "Cancel")
+            }
+        },
+        title = {
+            Text(text = "Delete Destination ${destino.localidad}")
+        },
+        text = {
+            Column {
+                Text(text = "Are you sure you want to delete this destination?")
+                Text(text = "This action cannot be undone.")
+                Text(text = "Id: ${destino.id}")
+                Text(text = "Date: ${destino.createdAt}")
+                Text(text = "Despacho: ${destino.despacho}")
+                Text(text = "Comisionista: ${destino.comisionista}")
+                Text(text = "Destino: ${destino.localidad}")
+            }
+        },
+        modifier = modifier
+    )
+
 }
 
 

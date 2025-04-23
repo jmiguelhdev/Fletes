@@ -9,11 +9,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.Card
-import androidx.compose.material.Divider
+import androidx.compose.material3.*
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -96,7 +94,7 @@ fun DispatchCard(
                     )
                 }
             }
-            Divider(
+            HorizontalDivider(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp), // Vertical padding for spacing
@@ -105,7 +103,7 @@ fun DispatchCard(
             )
             Text(text = "Commission agent Name: ${dispatch.comisionista}")
             Spacer(modifier = Modifier.padding(vertical = 4.dp))
-            Divider()
+            HorizontalDivider(modifier = Modifier, thickness = 1.dp)
 
             val format: NumberFormat = NumberFormat
                 .getCurrencyInstance(Locale.getDefault())
@@ -113,7 +111,7 @@ fun DispatchCard(
             Spacer(modifier = Modifier.padding(vertical = 4.dp))
             Text(text = "Dispatch amount: $formattedNumber")
             Spacer(modifier = Modifier.padding(vertical = 4.dp))
-            Divider()
+            HorizontalDivider(modifier = Modifier, thickness = 1.dp)
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -129,7 +127,7 @@ fun DispatchCard(
                 Text(text = dispatch.localidad)
             }
             Spacer(modifier = Modifier.padding(vertical = 2.dp))
-            Divider()
+            HorizontalDivider(modifier = Modifier, thickness = 1.dp)
         }
     }
 }

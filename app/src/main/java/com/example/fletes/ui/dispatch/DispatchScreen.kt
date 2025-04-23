@@ -1,4 +1,4 @@
-package com.example.fletes.ui.destino
+package com.example.fletes.ui.dispatch
 
 import android.util.Log
 import androidx.compose.foundation.clickable
@@ -18,7 +18,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.AlertDialog
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -47,6 +47,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.fletes.R
 import com.example.fletes.data.room.Destino
+import com.example.fletes.ui.destino.DispatchViewModel
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
@@ -104,13 +105,13 @@ fun DispatchScreen(
             modifier = Modifier
                 .padding(paddingValues)
                 .wrapContentHeight()
-        ){
+        ) {
             Column(
                 modifier = Modifier
                     .padding(16.dp)
                     .wrapContentHeight()
-            ){
-                LazyRow (
+            ) {
+                LazyRow(
                     modifier = Modifier.padding(16.dp)
                 ) {
                     items(activeDispatch) { destino ->
@@ -308,7 +309,8 @@ fun DecimalTextField(
 @Composable
 fun DestinoCard(
     destino: Destino,
-    onDeleteClick: () -> Unit) {
+    onDeleteClick: () -> Unit
+) {
     Card(
         modifier = Modifier
             .width(IntrinsicSize.Max)

@@ -134,7 +134,7 @@ fun DispatchScreen(
                     .padding(16.dp)
             ) {
                 DecimalTextField(
-                    value = if (uiState.despacho == null) "" else uiState.despacho.toString(),
+                    value = uiState.despacho.toString(),
                     onValueChange = viewModel::onValueChangeDespacho,
                     label = "Despacho",
                     errorMessage = uiState.despachoErrorMessage,
@@ -180,8 +180,6 @@ fun DispatchScreen(
                 ) {
                     Button(
                         onClick = {
-                            viewModel.validateComisionista(uiState.comisionista)
-                            viewModel.validateLocalidad(uiState.localidad)
                             viewModel.insertNewDestino()
                         },
                         enabled = uiState.isInsertButtonEnabled

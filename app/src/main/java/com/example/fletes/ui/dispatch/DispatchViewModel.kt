@@ -9,6 +9,7 @@ import com.example.fletes.domain.GetAllDestinosUseCase
 import com.example.fletes.domain.InsertDestinoUseCase
 import com.example.fletes.domain.SearchComisionistaUseCase
 import com.example.fletes.domain.SearchLocalidadUseCase
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
 import kotlinx.coroutines.flow.StateFlow
@@ -91,7 +92,8 @@ class DispatchViewModel(
             getAllDestinosUseCase().catch {
                 // Handle any exception during data loading
                 Log.e("DispatchViewModel", "Error loading data", it)
-            }.collect { allDestinos ->
+            }
+                .collect { allDestinos ->
                 val comisionistas = allDestinos.map { it.comisionista }.distinct()
                 val localidades = allDestinos.map { it.localidad }.distinct()
                 Log.d("DispatchViewModel", "Loaded comisionistas: $comisionistas")
@@ -106,6 +108,7 @@ class DispatchViewModel(
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun combineComisionistaSuggestions() {
         viewModelScope.launch {
             _comisionistaQuery.flatMapLatest { query ->
@@ -122,6 +125,7 @@ class DispatchViewModel(
             }
         }
     }
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun combineLocalidadSuggestions() {
         viewModelScope.launch {
             _localidadQuery.flatMapLatest { queryLocalidad ->
@@ -152,11 +156,18 @@ class DispatchViewModel(
 
     // Insert new Destino
     fun insertNewDestino() {
+        if (!_uiState.value.isFormValid) {
+            _uiState.update {
+                it.copy(isLoading = false)
+            }
+            return
+        }
         _uiState.update {
             it.copy(isLoading = true)
         }
-        if (_uiState.value.isFormValid) {
-            viewModelScope.launch {
+
+        viewModelScope.launch {
+            try {
                 insertDestinoUseCase(
                     Destino(
                         comisionista = _uiState.value.comisionista,
@@ -172,11 +183,17 @@ class DispatchViewModel(
                         snackbarMessage = "Destino insertado correctamente"
                     )
                 }
+            } catch (e: Exception) {
+                // Handle specific exceptions here
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        showSnackbar = true,
+                        snackbarMessage = "Error al insertar el destino: ${e.message}" // Or a generic error message
+                    )
+                }
             }
-        } else {
-            _uiState.update {
-                it.copy(isLoading = false)
-            }
+
         }
     }
 
@@ -206,7 +223,7 @@ class DispatchViewModel(
                     newDespacho = cleanDespacho.toDouble()
                     isValid = true
                 } catch (e: NumberFormatException) {
-                    errorMessage = "Debe ingresar un número válido"
+                    errorMessage = "Debe ingresar un número válido $e"
                     isValid = false
                     newDespacho = null
                 }
@@ -235,32 +252,27 @@ class DispatchViewModel(
         }
     }
 
-    fun validateComisionista(value: String) {
+    private fun validateComisionista(value: String) {
         _uiState.update { currentState ->
-            if (value.isBlank()) {
-                currentState.copy(
-                    isValidComisionista = false,
-                    comisionistaErrorMessage = "Debe ingresar un comisionista"
-                )
-            } else {
-                currentState.copy(isValidComisionista = true, comisionistaErrorMessage = null)
-            }
+            val isValid = value.isNotBlank()
+            val errorMessage = if (!isValid) "Debe ingresar un comisionista" else null
+            currentState.copy(
+                isValidComisionista = isValid,
+                comisionistaErrorMessage = errorMessage
+            )
         }
     }
 
-    fun validateLocalidad(value: String) {
+    private fun validateLocalidad(value: String) {
         _uiState.update { currentState ->
-            if (value.isBlank()) {
-                currentState.copy(
-                    isValidLocalidad = false,
-                    localidadErrorMessage = "Debe ingresar una localidad"
-                )
-            } else {
-                currentState.copy(isValidLocalidad = true, localidadErrorMessage = null)
-            }
+            val isValid = value.isNotBlank()
+            val errorMessage = if (!isValid) "Debe ingresar una localidad" else null
+            currentState.copy(
+                isValidLocalidad = isValid,
+                localidadErrorMessage = errorMessage
+            )
         }
     }
-
     private fun updateInsertButton() {
         _uiState.update { currentState ->
             currentState.copy(

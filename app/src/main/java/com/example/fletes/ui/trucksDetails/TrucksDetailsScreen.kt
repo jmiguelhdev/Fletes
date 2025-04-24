@@ -49,11 +49,14 @@ fun TrucksDetailsScreen(
         }
     ) {innerPadding ->
        ContentTrucksDetailsScreen(
-           modifier = Modifier.fillMaxSize().padding(innerPadding),
+           modifier = Modifier
+               .fillMaxSize()
+               .padding(innerPadding),
            activeDispatch = activeDispatch,
            showDeleteDialog = uiState.showDeleteDialog,
            onEditClick = {
                 viewModel.editDispatch(it)
+               // TODO: completar logica en vm y domain 
            },
            onDeleteClick = {
                viewModel.showDeleteDialog()

@@ -61,6 +61,8 @@ fun ContentTrucksDetailsScreen(
 
 @Composable
 fun AvailableTrucks(modifier: Modifier = Modifier) {
+    // TODO: implementar chip con info de camiones disponibles para despacho
+    // TODO: cambiar la db para tener en cuenta camiones deisponibles
 
 }
 

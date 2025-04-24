@@ -1,15 +1,17 @@
-package com.example.fletes.ui.destino
+package com.example.fletes.ui.dispatch
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.fletes.data.repositories.interfaces.DestinationRepositoryInterface
 import com.example.fletes.data.room.Destino
+import com.example.fletes.domain.DeleteDestinoUseCase
+import com.example.fletes.domain.GetActiveDestinosUseCase
+import com.example.fletes.domain.GetActiveDispatchCount
 import com.example.fletes.domain.GetAllDestinosUseCase
 import com.example.fletes.domain.InsertDestinoUseCase
 import com.example.fletes.domain.SearchComisionistaUseCase
-import com.example.fletes.domain.DeleteDestinoUseCase
 import com.example.fletes.domain.SearchLocalidadUseCase
+import com.example.fletes.domain.UpdateDestinoUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
@@ -46,12 +48,14 @@ data class DispatchUiState(
 }
 
 class DispatchViewModel(
-    private val destinationRepository: DestinationRepositoryInterface,
+    getActiveDispatch: GetActiveDestinosUseCase,
+    getActiveDispatchCount: GetActiveDispatchCount,
     private val searchComisionistaUseCase: SearchComisionistaUseCase,
     private val searchLocalidadUseCase: SearchLocalidadUseCase,
     private val getAllDestinosUseCase: GetAllDestinosUseCase,
     private val insertDestinoUseCase: InsertDestinoUseCase,
-    private val deleteDestinoUseCase: DeleteDestinoUseCase
+    private val deleteDestinoUseCase: DeleteDestinoUseCase,
+    private val updateDestinoUseCase: UpdateDestinoUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(DispatchUiState())
@@ -61,17 +65,19 @@ class DispatchViewModel(
         initialValue = DispatchUiState()
     )
 
-    val activeDispatch = destinationRepository.getActiveDestinosStream().stateIn(
-        scope = viewModelScope,
-        started = WhileSubscribed(5000),
-        initialValue = emptyList()
-    )
+    val activeDispatch: StateFlow<List<Destino>> =
+        getActiveDispatch().stateIn(
+            scope = viewModelScope,
+            started = WhileSubscribed(5000), // Consider shorter timeout if feasible
+            initialValue = emptyList()
+        )
 
-    val activeDispatchCount = destinationRepository.getActiveDestinosCountStream().stateIn(
-        scope = viewModelScope,
-        started = WhileSubscribed(5000),
-        initialValue = 0
-    )
+    val activeDispatchCount: StateFlow<Int> =
+        getActiveDispatchCount().stateIn(
+            scope = viewModelScope,
+            started = WhileSubscribed(5000), // Consider shorter timeout if feasible
+            initialValue = 0
+        )
 
     // Comisionista StateFlows
     private val _comisionistaQuery = MutableStateFlow("")
@@ -96,17 +102,17 @@ class DispatchViewModel(
                 Log.e("DispatchViewModel", "Error loading data", it)
             }
                 .collect { allDestinos ->
-                val comisionistas = allDestinos.map { it.comisionista }.distinct()
-                val localidades = allDestinos.map { it.localidad }.distinct()
-                Log.d("DispatchViewModel", "Loaded comisionistas: $comisionistas")
-                Log.d("DispatchViewModel", "Loaded localidades: $localidades")
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        comisionistaSuggestions = comisionistas,
-                        localidadSuggestions = localidades
-                    )
+                    val comisionistas = allDestinos.map { it.comisionista }.distinct()
+                    val localidades = allDestinos.map { it.localidad }.distinct()
+                    Log.d("DispatchViewModel", "Loaded comisionistas: $comisionistas")
+                    Log.d("DispatchViewModel", "Loaded localidades: $localidades")
+                    _uiState.update { currentState ->
+                        currentState.copy(
+                            comisionistaSuggestions = comisionistas,
+                            localidadSuggestions = localidades
+                        )
+                    }
                 }
-            }
         }
     }
 
@@ -127,6 +133,7 @@ class DispatchViewModel(
             }
         }
     }
+
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun combineLocalidadSuggestions() {
         viewModelScope.launch {
@@ -149,12 +156,12 @@ class DispatchViewModel(
     fun onComisionistaQueryChange(query: String) {
         _comisionistaQuery.update { query }
         combineComisionistaSuggestions()
-     }
+    }
 
     fun onLocalidadQueryChange(query: String) {
         _localidadQuery.update { query }
         combineLocalidadSuggestions()
-     }
+    }
 
     // Insert new Destino
     fun insertNewDestino() {
@@ -249,7 +256,6 @@ class DispatchViewModel(
     }
 
 
-
     private fun validateComisionista(value: String) {
         _uiState.update { currentState ->
             val isValid = value.isNotBlank()
@@ -271,6 +277,7 @@ class DispatchViewModel(
             )
         }
     }
+
     private fun updateInsertButton() {
         _uiState.update { currentState ->
             currentState.copy(
@@ -284,16 +291,18 @@ class DispatchViewModel(
             currentState.copy(showDeleteDialog = true)
         }
     }
+
     fun hideDeleteDialog() {
         _uiState.update { currentState ->
             currentState.copy(showDeleteDialog = false)
         }
     }
-    fun deleteDetino(destino: Destino){
+
+    fun deleteDetino(destino: Destino) {
         viewModelScope.launch {
             try {
                 deleteDestinoUseCase(destino)
-            }catch (e:Exception){
+            } catch (e: Exception) {
                 _uiState.update {
                     it.copy(
                         showSnackbar = true,
@@ -307,8 +316,8 @@ class DispatchViewModel(
     fun editDispatch(destino: Destino) {
         viewModelScope.launch {
             try {
-
-            }catch (e:Exception){
+                updateDestinoUseCase(destino)
+            } catch (e: Exception) {
                 _uiState.update {
                     it.copy(
                         showSnackbar = true,

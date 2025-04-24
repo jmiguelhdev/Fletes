@@ -19,7 +19,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.fletes.R
-import com.example.fletes.ui.destino.DispatchViewModel
+import com.example.fletes.ui.dispatch.DispatchViewModel
 import com.example.fletes.ui.theme.FletesTheme
 import org.koin.androidx.compose.koinViewModel
 

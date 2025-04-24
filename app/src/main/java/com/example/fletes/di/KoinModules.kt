@@ -6,14 +6,17 @@ import com.example.fletes.data.repositories.implementations.TruckRepositoryImpl
 import com.example.fletes.data.repositories.interfaces.DestinationRepositoryInterface
 import com.example.fletes.data.room.AppDatabase
 import com.example.fletes.domain.DeleteDestinoUseCase
+import com.example.fletes.domain.GetActiveDestinosUseCase
+import com.example.fletes.domain.GetActiveDispatchCount
 import com.example.fletes.domain.GetAllDestinosUseCase
 import com.example.fletes.domain.InsertDestinoUseCase
 import com.example.fletes.domain.SearchComisionistaUseCase
 import com.example.fletes.domain.SearchLocalidadUseCase
+import com.example.fletes.domain.UpdateDestinoUseCase
 import com.example.fletes.domain.validators.DniValidator
 import com.example.fletes.domain.validators.PatenteValidator
 import com.example.fletes.ui.camion.CamionViewModel
-import com.example.fletes.ui.destino.DispatchViewModel
+import com.example.fletes.ui.dispatch.DispatchViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -64,19 +67,25 @@ val domainModule = module {
     single { GetAllDestinosUseCase(get()) }
     single { SearchComisionistaUseCase(get()) }
     single { SearchLocalidadUseCase(get()) }
+    single { InsertDestinoUseCase(get()) }
     single { DeleteDestinoUseCase(get()) }
+    single { UpdateDestinoUseCase(get()) }
+    single { GetActiveDestinosUseCase(get()) }
+    single { GetActiveDispatchCount(get()) }
 
 }
 
 val dispatchModule = module {
     viewModel {
         DispatchViewModel(
-            destinationRepository = get(),
+            getActiveDispatch = get(),
+            getActiveDispatchCount = get(),
             searchComisionistaUseCase = get(),
             searchLocalidadUseCase = get(),
             getAllDestinosUseCase = get(),
             insertDestinoUseCase = get(),
-            deleteDestinoUseCase = get()
+            deleteDestinoUseCase = get(),
+            updateDestinoUseCase = get()
         )
     }
 }

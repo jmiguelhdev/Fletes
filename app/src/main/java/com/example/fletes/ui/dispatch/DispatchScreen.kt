@@ -90,7 +90,7 @@ fun DispatchScreen(
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(
-                            painter = painterResource(R.drawable.ic_time_to_leave_24),
+                            painter = painterResource(R.drawable.ic_arrow_back_24),
                             contentDescription = "Back"
                         )
                     }
@@ -106,32 +106,6 @@ fun DispatchScreen(
                 .padding(paddingValues)
                 .wrapContentHeight()
         ) {
-            Column(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .wrapContentHeight()
-            ) {
-                LazyRow(
-                    modifier = Modifier.padding(16.dp)
-                ) {
-                    items(activeDispatch) { destino ->
-                        DestinoCard(
-                            destino = destino,
-                            onDeleteClick = {
-                                viewModel.showDeleteDialog()
-                                Log.d("DispatchScreen", "Delete clicked for id: ${destino.id}")
-                            }
-                        )
-                        if (uiState.showDeleteDialog) {
-                            DeleteDestinoAlertDialog(
-                                destino = destino,
-                                onDismissRequest = viewModel::hideDeleteDialog,
-                                onConfirm = viewModel::deleteDetino
-                            )
-                        }
-                    }
-                }
-            }
             Column(
                 modifier = Modifier
                     .padding(16.dp)

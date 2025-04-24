@@ -23,7 +23,7 @@ fun MyNavHost(
         }
         composable<DispatchScreenRoute> {
             DispatchScreen {
-
+                navController.popBackStack()
             }
         }
         composable<TruckScreenRoute> {

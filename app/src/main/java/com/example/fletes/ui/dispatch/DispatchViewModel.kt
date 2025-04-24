@@ -303,4 +303,19 @@ class DispatchViewModel(
             }
         }
     }
+
+    fun editDispatch(destino: Destino) {
+        viewModelScope.launch {
+            try {
+
+            }catch (e:Exception){
+                _uiState.update {
+                    it.copy(
+                        showSnackbar = true,
+                        snackbarMessage = "Error al eliminar el destino: ${e.message}"
+                    )
+                }
+            }
+        }
+    }
 }

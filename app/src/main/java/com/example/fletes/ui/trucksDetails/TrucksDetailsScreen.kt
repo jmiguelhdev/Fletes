@@ -29,7 +29,7 @@ fun TrucksDetailsScreen(
     viewModel: DispatchViewModel = koinViewModel(),
     onClickFab: () -> Unit = {}
 ) {
-
+    val uiState by viewModel.uiState.collectAsState()
     val activeDispatchCount by viewModel.activeDispatchCount.collectAsState(0)
     val activeDispatch by viewModel.activeDispatch.collectAsState(emptyList())
 
@@ -51,7 +51,17 @@ fun TrucksDetailsScreen(
        ContentTrucksDetailsScreen(
            modifier = Modifier.fillMaxSize().padding(innerPadding),
            activeDispatch = activeDispatch,
+           showDeleteDialog = uiState.showDeleteDialog,
+           onEditClick = {
+                viewModel.editDispatch(it)
+           },
+           onDeleteClick = {
+               viewModel.showDeleteDialog()
+           },
+           onDismissRequest = viewModel::hideDeleteDialog,
+           onConfirm = viewModel::deleteDetino
        )
+
     }
 }
 

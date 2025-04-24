@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -33,6 +32,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.fletes.R
 import com.example.fletes.data.room.Destino
+import com.example.fletes.ui.dispatch.DeleteDestinoAlertDialog
 import com.example.fletes.ui.theme.FletesTheme
 import java.time.LocalDate
 import java.util.Locale
@@ -40,10 +40,21 @@ import java.util.Locale
 @Composable
 fun ContentTrucksDetailsScreen(
     modifier: Modifier = Modifier,
-    activeDispatch: List<Destino> = emptyList()
+    activeDispatch: List<Destino> = emptyList(),
+    showDeleteDialog: Boolean = false,
+    onDismissRequest: () ->Unit,
+    onConfirm: (Destino) -> Unit = {},
+    onDeleteClick: () -> Unit,
+    onEditClick: (Destino) -> Unit
+
 ) {
     ActiveDispatch(
         activeDispatch = activeDispatch,
+        onDeleteClick = onDeleteClick,
+        showDeleteDialog = showDeleteDialog,
+        onDismissRequest = onDismissRequest,
+        onConfirm = onConfirm,
+        onEditClick = onEditClick,
         modifier = modifier
     )
 }
@@ -56,7 +67,12 @@ fun AvailableTrucks(modifier: Modifier = Modifier) {
 @Composable
 fun ActiveDispatch(
     modifier: Modifier = Modifier,
-    activeDispatch: List<Destino>
+    activeDispatch: List<Destino>,
+    showDeleteDialog: Boolean = false,
+    onDismissRequest :()-> Unit,
+    onConfirm: (Destino) -> Unit = {},
+    onDeleteClick: () -> Unit,
+    onEditClick: (Destino) -> Unit
 ) {
     LazyColumn(modifier = modifier) {
         items(
@@ -65,9 +81,16 @@ fun ActiveDispatch(
             ) { destino ->
             DispatchCard(
                 dispatch = destino,
-                onDeleteClick = {},
-                onEditClick = {},
+                onDeleteClick = onDeleteClick,
+                onEditClick = onEditClick,
             )
+            if (showDeleteDialog) {
+                DeleteDestinoAlertDialog(
+                    destino = destino,
+                    onDismissRequest = onDismissRequest,
+                    onConfirm = onConfirm,
+                )
+            }
         }
     }
 }
@@ -78,7 +101,7 @@ fun ActiveDispatch(
 fun DispatchCard(
     modifier: Modifier = Modifier,
     dispatch: Destino,
-    onDeleteClick: (dispatch: Destino) -> Unit,
+    onDeleteClick: () -> Unit,
     onEditClick: (dispatch: Destino) -> Unit
 ) {
     var isExpanded by remember { mutableStateOf(false) }
@@ -121,7 +144,7 @@ fun DispatchCard(
                             contentDescription = "delete icon",
                             modifier = Modifier
                                 .padding(start = 8.dp)
-                                .clickable { onDeleteClick(dispatch) }
+                                .clickable { onDeleteClick() }
                         )
                         Icon(
                             painter = painterResource(id = R.drawable.edit_edit_24),

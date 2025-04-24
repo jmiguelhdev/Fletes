@@ -312,19 +312,19 @@ fun DestinoCard(
 @Composable
 fun DeleteDestinoAlertDialog(
     destino: Destino,
-    onDismissRequest: () -> Unit,
-    onConfirm: (destino: Destino) -> Unit,
+    onDismissRequestDelete: () -> Unit,
+    onConfirmDelete: (destino: Destino) -> Unit,
     modifier: Modifier = Modifier
 ) {
     AlertDialog(
-        onDismissRequest = onDismissRequest,
+        onDismissRequest = onDismissRequestDelete,
         confirmButton = {
-            Button(onClick = { onConfirm(destino) }) {
+            Button(onClick = { onConfirmDelete(destino) }) {
                 Text(text = "Confirm Delete")
             }
         },
         dismissButton = {
-            Button(onClick = onDismissRequest) {
+            Button(onClick = onDismissRequestDelete) {
                 Text(text = "Cancel")
             }
         },
@@ -336,10 +336,59 @@ fun DeleteDestinoAlertDialog(
                 Text(text = "Are you sure you want to delete this destination?")
                 Text(text = "This action cannot be undone.")
                 Text(text = "Id: ${destino.id}")
-                Text(text = "Date: ${destino.createdAt}")
+                Text(text = "Fecha: ${destino.createdAt}")
                 Text(text = "Despacho: ${destino.despacho}")
                 Text(text = "Comisionista: ${destino.comisionista}")
                 Text(text = "Destino: ${destino.localidad}")
+            }
+        },
+        modifier = modifier
+    )
+
+}
+
+@Composable
+fun UpdateDestinoAlertDialog(
+    destino: Destino,
+    onDismissRequest: () -> Unit,
+    onConfirm: (destino: Destino) -> Unit,
+    value: String,
+    onValueChange: (String) -> Unit,
+    errorMessage: String?,
+    modifier: Modifier = Modifier
+) {
+    AlertDialog(
+        onDismissRequest = onDismissRequest,
+        confirmButton = {
+            Button(onClick = { onConfirm(destino) }
+            ) {
+                Text(text = "Confirm Update")
+            }
+        },
+        dismissButton = {
+            Button(onClick = onDismissRequest) {
+                Text(text = "Cancelar")
+            }
+        },
+        title = {
+            Text(text = "Editando Destino: ${destino.localidad}")
+        },
+        text = {
+            Column {
+                Text(text = "Ingrese los nuevos valores para el destino:")
+                Text(text = "Id: ${destino.id}")
+                Text(text = "Fecha: ${destino.createdAt}")
+                Text(text = "Despacho: ${destino.despacho}")
+                Text(text = "Comisionista: ${destino.comisionista}")
+                Text(text = "Destino: ${destino.localidad}")
+                HorizontalDivider(thickness = 2.dp)
+                DecimalTextField(
+                    value = value,
+                    onValueChange = onValueChange,
+                    label = "Despacho",
+                    errorMessage = errorMessage,
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
         },
         modifier = modifier

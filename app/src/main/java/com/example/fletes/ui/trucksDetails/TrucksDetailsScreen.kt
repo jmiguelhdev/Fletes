@@ -10,10 +10,14 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
@@ -21,6 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.fletes.R
 import com.example.fletes.ui.dispatch.DispatchViewModel
 import com.example.fletes.ui.theme.FletesTheme
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -32,7 +37,20 @@ fun TrucksDetailsScreen(
     val uiState by viewModel.uiState.collectAsState()
     val activeDispatchCount by viewModel.activeDispatchCount.collectAsState(0)
     val activeDispatch by viewModel.activeDispatch.collectAsState(emptyList())
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
+    LaunchedEffect(uiState.showSnackbar) {
+        if (uiState.showSnackbar) {
+            scope.launch {
+                snackbarHostState.showSnackbar(
+                    message = uiState.snackbarMessage,
+                    withDismissAction = true
+                )
+                viewModel.snackbarShown()
+            }
+        }
+    }
     Log.d("TrucksDetailsScreen", "activeDispatch: $activeDispatch")
 
     Scaffold(
@@ -54,15 +72,20 @@ fun TrucksDetailsScreen(
                .padding(innerPadding),
            activeDispatch = activeDispatch,
            showDeleteDialog = uiState.showDeleteDialog,
+           showUpdateDialog = uiState.showUpdateDialog,
            onEditClick = {
-                viewModel.editDispatch(it)
-               // TODO: completar logica en vm y domain 
+               viewModel.showUpdateDialog()
            },
            onDeleteClick = {
                viewModel.showDeleteDialog()
            },
-           onDismissRequest = viewModel::hideDeleteDialog,
-           onConfirm = viewModel::deleteDetino
+           onDismissRequestDelete = viewModel::hideDeleteDialog,
+           onConfirmDelete = viewModel::deleteDetino,
+           onDismissRequestUpdate = viewModel::hideUpdateDialog,
+           onConfirmUpdate = viewModel::updateDestination,
+           value = uiState.despacho.toString(),
+           onValueChange = viewModel::onValueChangeDespacho,
+           errorMessage = uiState.despachoErrorMessage,
        )
 
     }

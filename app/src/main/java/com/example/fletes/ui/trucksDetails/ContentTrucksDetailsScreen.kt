@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import com.example.fletes.R
 import com.example.fletes.data.room.Destino
 import com.example.fletes.ui.dispatch.DeleteDestinoAlertDialog
+import com.example.fletes.ui.dispatch.UpdateDestinoAlertDialog
 import com.example.fletes.ui.theme.FletesTheme
 import java.time.LocalDate
 import java.util.Locale
@@ -42,19 +43,30 @@ fun ContentTrucksDetailsScreen(
     modifier: Modifier = Modifier,
     activeDispatch: List<Destino> = emptyList(),
     showDeleteDialog: Boolean = false,
-    onDismissRequest: () ->Unit,
-    onConfirm: (Destino) -> Unit = {},
+    onDismissRequestDelete: () ->Unit,
+    onConfirmDelete: (Destino) -> Unit = {},
     onDeleteClick: () -> Unit,
-    onEditClick: (Destino) -> Unit
-
+    onEditClick: () -> Unit,
+    showUpdateDialog: Boolean = false,
+    onDismissRequestUpdate: () ->Unit,
+    onConfirmUpdate: (Destino) -> Unit = {},
+    value: String,
+    onValueChange: (String) -> Unit = {},
+    errorMessage: String?
 ) {
     ActiveDispatch(
         activeDispatch = activeDispatch,
         onDeleteClick = onDeleteClick,
         showDeleteDialog = showDeleteDialog,
-        onDismissRequest = onDismissRequest,
-        onConfirm = onConfirm,
+        onDismissRequestDelete = onDismissRequestDelete,
+        onConfirmDelete = onConfirmDelete,
+        showUpdateDialog = showUpdateDialog,
+        onDismissRequestUpdate = onDismissRequestUpdate,
+        onConfirmUpdate = onConfirmUpdate,
         onEditClick = onEditClick,
+        value = value,
+        onValueChange = onValueChange,
+        errorMessage = errorMessage,
         modifier = modifier
     )
 }
@@ -71,10 +83,16 @@ fun ActiveDispatch(
     modifier: Modifier = Modifier,
     activeDispatch: List<Destino>,
     showDeleteDialog: Boolean = false,
-    onDismissRequest :()-> Unit,
-    onConfirm: (Destino) -> Unit = {},
+    onDismissRequestDelete :()-> Unit,
+    onConfirmDelete: (Destino) -> Unit = {},
     onDeleteClick: () -> Unit,
-    onEditClick: (Destino) -> Unit
+    onEditClick: () -> Unit,
+    showUpdateDialog: Boolean = false,
+    onDismissRequestUpdate: () -> Unit,
+    onConfirmUpdate: (Destino) -> Unit = {},
+    value: String,
+    onValueChange: (String) -> Unit = {},
+    errorMessage: String?
 ) {
     LazyColumn(modifier = modifier) {
         items(
@@ -89,8 +107,19 @@ fun ActiveDispatch(
             if (showDeleteDialog) {
                 DeleteDestinoAlertDialog(
                     destino = destino,
-                    onDismissRequest = onDismissRequest,
-                    onConfirm = onConfirm,
+                    onDismissRequestDelete = onDismissRequestDelete,
+                    onConfirmDelete = onConfirmDelete,
+                )
+            }
+            if (showUpdateDialog){
+                UpdateDestinoAlertDialog(
+                    destino = destino,
+                    value = value,
+                    onValueChange = onValueChange,
+                    onDismissRequest = onDismissRequestUpdate,
+                    onConfirm = onConfirmUpdate,
+                    errorMessage = errorMessage,
+                    modifier = modifier,
                 )
             }
         }
@@ -104,7 +133,7 @@ fun DispatchCard(
     modifier: Modifier = Modifier,
     dispatch: Destino,
     onDeleteClick: () -> Unit,
-    onEditClick: (dispatch: Destino) -> Unit
+    onEditClick: () -> Unit
 ) {
     var isExpanded by remember { mutableStateOf(false) }
 
@@ -153,7 +182,7 @@ fun DispatchCard(
                             contentDescription = "edit icon",
                             modifier = Modifier
                                 .padding(start = 8.dp)
-                                .clickable { onEditClick(dispatch) }
+                                .clickable { onEditClick() }
                         )
                     }
                 }

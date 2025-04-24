@@ -35,6 +35,7 @@ data class DispatchUiState(
     val localidadErrorMessage: String? = null,
     val isValidLocalidad: Boolean = true,
     val showDeleteDialog: Boolean = false,
+    val showUpdateDialog: Boolean = false,
     val comisionistaSuggestions: List<String> = emptyList(),
     val localidadSuggestions: List<String> = emptyList(),
     val isInsertButtonEnabled: Boolean = false,
@@ -243,7 +244,7 @@ class DispatchViewModel(
                 despachoErrorMessage = errorMessage
             )
         }
-
+        Log.d("DispatchViewModel", "onValueChangeDespacho: $despacho")
         updateInsertButton()
     }
 
@@ -297,6 +298,17 @@ class DispatchViewModel(
             currentState.copy(showDeleteDialog = false)
         }
     }
+    fun showUpdateDialog() {
+        _uiState.update { currentState ->
+            currentState.copy(showUpdateDialog = true)
+        }
+    }
+
+    fun hideUpdateDialog() {
+        _uiState.update { currentState ->
+            currentState.copy(showUpdateDialog = false)
+        }
+    }
 
     fun deleteDetino(destino: Destino) {
         viewModelScope.launch {
@@ -313,10 +325,25 @@ class DispatchViewModel(
         }
     }
 
-    fun editDispatch(destino: Destino) {
+    fun updateDestination(destino: Destino) {
         viewModelScope.launch {
+            Log.d("DispatchViewModel", "pre update ${destino.despacho}")
             try {
-                updateDestinoUseCase(destino)
+               val  updatedDestino = destino.copy(
+                    despacho = uiState.value.despacho
+                )
+                Log.d("DispatchViewModel", "updatedDestino: $updatedDestino")
+
+                updateDestinoUseCase(updatedDestino)
+
+                _uiState.update {
+                    it.copy(
+                        showSnackbar = true,
+                        snackbarMessage = "Destino editado correctamente",
+                        showUpdateDialog = false
+                    )
+                }
+                Log.d("DispatchViewModel", "post update ${destino.despacho}")
             } catch (e: Exception) {
                 _uiState.update {
                     it.copy(

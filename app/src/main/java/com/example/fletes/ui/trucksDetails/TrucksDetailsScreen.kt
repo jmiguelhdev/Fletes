@@ -1,7 +1,9 @@
 package com.example.fletes.ui.trucksDetails
 
-import androidx.compose.foundation.layout.PaddingValues
+import android.util.Log
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -25,26 +27,31 @@ import org.koin.androidx.compose.koinViewModel
 fun TrucksDetailsScreen(
     modifier: Modifier = Modifier,
     viewModel: DispatchViewModel = koinViewModel(),
-    content: @Composable (paddingValues: PaddingValues) -> Unit = {},
     onClickFab: () -> Unit = {}
 ) {
 
     val activeDispatchCount by viewModel.activeDispatchCount.collectAsState(0)
     val activeDispatch by viewModel.activeDispatch.collectAsState(emptyList())
+
+    Log.d("TrucksDetailsScreen", "activeDispatch: $activeDispatch")
+
     Scaffold(
         modifier = modifier.imePadding(),
         topBar = {
-            TrucksTopAppBar()
+            TrucksTopAppBar(count = activeDispatchCount)
         },
         floatingActionButton = {
             TruckFab(
                 onClick = onClickFab,
                 icon = painterResource(R.drawable.icl_shipping_24),
-                modifier = modifier
+                modifier = Modifier
             )
         }
-    ) {
-        content(it)
+    ) {innerPadding ->
+       ContentTrucksDetailsScreen(
+           modifier = Modifier.fillMaxSize().padding(innerPadding),
+           activeDispatch = activeDispatch,
+       )
     }
 }
 
@@ -69,11 +76,12 @@ fun TruckFab(
 @Composable
 fun TrucksTopAppBar(
     modifier: Modifier = Modifier,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit = {},
+    count: Int = 0
 ) {
     CenterAlignedTopAppBar(
         title = {
-            Text("Details Trucks Available")
+            Text("Details Trucks Available $count")
         },
         modifier = modifier,
         navigationIcon = {
@@ -101,8 +109,7 @@ fun TrucksTopAppBar(
 fun TrucksDetailsScreenPrev(modifier: Modifier = Modifier) {
     FletesTheme {
         TrucksDetailsScreen(
-            content = {},
-            modifier = modifier
+            modifier = modifier,
         )
     }
 }

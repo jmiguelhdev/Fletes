@@ -91,7 +91,7 @@ fun TrucksTopAppBar(
 ) {
     CenterAlignedTopAppBar(
         title = {
-            Text("Details Trucks Available $count")
+            Text("Prepare Dispatch $count")
         },
         modifier = modifier,
         navigationIcon = {

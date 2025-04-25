@@ -10,6 +10,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -55,6 +56,7 @@ fun TrucksDetailsScreen(
 
     Scaffold(
         modifier = modifier.imePadding(),
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TrucksTopAppBar(count = activeDispatchCount)
         },
@@ -86,6 +88,7 @@ fun TrucksDetailsScreen(
            value = uiState.despacho.toString(),
            onValueChange = viewModel::onValueChangeDespacho,
            errorMessage = uiState.despachoErrorMessage,
+
        )
 
     }
@@ -93,9 +96,9 @@ fun TrucksDetailsScreen(
 
 @Composable
 fun TruckFab(
+    modifier: Modifier = Modifier,
     icon: Painter,
-    onClick: () -> Unit = {},
-    modifier: Modifier = Modifier
+    onClick: () -> Unit = {}
 ) {
     FloatingActionButton(
         modifier = modifier,

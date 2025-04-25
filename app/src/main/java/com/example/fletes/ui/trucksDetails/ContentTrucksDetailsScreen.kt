@@ -11,9 +11,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -32,8 +35,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.fletes.R
 import com.example.fletes.data.room.Destino
+import com.example.fletes.ui.dispatch.DecimalTextField
 import com.example.fletes.ui.dispatch.DeleteDestinoAlertDialog
-import com.example.fletes.ui.dispatch.UpdateDestinoAlertDialog
 import com.example.fletes.ui.theme.FletesTheme
 import java.time.LocalDate
 import java.util.Locale
@@ -43,12 +46,12 @@ fun ContentTrucksDetailsScreen(
     modifier: Modifier = Modifier,
     activeDispatch: List<Destino> = emptyList(),
     showDeleteDialog: Boolean = false,
-    onDismissRequestDelete: () ->Unit,
+    onDismissRequestDelete: () -> Unit,
     onConfirmDelete: (Destino) -> Unit = {},
     onDeleteClick: () -> Unit,
     onEditClick: () -> Unit,
     showUpdateDialog: Boolean = false,
-    onDismissRequestUpdate: () ->Unit,
+    onDismissRequestUpdate: () -> Unit,
     onConfirmUpdate: (Destino) -> Unit = {},
     value: String,
     onValueChange: (String) -> Unit = {},
@@ -83,7 +86,7 @@ fun ActiveDispatch(
     modifier: Modifier = Modifier,
     activeDispatch: List<Destino>,
     showDeleteDialog: Boolean = false,
-    onDismissRequestDelete :()-> Unit,
+    onDismissRequestDelete: () -> Unit,
     onConfirmDelete: (Destino) -> Unit = {},
     onDeleteClick: () -> Unit,
     onEditClick: () -> Unit,
@@ -98,7 +101,7 @@ fun ActiveDispatch(
         items(
             items = activeDispatch,
             key = { destino -> destino.id }
-            ) { destino ->
+        ) { destino ->
             DispatchCard(
                 dispatch = destino,
                 onDeleteClick = onDeleteClick,
@@ -111,7 +114,7 @@ fun ActiveDispatch(
                     onConfirmDelete = onConfirmDelete,
                 )
             }
-            if (showUpdateDialog){
+            if (showUpdateDialog) {
                 UpdateDestinoAlertDialog(
                     destino = destino,
                     value = value,
@@ -249,3 +252,74 @@ fun DispatchCardPrev(modifier: Modifier = Modifier) {
         )
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+fun UpdateDestinoAlertDialogPreview(modifier: Modifier = Modifier) {
+    FletesTheme {
+        UpdateDestinoAlertDialog(
+            destino = Destino(
+                id = 1,
+                createdAt = LocalDate.now(),
+                comisionista = "Miguel",
+                despacho = 10_000_000.0,
+                localidad = "Buenos Aires",
+                isActive = true
+            ),
+            onDismissRequest = { },
+            onConfirm = { },
+            value = "10000000.0",
+            onValueChange = { },
+            errorMessage = null,
+            modifier = modifier
+        )
+    }
+}
+
+@Composable
+fun UpdateDestinoAlertDialog(
+    destino: Destino,
+    onDismissRequest: () -> Unit,
+    onConfirm: (destino: Destino) -> Unit,
+    value: String,
+    onValueChange: (String) -> Unit,
+    errorMessage: String?,
+    modifier: Modifier = Modifier
+) {
+    AlertDialog(
+        onDismissRequest = onDismissRequest,
+        confirmButton = {
+            Button(onClick = { onConfirm(destino) }
+            ) {
+                Text(text = "Confirm Update")
+            }
+        },
+        dismissButton = {
+            Button(onClick = onDismissRequest) {
+                Text(text = "Cancelar")
+            }
+        },
+        title = {
+            Text(text = "Editando Destino: ${destino.localidad}")
+        },
+        text = {
+            Column {
+                Text(text = "Fecha: ${destino.createdAt}")
+                Text(text = "Despacho: ${destino.despacho}")
+                Text(text = "Comisionista: ${destino.comisionista}")
+                Text(text = "Destino: ${destino.localidad}")
+                Text(text = "Ingrese nuevo valor de despacho")
+                HorizontalDivider(thickness = 2.dp)
+                DecimalTextField(
+                    value = value,
+                    onValueChange = onValueChange,
+                    label = "Despacho",
+                    errorMessage = errorMessage,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        }, modifier = Modifier.wrapContentHeight()
+    )
+}
+
+

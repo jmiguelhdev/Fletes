@@ -40,6 +40,7 @@ fun TrucksDetailsScreen(
     val activeDispatch by viewModel.activeDispatch.collectAsState(emptyList())
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    val trucksList by viewModel.allTrucks.collectAsState(emptyList())
 
     LaunchedEffect(uiState.showSnackbar) {
         if (uiState.showSnackbar) {

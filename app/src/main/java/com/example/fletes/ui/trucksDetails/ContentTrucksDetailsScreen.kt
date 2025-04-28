@@ -5,6 +5,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -18,6 +19,8 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.DividerDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -41,7 +44,6 @@ import com.example.fletes.data.room.Destino
 import com.example.fletes.ui.dispatch.DecimalTextField
 import com.example.fletes.ui.dispatch.DeleteDestinoAlertDialog
 import com.example.fletes.ui.theme.FletesTheme
-import com.example.fletes.ui.truckjourney.JourneyCard
 import java.time.LocalDate
 import java.util.Locale
 
@@ -380,6 +382,124 @@ fun UpdateDestinoAlertDialog(
             }
         }, modifier = Modifier.wrapContentHeight()
     )
+}
+
+@Composable
+fun JourneyCard(
+    modifier: Modifier = Modifier,
+    camion: Camion,
+    truckJourneyData: TruckJourneyData
+) {
+    Card(modifier = Modifier.padding(8.dp))  {
+        Row (
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Text(text = "Registro de viaje Chofer: ")
+            Text(text = camion.choferName)
+        }
+        HorizontalDivider(thickness = DividerDefaults.Thickness)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            Box(modifier = Modifier.weight(1f)) {
+                Column(modifier = Modifier.padding(4.dp)) {
+                    DecimalTextField(
+                        value = truckJourneyData.kmCargaData.value,
+                        onValueChange = truckJourneyData.kmCargaData.onValueChange,
+                        label = "km carga",
+                        errorMessage = truckJourneyData.kmCargaData.errorMessage,
+                    )
+                }
+            }
+            Box(modifier = Modifier.weight(1f)) {
+                Column(modifier = Modifier.padding(4.dp)) {
+                    DecimalTextField(
+                        value = truckJourneyData.kmDescargaData.value,
+                        onValueChange = truckJourneyData.kmDescargaData.onValueChange,
+                        label = "km descarga",
+                        errorMessage = truckJourneyData.kmDescargaData.errorMessage,                    )
+                }
+            }
+        }
+        HorizontalDivider(thickness = DividerDefaults.Thickness)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            Box(modifier = Modifier.weight(1f)) {
+                Column(modifier = Modifier.padding(4.dp)) {
+                    DecimalTextField(
+                        value = truckJourneyData.kmSurtidorData.value,
+                        onValueChange = truckJourneyData.kmSurtidorData.onValueChange,
+                        label = "km surtidor",
+                        errorMessage = truckJourneyData.kmDescargaData.errorMessage,
+                    )
+                }
+            }
+            Box(modifier = Modifier.weight(1f)) {
+                Column(modifier = Modifier.padding(4.dp)) {
+                    DecimalTextField(
+                        value = truckJourneyData.litrosData.value,
+                        onValueChange = truckJourneyData.litrosData.onValueChange,
+                        label = "litros surtidos",
+                        errorMessage = truckJourneyData.litrosData.errorMessage,                    )
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = true)
+@Composable
+fun JourneyCardPreview() {
+    val sampleCamion = Camion(
+        id = 1,
+        createdAt = LocalDate.now(),
+        choferName = "Miguel",
+        choferDni = 29673971,
+        patenteTractor = "Ad123dc",
+        patenteJaula = "Cd456Fd",
+        isActive = true
+    )
+    // Creamos un objeto de ejemplo de TruckJourneyData
+    // Cada campo (kmCargaData, kmDescargaData, etc.) ahora es un TextFieldData
+    val sampleTruckJourneyData = TruckJourneyData(
+        kmCargaData = DecimalTextFieldData(
+            label = "km carga",
+            value = "123.0",
+            onValueChange = { /* Aquí puedes agregar lógica de manejo de cambios si es necesario */ },
+            errorMessage = ""
+        ),
+        kmDescargaData = DecimalTextFieldData(
+            label = "km descarga",
+            value = "231.0",
+            onValueChange = { /* Aquí puedes agregar lógica de manejo de cambios si es necesario */ },
+            errorMessage = ""
+        ),
+        kmSurtidorData = DecimalTextFieldData(
+            label = "km surtidor",
+            value = "100.0",
+            onValueChange = { /* Aquí puedes agregar lógica de manejo de cambios si es necesario */ },
+            errorMessage = ""
+        ),
+        litrosData = DecimalTextFieldData(
+            label = "litros surtidos",
+            value = "50.0",
+            onValueChange = { /* Aquí puedes agregar lógica de manejo de cambios si es necesario */ },
+            errorMessage = ""
+        ),
+        isLast = false
+    )
+
+    FletesTheme {
+        JourneyCard(
+            camion = sampleCamion,
+            truckJourneyData = sampleTruckJourneyData,
+        )
+    }
 }
 
 

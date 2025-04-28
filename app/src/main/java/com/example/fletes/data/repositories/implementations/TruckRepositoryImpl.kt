@@ -31,4 +31,8 @@ class TruckRepositoryImpl(private val truckDao: TruckDao): TruckRepositoryInterf
     override fun getAllCamiones(): Flow<List<Camion>> {
        return truckDao.getAllTrucks()
     }
+
+    override suspend fun updateTruckIsActive(camion: Camion) {
+        return truckDao.updateTruckIsActive(camion.id, camion.isActive)
+    }
 }

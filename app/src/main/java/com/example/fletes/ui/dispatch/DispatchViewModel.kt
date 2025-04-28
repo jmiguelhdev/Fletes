@@ -14,6 +14,7 @@ import com.example.fletes.domain.InsertDestinoUseCase
 import com.example.fletes.domain.SearchComisionistaUseCase
 import com.example.fletes.domain.SearchLocalidadUseCase
 import com.example.fletes.domain.UpdateDestinoUseCase
+import com.example.fletes.domain.UpdateTruckIsActiveUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
@@ -59,7 +60,8 @@ class DispatchViewModel(
     private val getAllDestinosUseCase: GetAllDestinosUseCase,
     private val insertDestinoUseCase: InsertDestinoUseCase,
     private val deleteDestinoUseCase: DeleteDestinoUseCase,
-    private val updateDestinoUseCase: UpdateDestinoUseCase
+    private val updateDestinoUseCase: UpdateDestinoUseCase,
+    private val updateTruckIsActiveUseCase: UpdateTruckIsActiveUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(DispatchUiState())
@@ -361,6 +363,15 @@ class DispatchViewModel(
                     )
                 }
             }
+        }
+    }
+
+    fun updateTruckIsActive(truck: Camion) {
+        viewModelScope.launch {
+            val updatedTruck = truck.copy(isActive = !truck.isActive)
+            Log.d("DispatchViewModel", "updateTruckIsActive: $updatedTruck")
+
+            updateTruckIsActiveUseCase(updatedTruck)
         }
     }
 }

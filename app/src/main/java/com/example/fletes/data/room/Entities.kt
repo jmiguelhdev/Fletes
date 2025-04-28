@@ -28,7 +28,7 @@ data class Camion(
     @ColumnInfo(name = "chofer_dni") val choferDni: Int,
     @ColumnInfo(name = "patente_tractor") val patenteTractor: String,
     @ColumnInfo(name = "patente_jaula") val patenteJaula: String,
-    @ColumnInfo(name = "km_service") val isActive: Boolean = true
+    @ColumnInfo(name = "is_active") val isActive: Boolean = true
 )
 
 @Entity(tableName = "destinos")

@@ -9,6 +9,7 @@ import com.example.fletes.domain.DeleteDestinoUseCase
 import com.example.fletes.domain.GetActiveDestinosUseCase
 import com.example.fletes.domain.GetActiveDispatchCount
 import com.example.fletes.domain.GetAllDestinosUseCase
+import com.example.fletes.domain.GetAllTrucks
 import com.example.fletes.domain.InsertDestinoUseCase
 import com.example.fletes.domain.SearchComisionistaUseCase
 import com.example.fletes.domain.SearchLocalidadUseCase
@@ -72,6 +73,7 @@ val domainModule = module {
     single { UpdateDestinoUseCase(get()) }
     single { GetActiveDestinosUseCase(get()) }
     single { GetActiveDispatchCount(get()) }
+    single { GetAllTrucks(get()) }
 
 }
 
@@ -85,7 +87,8 @@ val dispatchModule = module {
             getAllDestinosUseCase = get(),
             insertDestinoUseCase = get(),
             deleteDestinoUseCase = get(),
-            updateDestinoUseCase = get()
+            updateDestinoUseCase = get(),
+            getAllTrucks = get()
         )
     }
 }

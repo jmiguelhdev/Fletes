@@ -29,4 +29,7 @@ interface TruckDao {
 
     @Query("SELECT * FROM camiones")
     fun getAllTrucks(): Flow<List<Camion>>
+
+    @Query("UPDATE camiones SET is_active = :isActive WHERE id = :truckId")
+    suspend fun updateTruckIsActive(truckId: Int, isActive: Boolean)
 }

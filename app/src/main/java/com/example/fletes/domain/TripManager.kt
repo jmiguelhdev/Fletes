@@ -1,6 +1,5 @@
 package com.example.fletes.domain
 
-import android.util.Log
 import com.example.fletes.data.repositories.implementations.TrucksJourneyRepositoryImp
 import com.example.fletes.data.room.CamionesRegistro
 import kotlinx.coroutines.flow.first
@@ -11,7 +10,7 @@ class TripManager(
     suspend fun saveNewTrip(camionesRegistro: CamionesRegistro) {
         val previousTrip = trucksRepository.getLastTripByCamionId(camionesRegistro.camionId).first()
         if (previousTrip != null) {
-            val updatedPreviousTrip = previousTrip.copy(isLast = false)
+            val updatedPreviousTrip = previousTrip.copy(isActive = false)
             trucksRepository.updateCamionesRegistro(updatedPreviousTrip)
         }
         //val newTrip = calculateRendimiento(previousTrip, camionesRegistro)

@@ -263,7 +263,7 @@ fun DispatchCardPrev(modifier: Modifier = Modifier) {
         choferDni = 29673971,
         patenteTractor = "Ad123dc",
         patenteJaula = "Cd456Fd",
-        kmService = 20000
+        isActive = 20000
     )
     // Creamos un objeto de ejemplo de TruckJourneyData
     // Cada campo (kmCargaData, kmDescargaData, etc.) ahora es un TextFieldData

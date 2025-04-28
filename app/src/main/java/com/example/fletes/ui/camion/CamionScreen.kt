@@ -289,7 +289,7 @@ fun CamionCardPreview() {
         patenteTractor = "AB123CD",
         patenteJaula = "EF456GH",
         createdAt = LocalDate.now(),
-        kmService = 20000
+        isActive = 20000
     )
     CamionCard(
         camion = mockCamion,
@@ -310,7 +310,7 @@ fun ListOfCamionesScreenPreview() {
             choferDni = 12345678,
             patenteTractor = "PATENTE1",
             patenteJaula = "JAULA1",
-            kmService = 10000
+            isActive = 10000
         ),
         Camion(
             id = 2,
@@ -319,7 +319,7 @@ fun ListOfCamionesScreenPreview() {
             choferDni = 12345678,
             patenteTractor = "PATENTE1",
             patenteJaula = "JAULA1",
-            kmService = 10000
+            isActive = 10000
         ),
         Camion(
             id = 13,
@@ -328,7 +328,7 @@ fun ListOfCamionesScreenPreview() {
             choferDni = 12345678,
             patenteTractor = "PATENTE1",
             patenteJaula = "JAULA1",
-            kmService = 10000
+            isActive = 10000
         ),
     )
 
@@ -353,7 +353,7 @@ fun InteractColumPreview() {
         choferDni = 123456789,
         patenteTractor = "AA123BB",
         patenteJaula = "CC456DD",
-        kmService = 20000,
+        isActive = 20000,
     )
     InteractColum(camion = mockCamion, onDeleteCamion = {}, onEditCamion = {})
 }

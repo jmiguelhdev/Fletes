@@ -2,7 +2,6 @@ package com.example.fletes.ui.dispatch
 
 import android.content.res.Configuration
 import android.util.Log
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -395,7 +394,7 @@ fun PreviewCamionChip() {
         choferDni = 29384756,
         patenteTractor = "ad123fg",
         patenteJaula = "df213fg",
-        kmService = 2000,
+        isActive = true,
     )
     CamionChip(camion = camion)
 }

@@ -113,7 +113,7 @@ class CamionViewModel(
                 choferDni = _uiState.value.choferDni.toInt(),
                 patenteTractor = _uiState.value.patenteTractor,
                 patenteJaula = _uiState.value.patenteJaula,
-                kmService = 20000
+                isActive = 20000
             )
             camionRepository.insertCamion(camionToInsert)
             Log.d("CamionViewModel", "Camion inserted $camionToInsert")
@@ -168,7 +168,7 @@ class CamionViewModel(
                     choferDni = _uiState.value.choferDni.toInt(),
                     patenteTractor = _uiState.value.patenteTractor,
                     patenteJaula = _uiState.value.patenteJaula,
-                    kmService = 30000
+                    isActive = 30000
                 )
                 camionRepository.updateCamion(updatedCamion)
             }

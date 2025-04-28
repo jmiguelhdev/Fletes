@@ -14,6 +14,7 @@ import com.example.fletes.domain.InsertDestinoUseCase
 import com.example.fletes.domain.SearchComisionistaUseCase
 import com.example.fletes.domain.SearchLocalidadUseCase
 import com.example.fletes.domain.UpdateDestinoUseCase
+import com.example.fletes.domain.UpdateTruckIsActiveUseCase
 import com.example.fletes.domain.validators.DniValidator
 import com.example.fletes.domain.validators.PatenteValidator
 import com.example.fletes.ui.camion.CamionViewModel
@@ -74,6 +75,7 @@ val domainModule = module {
     single { GetActiveDestinosUseCase(get()) }
     single { GetActiveDispatchCount(get()) }
     single { GetAllTrucks(get()) }
+    single { UpdateTruckIsActiveUseCase(get()) }
 
 }
 
@@ -88,7 +90,8 @@ val dispatchModule = module {
             insertDestinoUseCase = get(),
             deleteDestinoUseCase = get(),
             updateDestinoUseCase = get(),
-            getAllTrucks = get()
+            getAllTrucks = get(),
+            updateTruckIsActiveUseCase = get()
         )
     }
 }

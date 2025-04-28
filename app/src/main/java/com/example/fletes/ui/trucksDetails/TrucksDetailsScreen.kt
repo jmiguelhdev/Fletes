@@ -88,7 +88,8 @@ fun TrucksDetailsScreen(
            value = uiState.despacho.toString(),
            onValueChange = viewModel::onValueChangeDespacho,
            errorMessage = uiState.despachoErrorMessage,
-
+           camion = TODO(),
+           truckJourneyData = TODO(),
        )
 
     }

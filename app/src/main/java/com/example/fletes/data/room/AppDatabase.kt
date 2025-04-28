@@ -10,7 +10,7 @@ import com.example.fletes.data.room.interfacesDao.TrucksRegistrationDao
 // Database
 @Database(
     entities = [Camion::class, Destino::class, CamionesRegistro::class],
-    version = 5,
+    version = 6,
     exportSchema = false
 )
 @TypeConverters(Converters::class)

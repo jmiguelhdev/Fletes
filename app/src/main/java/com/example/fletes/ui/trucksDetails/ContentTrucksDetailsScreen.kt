@@ -34,10 +34,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.fletes.R
+import com.example.fletes.data.model.DecimalTextFieldData
+import com.example.fletes.data.model.truckJourneyData.TruckJourneyData
+import com.example.fletes.data.room.Camion
 import com.example.fletes.data.room.Destino
 import com.example.fletes.ui.dispatch.DecimalTextField
 import com.example.fletes.ui.dispatch.DeleteDestinoAlertDialog
 import com.example.fletes.ui.theme.FletesTheme
+import com.example.fletes.ui.truckjourney.JourneyCard
 import java.time.LocalDate
 import java.util.Locale
 
@@ -55,7 +59,9 @@ fun ContentTrucksDetailsScreen(
     onConfirmUpdate: (Destino) -> Unit = {},
     value: String,
     onValueChange: (String) -> Unit = {},
-    errorMessage: String?
+    errorMessage: String?,
+    camion: Camion,
+    truckJourneyData: TruckJourneyData
 ) {
     ActiveDispatch(
         activeDispatch = activeDispatch,
@@ -70,7 +76,9 @@ fun ContentTrucksDetailsScreen(
         value = value,
         onValueChange = onValueChange,
         errorMessage = errorMessage,
-        modifier = modifier
+        modifier = modifier,
+        camion = camion,
+        truckJourneyData = truckJourneyData
     )
 }
 
@@ -95,7 +103,9 @@ fun ActiveDispatch(
     onConfirmUpdate: (Destino) -> Unit = {},
     value: String,
     onValueChange: (String) -> Unit = {},
-    errorMessage: String?
+    errorMessage: String?,
+    camion: Camion,
+    truckJourneyData: TruckJourneyData
 ) {
     LazyColumn(modifier = modifier) {
         items(
@@ -106,6 +116,9 @@ fun ActiveDispatch(
                 dispatch = destino,
                 onDeleteClick = onDeleteClick,
                 onEditClick = onEditClick,
+                modifier = modifier,
+                camion = camion,
+                truckJourneyData = truckJourneyData
             )
             if (showDeleteDialog) {
                 DeleteDestinoAlertDialog(
@@ -136,9 +149,11 @@ fun DispatchCard(
     modifier: Modifier = Modifier,
     dispatch: Destino,
     onDeleteClick: () -> Unit,
-    onEditClick: () -> Unit
+    onEditClick: () -> Unit,
+    camion: Camion,
+    truckJourneyData: TruckJourneyData
 ) {
-    var isExpanded by remember { mutableStateOf(false) }
+    var isExpanded by remember { mutableStateOf(true) } //cambiar a false para probar
 
     if (dispatch.isActive) {
         Card(
@@ -226,6 +241,11 @@ fun DispatchCard(
                         }
                         Spacer(modifier = Modifier.padding(vertical = 2.dp))
                         HorizontalDivider(modifier = Modifier, thickness = 1.dp)
+                        JourneyCard(
+                            modifier = modifier,
+                            camion = camion,
+                            truckJourneyData = truckJourneyData
+                        )
                     }
                 }
             }
@@ -236,6 +256,44 @@ fun DispatchCard(
 @Preview(showBackground = true)
 @Composable
 fun DispatchCardPrev(modifier: Modifier = Modifier) {
+    val sampleCamion = Camion(
+        id = 1,
+        createdAt = LocalDate.now(),
+        choferName = "Miguel",
+        choferDni = 29673971,
+        patenteTractor = "Ad123dc",
+        patenteJaula = "Cd456Fd",
+        kmService = 20000
+    )
+    // Creamos un objeto de ejemplo de TruckJourneyData
+    // Cada campo (kmCargaData, kmDescargaData, etc.) ahora es un TextFieldData
+    val sampleTruckJourneyData = TruckJourneyData(
+        kmCargaData = DecimalTextFieldData(
+            label = "km carga",
+            value = "123.0",
+            onValueChange = { /* Aquí puedes agregar lógica de manejo de cambios si es necesario */ },
+            errorMessage = ""
+        ),
+        kmDescargaData = DecimalTextFieldData(
+            label = "km descarga",
+            value = "231.0",
+            onValueChange = { /* Aquí puedes agregar lógica de manejo de cambios si es necesario */ },
+            errorMessage = ""
+        ),
+        kmSurtidorData = DecimalTextFieldData(
+            label = "km surtidor",
+            value = "100.0",
+            onValueChange = { /* Aquí puedes agregar lógica de manejo de cambios si es necesario */ },
+            errorMessage = ""
+        ),
+        litrosData = DecimalTextFieldData(
+            label = "litros surtidos",
+            value = "50.0",
+            onValueChange = { /* Aquí puedes agregar lógica de manejo de cambios si es necesario */ },
+            errorMessage = ""
+        ),
+        isLast = false
+    )
     FletesTheme {
         DispatchCard(
             modifier = modifier,
@@ -248,7 +306,9 @@ fun DispatchCardPrev(modifier: Modifier = Modifier) {
                 isActive = true
             ),
             onDeleteClick = {},
-            onEditClick = {}
+            onEditClick = {},
+            camion = sampleCamion,
+            truckJourneyData = sampleTruckJourneyData,
         )
     }
 }

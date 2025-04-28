@@ -1,15 +1,11 @@
 package com.example.fletes.data.model.truckJourneyData
 
-import java.time.LocalDate
+import com.example.fletes.data.model.DecimalTextFieldData
 
 data class TruckJourneyData(
-    val id: Int,
-    val createdAt: LocalDate,
-    val kmCarga: Int,
-    val kmDescarga: Int,
-    val kmSurtidor: Int,
-    val litros: Double,
-    val precioGasOil: Double,
-    val rendimiento: Double,
+    val kmCargaData: DecimalTextFieldData,
+    val kmDescargaData: DecimalTextFieldData,
+    val kmSurtidorData: DecimalTextFieldData,
+    val litrosData: DecimalTextFieldData,
     val isLast: Boolean,
 )

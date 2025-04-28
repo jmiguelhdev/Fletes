@@ -15,6 +15,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.fletes.data.model.DecimalTextFieldData
+import com.example.fletes.data.model.truckJourneyData.TruckJourneyData
 import com.example.fletes.data.room.Camion
 import com.example.fletes.ui.dispatch.DecimalTextField
 import com.example.fletes.ui.theme.FletesTheme
@@ -29,9 +31,7 @@ fun truckRegistrationScreen() {
 fun JourneyCard(
     modifier: Modifier = Modifier,
     camion: Camion,
-    valueKmCarga: Double,
-    onValueChangeKmCarga: (String) -> Unit,
-    errorMessage: String,
+    truckJourneyData: TruckJourneyData
 ) {
     Card(modifier = Modifier.padding(8.dp))  {
         Row (
@@ -49,29 +49,45 @@ fun JourneyCard(
             Box(modifier = Modifier.weight(1f)) {
                 Column(modifier = Modifier.padding(4.dp)) {
                     DecimalTextField(
-                        value = valueKmCarga.toString(),
-                        onValueChange = onValueChangeKmCarga,
+                        value = truckJourneyData.kmCargaData.value,
+                        onValueChange = truckJourneyData.kmCargaData.onValueChange,
                         label = "km carga",
-                        errorMessage = errorMessage,
+                        errorMessage = truckJourneyData.kmCargaData.errorMessage,
                     )
                 }
             }
             Box(modifier = Modifier.weight(1f)) {
                 Column(modifier = Modifier.padding(4.dp)) {
                     DecimalTextField(
-                        value = valueKmCarga.toString(),
-                        onValueChange = onValueChangeKmCarga,
+                        value = truckJourneyData.kmDescargaData.value,
+                        onValueChange = truckJourneyData.kmDescargaData.onValueChange,
                         label = "km descarga",
-                        errorMessage = errorMessage,                    )
+                        errorMessage = truckJourneyData.kmDescargaData.errorMessage,                    )
+                }
+            }
+        }
+        HorizontalDivider(thickness = DividerDefaults.Thickness)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            Box(modifier = Modifier.weight(1f)) {
+                Column(modifier = Modifier.padding(4.dp)) {
+                    DecimalTextField(
+                        value = truckJourneyData.kmSurtidorData.value,
+                        onValueChange = truckJourneyData.kmSurtidorData.onValueChange,
+                        label = "km surtidor",
+                        errorMessage = truckJourneyData.kmDescargaData.errorMessage,
+                    )
                 }
             }
             Box(modifier = Modifier.weight(1f)) {
                 Column(modifier = Modifier.padding(4.dp)) {
                     DecimalTextField(
-                        value = valueKmCarga.toString(),
-                        onValueChange = onValueChangeKmCarga,
-                        label = "km en surtidor",
-                        errorMessage = errorMessage,                    )
+                        value = truckJourneyData.litrosData.value,
+                        onValueChange = truckJourneyData.litrosData.onValueChange,
+                        label = "litros surtidos",
+                        errorMessage = truckJourneyData.litrosData.errorMessage,                    )
                 }
             }
         }
@@ -91,13 +107,40 @@ fun JourneyCardPreview() {
         patenteJaula = "Cd456Fd",
         kmService = 20000
     )
+    // Creamos un objeto de ejemplo de TruckJourneyData
+    // Cada campo (kmCargaData, kmDescargaData, etc.) ahora es un TextFieldData
+    val sampleTruckJourneyData = TruckJourneyData(
+        kmCargaData = DecimalTextFieldData(
+            label = "km carga",
+            value = "123.0",
+            onValueChange = { /* Aquí puedes agregar lógica de manejo de cambios si es necesario */ },
+            errorMessage = ""
+        ),
+        kmDescargaData = DecimalTextFieldData(
+            label = "km descarga",
+            value = "231.0",
+            onValueChange = { /* Aquí puedes agregar lógica de manejo de cambios si es necesario */ },
+            errorMessage = ""
+        ),
+        kmSurtidorData = DecimalTextFieldData(
+            label = "km surtidor",
+            value = "100.0",
+            onValueChange = { /* Aquí puedes agregar lógica de manejo de cambios si es necesario */ },
+            errorMessage = ""
+        ),
+        litrosData = DecimalTextFieldData(
+            label = "litros surtidos",
+            value = "50.0",
+            onValueChange = { /* Aquí puedes agregar lógica de manejo de cambios si es necesario */ },
+            errorMessage = ""
+        ),
+        isLast = false
+    )
 
     FletesTheme {
         JourneyCard(
             camion = sampleCamion,
-            valueKmCarga = 123234.45,
-            onValueChangeKmCarga = { /* Handle value change */ },
-            errorMessage = "Error"
+            truckJourneyData = sampleTruckJourneyData,
         )
     }
 }

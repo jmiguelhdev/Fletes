@@ -63,16 +63,21 @@ data class CamionesRegistro(
     @ColumnInfo(name = "camion_id", index = true) val camionId: Int, // Foreign key to Camion
     @ColumnInfo(name = "destino_id", index = true) val destinoId: Int, // Foreign key to Destino
     @ColumnInfo(name = "created_at") val createdAt: LocalDate = LocalDate.now(),
-    @ColumnInfo(name = "km_carga") val kmCarga: Int,
+    @ColumnInfo(name = "km_carga") val kmCarga: Int, // temer en cuenta que se guarda como int
     @ColumnInfo(name = "km_descarga") val kmDescarga: Int,
     @ColumnInfo(name = "km_surtidor") val kmSurtidor: Int,
     @ColumnInfo(name = "litros") val litros: Double,
-    @ColumnInfo(name = "precio_gas_oil") val precioGasOil: Double,
-    @ColumnInfo(name = "rendimiento") val rendimiento: Double? = null, // New field
     @ColumnInfo(name = "is_last") val isLast: Boolean = false //new field
 ){
     fun getDistancia(): Int {
         return kmDescarga - kmCarga
+    }
+    fun getRateKmTimesLiters(): Double {
+        return if (litros >0){
+            getDistancia() / litros
+        } else {
+            0.0
+        }
     }
 }
 

@@ -2,7 +2,9 @@ package com.example.fletes.domain
 
 
 
+import com.example.fletes.data.repositories.implementations.TruckRepositoryImpl
 import com.example.fletes.data.repositories.interfaces.DestinationRepositoryInterface
+import com.example.fletes.data.room.Camion
 import com.example.fletes.data.room.Destino
 import kotlinx.coroutines.flow.Flow
 
@@ -50,6 +52,13 @@ class DeleteDestinoUseCase(private val repository: DestinationRepositoryInterfac
 class UpdateDestinoUseCase(private val repository: DestinationRepositoryInterface){
     suspend operator fun invoke(destino: Destino){
         repository.updateDestino(destino)
+    }
+
+}
+
+class GetAllTrucks(private val repository: TruckRepositoryImpl){
+    operator fun invoke(): Flow<List<Camion>> {
+        return repository.getAllCamiones()
     }
 
 }

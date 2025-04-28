@@ -3,11 +3,13 @@ package com.example.fletes.ui.dispatch
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.fletes.data.room.Camion
 import com.example.fletes.data.room.Destino
 import com.example.fletes.domain.DeleteDestinoUseCase
 import com.example.fletes.domain.GetActiveDestinosUseCase
 import com.example.fletes.domain.GetActiveDispatchCount
 import com.example.fletes.domain.GetAllDestinosUseCase
+import com.example.fletes.domain.GetAllTrucks
 import com.example.fletes.domain.InsertDestinoUseCase
 import com.example.fletes.domain.SearchComisionistaUseCase
 import com.example.fletes.domain.SearchLocalidadUseCase
@@ -51,6 +53,7 @@ data class DispatchUiState(
 class DispatchViewModel(
     getActiveDispatch: GetActiveDestinosUseCase,
     getActiveDispatchCount: GetActiveDispatchCount,
+    getAllTrucks: GetAllTrucks,
     private val searchComisionistaUseCase: SearchComisionistaUseCase,
     private val searchLocalidadUseCase: SearchLocalidadUseCase,
     private val getAllDestinosUseCase: GetAllDestinosUseCase,
@@ -79,6 +82,12 @@ class DispatchViewModel(
             started = WhileSubscribed(5000), // Consider shorter timeout if feasible
             initialValue = 0
         )
+
+    val allTrucks: StateFlow<List<Camion>> = getAllTrucks().stateIn(
+        scope = viewModelScope,
+        started = WhileSubscribed(5000), // Consider shorter timeout if feasible
+        initialValue = emptyList()
+    )
 
     // Comisionista StateFlows
     private val _comisionistaQuery = MutableStateFlow("")

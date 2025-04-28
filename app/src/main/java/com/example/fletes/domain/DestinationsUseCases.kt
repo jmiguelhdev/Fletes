@@ -60,5 +60,11 @@ class GetAllTrucks(private val repository: TruckRepositoryImpl){
     operator fun invoke(): Flow<List<Camion>> {
         return repository.getAllCamiones()
     }
+}
+
+class UpdateTruckIsActiveUseCase(private val repository: TruckRepositoryImpl){
+    suspend operator fun invoke(truck: Camion){
+        repository.updateTruckIsActive(truck)
+    }
 
 }

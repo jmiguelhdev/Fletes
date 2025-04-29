@@ -358,46 +358,7 @@ fun DeleteDestinoAlertDialog(
 
 }
 
-@Composable
-fun CamionChip(
-    modifier: Modifier = Modifier,
-    camion: Camion
-    ) {
-    var isChipActive by remember { mutableStateOf(false) }
 
-    ElevatedAssistChip(
-        onClick = { isChipActive = !isChipActive },
-        label = { Text("Chofer: ${camion.choferName}") },
-        modifier = modifier
-            .padding(4.dp)
-            .wrapContentWidth(),
-        colors = AssistChipDefaults.assistChipColors(
-            containerColor = if (isChipActive) Color.Green else Color.Red,
-            labelColor = Color.White,
-            leadingIconContentColor = Color.White, // Color para el icono si lo hubiera
-            trailingIconContentColor = Color.White,
-        )
-    )
-}
-
-@Preview(
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_NO,
-    wallpaper = Wallpapers.NONE
-)
-@Composable
-fun PreviewCamionChip() {
-    val camion = Camion(
-        id = 1,
-        choferName = "Juan Perez",
-        createdAt = LocalDate.now(),
-        choferDni = 29384756,
-        patenteTractor = "ad123fg",
-        patenteJaula = "df213fg",
-        isActive = true,
-    )
-    CamionChip(camion = camion)
-}
 
 
 

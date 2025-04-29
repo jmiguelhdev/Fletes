@@ -41,6 +41,7 @@ fun TrucksDetailsScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val trucksList by viewModel.allTrucks.collectAsState(emptyList())
+    val truckSelected by viewModel.truckSelected.collectAsState()
 
     LaunchedEffect(uiState.showSnackbar) {
         if (uiState.showSnackbar) {
@@ -89,7 +90,11 @@ fun TrucksDetailsScreen(
            value = uiState.despacho.toString(),
            onValueChange = viewModel::onValueChangeDespacho,
            errorMessage = uiState.despachoErrorMessage,
-           camion = TODO(),
+           listCamiones = trucksList,
+           onClickChip = {
+               viewModel.onTruckSelected(it)
+           },
+           camion = ,
            truckJourneyData = TODO(),
        )
 

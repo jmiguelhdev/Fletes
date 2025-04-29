@@ -67,7 +67,7 @@ data class CamionesRegistro(
     @ColumnInfo(name = "km_descarga") val kmDescarga: Int = 0,
     @ColumnInfo(name = "km_surtidor") val kmSurtidor: Int = 0,
     @ColumnInfo(name = "litros") val litros: Double = 0.0,
-    @ColumnInfo(name = "is_active") val isActive: Boolean = false //new field
+    @ColumnInfo(name = "is_active") val isActive: Boolean = true //new field
 ){
     fun getDistancia(): Int {
         return kmDescarga - kmCarga

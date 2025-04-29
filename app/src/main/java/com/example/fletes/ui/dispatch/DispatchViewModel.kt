@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.fletes.data.model.DecimalTextFieldData
 import com.example.fletes.data.model.truckJourneyData.TruckJourneyData
 import com.example.fletes.data.room.Camion
+import com.example.fletes.data.room.CamionesRegistro
 import com.example.fletes.data.room.Destino
 import com.example.fletes.domain.DeleteDestinoUseCase
 import com.example.fletes.domain.GetActiveDestinosUseCase
@@ -14,6 +15,7 @@ import com.example.fletes.domain.GetActiveDispatchCount
 import com.example.fletes.domain.GetAllDestinosUseCase
 import com.example.fletes.domain.GetAllTrucks
 import com.example.fletes.domain.InsertDestinoUseCase
+import com.example.fletes.domain.InsertJourneyUseCase
 import com.example.fletes.domain.SearchComisionistaUseCase
 import com.example.fletes.domain.SearchLocalidadUseCase
 import com.example.fletes.domain.UpdateDestinoUseCase
@@ -67,6 +69,7 @@ data class DispatchUiState(
 
 data class TruckJourneyUiState(
     val truckJourneyData: TruckJourneyData = TruckJourneyData(
+        camionId  = 0,
         kmCargaData = DecimalTextFieldData("km carga", "", {}, ""),
         kmDescargaData = DecimalTextFieldData("km descarga", "", {}, ""),
         kmSurtidorData = DecimalTextFieldData("km surtidor", "", {}, ""),
@@ -81,6 +84,7 @@ class DispatchViewModel(
     getActiveDispatch: GetActiveDestinosUseCase,
     getActiveDispatchCount: GetActiveDispatchCount,
     getAllTrucks: GetAllTrucks,
+    private val insertJourneyUseCase: InsertJourneyUseCase,
     private val searchComisionistaUseCase: SearchComisionistaUseCase,
     private val searchLocalidadUseCase: SearchLocalidadUseCase,
     private val getAllDestinosUseCase: GetAllDestinosUseCase,
@@ -93,6 +97,7 @@ class DispatchViewModel(
 
     // Claves para SavedStateHandle
     companion object {
+        const val TRUCK_SELECTED_ID = "truckSelectedId"
         const val KM_CARGA_VALUE = "kmCargaValue"
         const val KM_DESCARGA_VALUE = "kmDescargaValue"
         const val KM_SURTIDOR_VALUE = "kmSurtidorValue"
@@ -109,6 +114,7 @@ class DispatchViewModel(
     private val _truckJourneyUiState = MutableStateFlow(
         TruckJourneyUiState(
             truckJourneyData = TruckJourneyData(
+                camionId  = savedStateHandle[TRUCK_SELECTED_ID] ?: 0,
                 kmCargaData = DecimalTextFieldData(
                     label = "km carga",
                     value = savedStateHandle[KM_CARGA_VALUE] ?: "",
@@ -174,7 +180,7 @@ class DispatchViewModel(
             error = "debe ser un numero"
         }
         savedStateHandle[KM_DESCARGA_VALUE] = newValue
-        savedStateHandle[Companion.KM_DESCARGA_ERROR] = error
+        savedStateHandle[KM_DESCARGA_ERROR] = error
         _truckJourneyUiState.update {
             it.copy(truckJourneyData = it.truckJourneyData.copy(kmDescargaData = it.truckJourneyData.kmDescargaData.copy(value = newValue, errorMessage = error)))
         }
@@ -204,7 +210,7 @@ class DispatchViewModel(
             error = "debe ser un numero"
         }
         savedStateHandle[LITROS_VALUE] = newValue
-        savedStateHandle[Companion.LITROS_ERROR] = error
+        savedStateHandle[LITROS_ERROR] = error
         _truckJourneyUiState.update {
             it.copy(truckJourneyData = it.truckJourneyData.copy(litrosData = it.truckJourneyData.litrosData.copy(value = newValue, errorMessage = error)))
         }
@@ -531,11 +537,42 @@ class DispatchViewModel(
     }
 
     fun onTruckSelected(camion: Camion) {
+        savedStateHandle[TRUCK_SELECTED_ID] = camion.id
         viewModelScope.launch {
             _uiState.update { currentState ->
                 currentState.copy(truckSelected = camion)
             }
             updateTruckIsActive(camion)
+        }
+    }
+
+    fun saveJourney(desinoId: Int){
+        viewModelScope.launch {
+            val truckSelectedId: Int? = savedStateHandle[TRUCK_SELECTED_ID]
+            val camionesRegistro = CamionesRegistro(
+                camionId = truckSelectedId ?: 0,
+                destinoId = desinoId,
+                kmCarga = truckJourneyUiState.value.truckJourneyData.kmCargaData.value.toIntOrNull() ?: 0,
+                kmDescarga = truckJourneyUiState.value.truckJourneyData.kmDescargaData.value.toIntOrNull() ?: 0,
+                kmSurtidor = truckJourneyUiState.value.truckJourneyData.kmSurtidorData.value.toIntOrNull() ?: 0,
+                litros = truckJourneyUiState.value.truckJourneyData.litrosData.value.toDoubleOrNull() ?: 0.0,
+                )
+            try {
+                insertJourneyUseCase(camionesRegistro)
+                _uiState.update {
+                    it.copy(
+                        showSnackbar = true,
+                        snackbarMessage = "Registro guardado correctamente"
+                    )
+                }
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(
+                        showSnackbar = true,
+                        snackbarMessage = "Error al guardar el registro: ${e.message}"
+                    )
+            }
+            }
         }
     }
 }

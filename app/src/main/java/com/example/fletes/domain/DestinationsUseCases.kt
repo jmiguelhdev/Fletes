@@ -66,5 +66,4 @@ class UpdateTruckIsActiveUseCase(private val repository: TruckRepositoryImpl){
     suspend operator fun invoke(truck: Camion){
         repository.updateTruckIsActive(truck)
     }
-
 }

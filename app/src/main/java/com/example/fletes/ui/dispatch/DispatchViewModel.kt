@@ -568,7 +568,7 @@ class DispatchViewModel(
             Log.d("DispatchViewModel", "all journeys: ${allJourneys.value}")
             try {
                 val existingJourney = allJourneys.value.firstOrNull {
-                    it.destinoId == desinoId && it.camionId == truckSelectedId
+                    it.destinoId == desinoId && it.camionId == truckSelectedId && it.isActive == true
                 }
                 Log.d("DispatchViewModel", "existingJourney: $existingJourney")
                 val existingJourneyId = existingJourney?.id
@@ -587,15 +587,16 @@ class DispatchViewModel(
                     if (existingJourney == null) {
                         //allJorneys no existe
                         insertJourneyUseCase(journeyToUpdate)
+                        updateDestinoUseCase(it.copy(isActive = false))
                         Log.d("DispatchViewModel", "insertJourneyUseCase: $journeyToUpdate")
                     } else {
                         updateJourneyUseCase(journeyToUpdate)
+                        updateDestinoUseCase(it.copy(isActive = false))
                         Log.d("DispatchViewModel", "updateJourneyUseCase: $journeyToUpdate")
                     }
 
                     _uiState.update { currentState ->
                         currentState.copy(
-
                             showSnackbar = true,
                             snackbarMessage = "Registro guardado correctamente",
                         )

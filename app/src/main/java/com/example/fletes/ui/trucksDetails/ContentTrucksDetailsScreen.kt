@@ -30,6 +30,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -72,7 +73,8 @@ fun ContentTrucksDetailsScreen(
     listCamiones: List<Camion>,
     onClickChip: (camion: Camion) -> Unit,
     camion: Camion,
-    truckJourneyData: TruckJourneyData
+    truckJourneyData: TruckJourneyData,
+    onClickSaveOrUpdateTrip: (destinoId: Int) -> Unit = {},
 ) {
     ActiveDispatch(
         activeDispatch = activeDispatch,
@@ -91,7 +93,8 @@ fun ContentTrucksDetailsScreen(
         listCamiones = listCamiones,
         onClickChip = onClickChip,
         camion = camion,
-        truckJourneyData = truckJourneyData
+        truckJourneyData = truckJourneyData,
+        onClickSaveOrUpdateTrip = onClickSaveOrUpdateTrip
     )
 }
 
@@ -113,7 +116,8 @@ fun ActiveDispatch(
     errorMessage: String?, listCamiones: List<Camion>,
     onClickChip: (camion: Camion) -> Unit,
     camion: Camion,
-    truckJourneyData: TruckJourneyData
+    truckJourneyData: TruckJourneyData,
+    onClickSaveOrUpdateTrip: (destinoId: Int) -> Unit = {},
 ) {
     LazyColumn(modifier = modifier.fillMaxWidth()) {
         item {
@@ -136,7 +140,9 @@ fun ActiveDispatch(
                 onEditClick = onEditClick,
                 modifier = modifier,
                 camion = camion,
-                truckJourneyData = truckJourneyData
+                truckJourneyData = truckJourneyData,
+                onClickSaveOrUpdateTrip = onClickSaveOrUpdateTrip
+
             )
             if (showDeleteDialog) {
                 DeleteDestinoAlertDialog(
@@ -169,7 +175,8 @@ fun DispatchCard(
     onDeleteClick: () -> Unit,
     onEditClick: () -> Unit,
     camion: Camion,
-    truckJourneyData: TruckJourneyData
+    truckJourneyData: TruckJourneyData,
+    onClickSaveOrUpdateTrip: (destinoId: Int) -> Unit = {},
 ) {
     var isExpanded by remember { mutableStateOf(true) } //cambiar a false para probar
 
@@ -262,7 +269,13 @@ fun DispatchCard(
                         JourneyCard(
                             modifier = modifier,
                             camion = camion,
-                            truckJourneyData = truckJourneyData
+                            truckJourneyData = truckJourneyData,
+                        )
+                        SaveOrUpdateTripButton(
+                            modifier = modifier,
+                            destinationId = dispatch.id,
+                            isActive = dispatch.isActive,
+                            onClickSaveOrUpdateTrip = onClickSaveOrUpdateTrip
                         )
                     }
                 }
@@ -272,10 +285,27 @@ fun DispatchCard(
 }
 
 @Composable
+fun SaveOrUpdateTripButton(
+    modifier: Modifier = Modifier,
+    destinationId: Int,
+    isActive: Boolean,
+    onClickSaveOrUpdateTrip: (destinoId: Int) -> Unit = {},
+) {
+    OutlinedButton(
+        onClick = { onClickSaveOrUpdateTrip(destinationId) },
+        modifier = modifier.fillMaxWidth(),
+        enabled = isActive
+    ) {
+        Text(text = "Save or Update Trip")
+    }
+    
+}
+
+@Composable
 fun JourneyCard(
     modifier: Modifier = Modifier,
     camion: Camion,
-    truckJourneyData: TruckJourneyData
+    truckJourneyData: TruckJourneyData,
 ) {
     Card(modifier = Modifier.padding(8.dp)) {
         Row(
@@ -313,7 +343,7 @@ fun JourneyCard(
         }
         HorizontalDivider(thickness = DividerDefaults.Thickness)
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             Box(modifier = Modifier.weight(1f)) {
@@ -337,6 +367,7 @@ fun JourneyCard(
                 }
             }
         }
+        HorizontalDivider(thickness = DividerDefaults.Thickness)
     }
 }
 
@@ -356,6 +387,7 @@ fun JourneyCardPreview() {
     // Creamos un objeto de ejemplo de TruckJourneyData
     // Cada campo (kmCargaData, kmDescargaData, etc.) ahora es un TextFieldData
     val sampleTruckJourneyData = TruckJourneyData(
+        camionId = 0,
         kmCargaData = DecimalTextFieldData(
             label = "km carga",
             value = "123.0",
@@ -566,6 +598,7 @@ fun DispatchCardPrev(modifier: Modifier = Modifier) {
     // Creamos un objeto de ejemplo de TruckJourneyData
     // Cada campo (kmCargaData, kmDescargaData, etc.) ahora es un TextFieldData
     val sampleTruckJourneyData = TruckJourneyData(
+        camionId = 0,
         kmCargaData = DecimalTextFieldData(
             label = "km carga",
             value = "123.0",

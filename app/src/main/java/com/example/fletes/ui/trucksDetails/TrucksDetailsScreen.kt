@@ -98,6 +98,10 @@ fun TrucksDetailsScreen(
            },
            camion = uiState.truckSelected,
            truckJourneyData = truckJourneyData,
+           onClickSaveOrUpdateTrip = {
+               viewModel.saveJourney(it)
+           }
+
        )
 
     }

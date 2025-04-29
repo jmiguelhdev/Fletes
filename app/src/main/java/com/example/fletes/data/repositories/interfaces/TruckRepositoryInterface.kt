@@ -11,4 +11,5 @@ interface TruckRepositoryInterface {
     suspend fun getCamionById(id: Int): Camion?
     fun getAllCamiones(): Flow<List<Camion>>
     suspend fun updateTruckIsActive(camion: Camion)
+    fun getActiveTrucks(): Flow<List<Camion>>
 }

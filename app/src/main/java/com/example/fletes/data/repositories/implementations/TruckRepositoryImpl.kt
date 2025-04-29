@@ -12,6 +12,10 @@ class TruckRepositoryImpl(private val truckDao: TruckDao): TruckRepositoryInterf
         return truckDao.insertTruck(camion)
     }
 
+    override fun getActiveTrucks(): Flow<List<Camion>> {
+        return truckDao.getActiveTrucks()
+    }
+
     override suspend fun deleteCamion(camion: Camion) {
         return truckDao.deleteCamion(camion)
     }

@@ -12,6 +12,7 @@ import com.example.fletes.data.room.Destino
 import com.example.fletes.domain.DeleteDestinoUseCase
 import com.example.fletes.domain.GetActiveDestinosUseCase
 import com.example.fletes.domain.GetActiveDispatchCount
+import com.example.fletes.domain.GetActiveTrucks
 import com.example.fletes.domain.GetAllDestinosUseCase
 import com.example.fletes.domain.GetAllJourneyUseCase
 import com.example.fletes.domain.GetAllTrucks
@@ -82,7 +83,7 @@ data class TruckJourneyUiState(
 class DispatchViewModel(
     getActiveDispatch: GetActiveDestinosUseCase,
     getActiveDispatchCount: GetActiveDispatchCount,
-    getAllTrucks: GetAllTrucks,
+    getActiveTrucks: GetActiveTrucks,
     getAllJourneys: GetAllJourneyUseCase,
     private val insertJourneyUseCase: InsertJourneyUseCase,
     private val searchComisionistaUseCase: SearchComisionistaUseCase,
@@ -266,7 +267,7 @@ class DispatchViewModel(
             initialValue = 0
         )
 
-    val allActiveTrucks: StateFlow<List<Camion>> = getAllTrucks().stateIn(
+    val allActiveTrucks: StateFlow<List<Camion>> = getActiveTrucks().stateIn(
         scope = viewModelScope,
         started = WhileSubscribed(5000), // Consider shorter timeout if feasible
         initialValue = emptyList()

@@ -158,7 +158,7 @@ class DispatchViewModel(
         } catch (e: NumberFormatException){
             error = "debe ser un numero"
         }
-        savedStateHandle[Companion.KM_CARGA_VALUE] = newValue
+        savedStateHandle[KM_CARGA_VALUE] = newValue
         savedStateHandle[KM_CARGA_ERROR] = error
         _truckJourneyUiState.update {
             it.copy(truckJourneyData = it.truckJourneyData.copy(kmCargaData = it.truckJourneyData.kmCargaData.copy(value = newValue, errorMessage = error)))

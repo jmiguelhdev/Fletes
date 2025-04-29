@@ -7,5 +7,5 @@ data class TruckJourneyData(
     val kmDescargaData: DecimalTextFieldData,
     val kmSurtidorData: DecimalTextFieldData,
     val litrosData: DecimalTextFieldData,
-    val isLast: Boolean,
+    val isActive: Boolean,
 )

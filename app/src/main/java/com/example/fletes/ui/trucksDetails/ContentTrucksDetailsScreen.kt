@@ -380,7 +380,7 @@ fun JourneyCardPreview() {
             onValueChange = { /* Aquí puedes agregar lógica de manejo de cambios si es necesario */ },
             errorMessage = ""
         ),
-        isLast = false
+        isActive = false
     )
 
     FletesTheme {
@@ -590,7 +590,7 @@ fun DispatchCardPrev(modifier: Modifier = Modifier) {
             onValueChange = { /* Aquí puedes agregar lógica de manejo de cambios si es necesario */ },
             errorMessage = ""
         ),
-        isLast = false
+        isActive = false
     )
     FletesTheme {
         DispatchCard(

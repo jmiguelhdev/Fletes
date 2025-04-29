@@ -1,8 +1,11 @@
 package com.example.fletes.ui.dispatch
 
 import android.util.Log
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.fletes.data.model.DecimalTextFieldData
+import com.example.fletes.data.model.truckJourneyData.TruckJourneyData
 import com.example.fletes.data.room.Camion
 import com.example.fletes.data.room.Destino
 import com.example.fletes.domain.DeleteDestinoUseCase
@@ -19,6 +22,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
@@ -61,6 +65,18 @@ data class DispatchUiState(
                 && comisionista.isNotBlank() && localidad.isNotBlank() && despacho >= 0
 }
 
+data class TruckJourneyUiState(
+    val truckJourneyData: TruckJourneyData = TruckJourneyData(
+        kmCargaData = DecimalTextFieldData("km carga", "", {}, ""),
+        kmDescargaData = DecimalTextFieldData("km descarga", "", {}, ""),
+        kmSurtidorData = DecimalTextFieldData("km surtidor", "", {}, ""),
+        litrosData = DecimalTextFieldData("litros surtidos", "", {}, ""),
+        isActive = false
+    ),
+    val isLoading: Boolean = false,
+    val isError: Boolean = false,
+)
+
 class DispatchViewModel(
     getActiveDispatch: GetActiveDestinosUseCase,
     getActiveDispatchCount: GetActiveDispatchCount,
@@ -71,8 +87,137 @@ class DispatchViewModel(
     private val insertDestinoUseCase: InsertDestinoUseCase,
     private val deleteDestinoUseCase: DeleteDestinoUseCase,
     private val updateDestinoUseCase: UpdateDestinoUseCase,
-    private val updateTruckIsActiveUseCase: UpdateTruckIsActiveUseCase
+    private val updateTruckIsActiveUseCase: UpdateTruckIsActiveUseCase,
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
+
+    // Claves para SavedStateHandle
+    companion object {
+        const val KM_CARGA_VALUE = "kmCargaValue"
+        const val KM_DESCARGA_VALUE = "kmDescargaValue"
+        const val KM_SURTIDOR_VALUE = "kmSurtidorValue"
+        const val LITROS_VALUE = "litrosValue"
+        const val IS_ACTIVE_VALUE = "isLastValue"
+        const val KM_CARGA_ERROR = "kmCargaError"
+        const val KM_DESCARGA_ERROR = "kmDescargaError"
+        const val KM_SURTIDOR_ERROR = "kmSurtidorError"
+        const val LITROS_ERROR = "litrosError"
+
+    }
+
+    // Inicializar el estado con los valores de SavedStateHandle o valores predeterminados
+    private val _truckJourneyUiState = MutableStateFlow(
+        TruckJourneyUiState(
+            truckJourneyData = TruckJourneyData(
+                kmCargaData = DecimalTextFieldData(
+                    label = "km carga",
+                    value = savedStateHandle[KM_CARGA_VALUE] ?: "",
+                    onValueChange = { newValue ->
+                        updateKmCargaValue(newValue)
+                    },
+                    errorMessage = savedStateHandle[KM_CARGA_ERROR] ?: ""
+                ),
+                kmDescargaData = DecimalTextFieldData(
+                    label = "km descarga",
+                    value = savedStateHandle[KM_DESCARGA_VALUE] ?: "",
+                    onValueChange = { newValue ->
+                        updateKmDescargaValue(newValue)
+                    },
+                    errorMessage = savedStateHandle[KM_DESCARGA_ERROR] ?: ""
+                ),
+                kmSurtidorData = DecimalTextFieldData(
+                    label = "km surtidor",
+                    value = savedStateHandle[KM_SURTIDOR_VALUE] ?: "",
+                    onValueChange = { newValue ->
+                        updateKmSurtidorValue(newValue)
+                    },
+                    errorMessage = savedStateHandle[KM_SURTIDOR_ERROR] ?: ""
+                ),
+                litrosData = DecimalTextFieldData(
+                    label = "litros surtidos",
+                    value = savedStateHandle[LITROS_VALUE] ?: "",
+                    onValueChange = { newValue ->
+                        updateLitrosValue(newValue)
+                    },
+                    errorMessage = savedStateHandle[LITROS_ERROR] ?: ""
+                ),
+                isActive = savedStateHandle[IS_ACTIVE_VALUE] ?: false,
+            )
+        )
+    )
+
+    // Expone el estado como un StateFlow inmutable
+    val truckJourneyUiState: StateFlow<TruckJourneyUiState> = _truckJourneyUiState.asStateFlow()
+
+    // Funciones para actualizar cada valor y guardar en SavedStateHandle
+    private fun updateKmCargaValue(newValue: String) {
+        // Validacion
+        var error = ""
+        try {
+            newValue.toDouble()
+        } catch (e: NumberFormatException){
+            error = "debe ser un numero"
+        }
+        savedStateHandle[Companion.KM_CARGA_VALUE] = newValue
+        savedStateHandle[KM_CARGA_ERROR] = error
+        _truckJourneyUiState.update {
+            it.copy(truckJourneyData = it.truckJourneyData.copy(kmCargaData = it.truckJourneyData.kmCargaData.copy(value = newValue, errorMessage = error)))
+        }
+    }
+
+    private fun updateKmDescargaValue(newValue: String) {
+        // Validacion
+        var error = ""
+        try {
+            newValue.toDouble()
+        } catch (e: NumberFormatException){
+            error = "debe ser un numero"
+        }
+        savedStateHandle[KM_DESCARGA_VALUE] = newValue
+        savedStateHandle[Companion.KM_DESCARGA_ERROR] = error
+        _truckJourneyUiState.update {
+            it.copy(truckJourneyData = it.truckJourneyData.copy(kmDescargaData = it.truckJourneyData.kmDescargaData.copy(value = newValue, errorMessage = error)))
+        }
+    }
+
+    private fun updateKmSurtidorValue(newValue: String) {
+        // Validacion
+        var error = ""
+        try {
+            newValue.toDouble()
+        } catch (e: NumberFormatException){
+            error = "debe ser un numero"
+        }
+        savedStateHandle[KM_SURTIDOR_VALUE] = newValue
+        savedStateHandle[KM_SURTIDOR_ERROR] = error
+        _truckJourneyUiState.update {
+            it.copy(truckJourneyData = it.truckJourneyData.copy(kmSurtidorData = it.truckJourneyData.kmSurtidorData.copy(value = newValue, errorMessage = error)))
+        }
+    }
+
+    private fun updateLitrosValue(newValue: String) {
+        // Validacion
+        var error = ""
+        try {
+            newValue.toDouble()
+        } catch (e: NumberFormatException){
+            error = "debe ser un numero"
+        }
+        savedStateHandle[LITROS_VALUE] = newValue
+        savedStateHandle[Companion.LITROS_ERROR] = error
+        _truckJourneyUiState.update {
+            it.copy(truckJourneyData = it.truckJourneyData.copy(litrosData = it.truckJourneyData.litrosData.copy(value = newValue, errorMessage = error)))
+        }
+    }
+
+    fun updateIsActiveValue(newValue: Boolean) {
+        savedStateHandle[IS_ACTIVE_VALUE] = newValue
+        _truckJourneyUiState.update {
+            it.copy(truckJourneyData = it.truckJourneyData.copy(isActive = newValue))
+        }
+    }
+
+
 
     private val _uiState = MutableStateFlow(DispatchUiState())
     val uiState: StateFlow<DispatchUiState> = _uiState.stateIn(

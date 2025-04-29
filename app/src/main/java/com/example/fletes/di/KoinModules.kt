@@ -1,5 +1,6 @@
 package com.example.fletes.di
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.room.Room
 import com.example.fletes.data.repositories.implementations.DestinationRepositoryImpl
 import com.example.fletes.data.repositories.implementations.TruckRepositoryImpl
@@ -80,8 +81,10 @@ val domainModule = module {
 }
 
 val dispatchModule = module {
-    viewModel {
+    viewModel {parameters ->
+        val savedStateHandle = parameters.get<SavedStateHandle>()
         DispatchViewModel(
+            savedStateHandle = savedStateHandle,
             getActiveDispatch = get(),
             getActiveDispatchCount = get(),
             searchComisionistaUseCase = get(),

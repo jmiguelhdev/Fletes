@@ -113,7 +113,8 @@ fun ActiveDispatch(
     onConfirmUpdate: (Destino) -> Unit = {},
     value: String,
     onValueChange: (String) -> Unit = {},
-    errorMessage: String?, listCamiones: List<Camion>,
+    errorMessage: String?,
+    listCamiones: List<Camion>,
     onClickChip: (camion: Camion) -> Unit,
     camion: Camion,
     truckJourneyData: TruckJourneyData,
@@ -434,6 +435,7 @@ fun CamionChipRow(
         ) {
             CamionChip(
                 camion = it,
+                isChipActive = it.isActive,
                 onClick = onClick
             )
         }
@@ -470,13 +472,13 @@ fun CamionChipRowPrev() {
 @Composable
 fun CamionChip(
     camion: Camion,
+    isChipActive: Boolean = true,
     onClick: (camion: Camion) -> Unit = {}
 ) {
-    var isChipActive by remember { mutableStateOf(false) }
+
 
     ElevatedAssistChip(
         onClick = {
-            isChipActive = camion.isActive
             onClick(camion)
         },
         label = { Text("Chofer: ${camion.choferName}") },

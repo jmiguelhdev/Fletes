@@ -41,7 +41,7 @@ fun TrucksDetailsScreen(
     val activeDispatch by viewModel.activeDispatch.collectAsState(emptyList())
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
-    val trucksList by viewModel.allTrucks.collectAsState(emptyList())
+    val trucksList by viewModel.allActiveTrucks.collectAsState(emptyList())
     val truckJourneyUiState by viewModel.truckJourneyUiState.collectAsState()
     val truckJourneyData = truckJourneyUiState.truckJourneyData
     val allJourneys by viewModel.allJourneys.collectAsState(emptyList())

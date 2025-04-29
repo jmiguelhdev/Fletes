@@ -28,16 +28,11 @@ import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 
 data class DispatchUiState(
     val isActive: Boolean = true,
@@ -271,7 +266,7 @@ class DispatchViewModel(
             initialValue = 0
         )
 
-    val allTrucks: StateFlow<List<Camion>> = getAllTrucks().stateIn(
+    val allActiveTrucks: StateFlow<List<Camion>> = getAllTrucks().stateIn(
         scope = viewModelScope,
         started = WhileSubscribed(5000), // Consider shorter timeout if feasible
         initialValue = emptyList()

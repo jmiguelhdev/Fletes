@@ -390,9 +390,7 @@ class DispatchViewModel(
             _uiState.update { currentState ->
                 currentState.copy(truckSelected = camion)
             }
-            val updatedTruck = camion.copy(isActive = !camion.isActive)
-            Log.d("DispatchViewModel", "updateTruckIsActive: $updatedTruck")
-            updateTruckIsActiveUseCase(updatedTruck)
+            updateTruckIsActive(camion)
         }
     }
 }

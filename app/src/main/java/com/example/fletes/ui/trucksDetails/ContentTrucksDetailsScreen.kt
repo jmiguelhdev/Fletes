@@ -122,9 +122,7 @@ fun ActiveDispatch(
     LazyColumn(modifier = modifier.fillMaxWidth()) {
         item {
             CamionChipRow(
-                camionList = listCamiones, modifier = Modifier
-                    .padding(8.dp)
-                    .size(width = 300.dp, height = 40.dp)
+                camionList = listCamiones
             ){
                 onClickChip(it)
             }
@@ -138,7 +136,7 @@ fun ActiveDispatch(
                 dispatch = destino,
                 onDeleteClick = onDeleteClick,
                 onEditClick = onEditClick,
-                modifier = modifier,
+                modifier = Modifier,
                 camion = camion,
                 truckJourneyData = truckJourneyData,
                 onClickSaveOrUpdateTrip = onClickSaveOrUpdateTrip
@@ -425,16 +423,16 @@ fun JourneyCardPreview() {
 
 @Composable
 fun CamionChipRow(
-    modifier: Modifier = Modifier,
     camionList: List<Camion>,
     onClick: (camion: Camion) -> Unit = {}
 ) {
-    LazyRow {
+    LazyRow(
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
         items(
             camionList
         ) {
             CamionChip(
-                modifier = modifier,
                 camion = it,
                 onClick = onClick
             )
@@ -471,7 +469,6 @@ fun CamionChipRowPrev() {
 
 @Composable
 fun CamionChip(
-    modifier: Modifier = Modifier,
     camion: Camion,
     onClick: (camion: Camion) -> Unit = {}
 ) {
@@ -479,11 +476,11 @@ fun CamionChip(
 
     ElevatedAssistChip(
         onClick = {
-            isChipActive = !isChipActive
-            onClick
+            isChipActive = camion.isActive
+            onClick(camion)
         },
         label = { Text("Chofer: ${camion.choferName}") },
-        modifier = modifier
+        modifier = Modifier
             .padding(4.dp)
             .wrapContentWidth(),
         colors = AssistChipDefaults.assistChipColors(

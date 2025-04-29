@@ -17,9 +17,14 @@ fun MyNavHost(
         startDestination = TrucksDetailScreenRoute,
     ) {
         composable<TrucksDetailScreenRoute> {
-            TrucksDetailsScreen(){
-                navController.navigate(DispatchScreenRoute)
-            }
+            TrucksDetailsScreen(
+                onClickFab = {
+                    navController.navigate(DispatchScreenRoute)
+                },
+                onClickAction = {
+                    navController.navigate(TruckScreenRoute)
+                }
+            )
         }
         composable<DispatchScreenRoute> {
             DispatchScreen {

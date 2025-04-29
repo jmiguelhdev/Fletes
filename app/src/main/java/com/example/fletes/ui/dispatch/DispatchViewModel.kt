@@ -13,6 +13,7 @@ import com.example.fletes.domain.DeleteDestinoUseCase
 import com.example.fletes.domain.GetActiveDestinosUseCase
 import com.example.fletes.domain.GetActiveDispatchCount
 import com.example.fletes.domain.GetAllDestinosUseCase
+import com.example.fletes.domain.GetAllJourneyUseCase
 import com.example.fletes.domain.GetAllTrucks
 import com.example.fletes.domain.InsertDestinoUseCase
 import com.example.fletes.domain.InsertJourneyUseCase
@@ -20,15 +21,20 @@ import com.example.fletes.domain.SearchComisionistaUseCase
 import com.example.fletes.domain.SearchLocalidadUseCase
 import com.example.fletes.domain.UpdateDestinoUseCase
 import com.example.fletes.domain.UpdateTruckIsActiveUseCase
+import com.example.fletes.domain.UpdateJourneyUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -53,8 +59,6 @@ data class DispatchUiState(
     val showSnackbar: Boolean = false,
     val snackbarMessage: String = "",
     val truckSelected: Camion = Camion(
-        id = 1,
-        createdAt = LocalDate.now(),
         choferName = "",
         choferDni = 0,
         patenteTractor = "",
@@ -84,6 +88,7 @@ class DispatchViewModel(
     getActiveDispatch: GetActiveDestinosUseCase,
     getActiveDispatchCount: GetActiveDispatchCount,
     getAllTrucks: GetAllTrucks,
+    getAllJourneys: GetAllJourneyUseCase,
     private val insertJourneyUseCase: InsertJourneyUseCase,
     private val searchComisionistaUseCase: SearchComisionistaUseCase,
     private val searchLocalidadUseCase: SearchLocalidadUseCase,
@@ -91,6 +96,7 @@ class DispatchViewModel(
     private val insertDestinoUseCase: InsertDestinoUseCase,
     private val deleteDestinoUseCase: DeleteDestinoUseCase,
     private val updateDestinoUseCase: UpdateDestinoUseCase,
+    private val updateJourneyUseCase: UpdateJourneyUseCase,
     private val updateTruckIsActiveUseCase: UpdateTruckIsActiveUseCase,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
@@ -155,6 +161,19 @@ class DispatchViewModel(
     // Expone el estado como un StateFlow inmutable
     val truckJourneyUiState: StateFlow<TruckJourneyUiState> = _truckJourneyUiState.asStateFlow()
 
+    fun onTruckSelected(camion: Camion) {
+        savedStateHandle[TRUCK_SELECTED_ID] = camion.id
+        viewModelScope.launch {
+            _uiState.update { currentState ->
+                currentState.copy(
+                    truckSelected = camion.copy(
+                        isActive = !camion.isActive
+                    ),
+                )
+            }
+            updateTruckIsActive(camion)
+        }
+    }
     // Funciones para actualizar cada valor y guardar en SavedStateHandle
     private fun updateKmCargaValue(newValue: String) {
         // Validacion
@@ -251,6 +270,13 @@ class DispatchViewModel(
         started = WhileSubscribed(5000), // Consider shorter timeout if feasible
         initialValue = emptyList()
     )
+
+
+     val allJourneys = getAllJourneys().stateIn(
+         scope = viewModelScope,
+         started = WhileSubscribed(5000),
+         initialValue = emptyList()
+     )
 
     // Comisionista StateFlows
     private val _comisionistaQuery = MutableStateFlow("")
@@ -536,40 +562,49 @@ class DispatchViewModel(
         }
     }
 
-    fun onTruckSelected(camion: Camion) {
-        savedStateHandle[TRUCK_SELECTED_ID] = camion.id
-        viewModelScope.launch {
-            _uiState.update { currentState ->
-                currentState.copy(truckSelected = camion)
-            }
-            updateTruckIsActive(camion)
-        }
-    }
-
     fun saveJourney(desinoId: Int){
         viewModelScope.launch {
             val truckSelectedId: Int? = savedStateHandle[TRUCK_SELECTED_ID]
-            val camionesRegistro = CamionesRegistro(
-                camionId = truckSelectedId ?: 0,
-                destinoId = desinoId,
-                kmCarga = truckJourneyUiState.value.truckJourneyData.kmCargaData.value.toIntOrNull() ?: 0,
-                kmDescarga = truckJourneyUiState.value.truckJourneyData.kmDescargaData.value.toIntOrNull() ?: 0,
-                kmSurtidor = truckJourneyUiState.value.truckJourneyData.kmSurtidorData.value.toIntOrNull() ?: 0,
-                litros = truckJourneyUiState.value.truckJourneyData.litrosData.value.toDoubleOrNull() ?: 0.0,
-                )
+            Log.d("DispatchViewModel", "all journeys: ${allJourneys.value}")
             try {
-                insertJourneyUseCase(camionesRegistro)
-                _uiState.update {
-                    it.copy(
-                        showSnackbar = true,
-                        snackbarMessage = "Registro guardado correctamente"
+                val existingJourney = allJourneys.value.firstOrNull {
+                    it.destinoId == desinoId && it.camionId == truckSelectedId
+                }
+                Log.d("DispatchViewModel", "existingJourney: $existingJourney")
+                val existingJourneyId = existingJourney?.id
+                activeDispatch.value.first { it.id == desinoId }.let {
+                    val truckId = truckSelectedId ?: 0
+                    val journeyToUpdate = CamionesRegistro(
+                        id = existingJourneyId ?: 0,
+                        camionId = truckId,
+                        destinoId = desinoId,
+                        kmCarga = truckJourneyUiState.value.truckJourneyData.kmCargaData.value.toIntOrNull() ?: 0,
+                        kmDescarga = truckJourneyUiState.value.truckJourneyData.kmDescargaData.value.toIntOrNull() ?: 0,
+                        kmSurtidor = truckJourneyUiState.value.truckJourneyData.kmSurtidorData.value.toIntOrNull() ?: 0,
+                        litros = truckJourneyUiState.value.truckJourneyData.litrosData.value.toDoubleOrNull() ?: 0.0,
                     )
+
+                    if (existingJourney == null) {
+                        //allJorneys no existe
+                        insertJourneyUseCase(journeyToUpdate)
+                        Log.d("DispatchViewModel", "insertJourneyUseCase: $journeyToUpdate")
+                    } else {
+                        updateJourneyUseCase(journeyToUpdate)
+                        Log.d("DispatchViewModel", "updateJourneyUseCase: $journeyToUpdate")
+                    }
+
+                    _uiState.update { currentState ->
+                        currentState.copy(
+
+                            showSnackbar = true,
+                            snackbarMessage = "Registro guardado correctamente",
+                        )
+                    }
                 }
             } catch (e: Exception) {
                 _uiState.update {
                     it.copy(
-                        showSnackbar = true,
-                        snackbarMessage = "Error al guardar el registro: ${e.message}"
+                        showSnackbar = true, snackbarMessage = "Error al guardar el registro: ${e.message}"
                     )
             }
             }

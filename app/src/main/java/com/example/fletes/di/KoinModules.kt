@@ -12,12 +12,14 @@ import com.example.fletes.domain.DeleteDestinoUseCase
 import com.example.fletes.domain.GetActiveDestinosUseCase
 import com.example.fletes.domain.GetActiveDispatchCount
 import com.example.fletes.domain.GetAllDestinosUseCase
+import com.example.fletes.domain.GetAllJourneyUseCase
 import com.example.fletes.domain.GetAllTrucks
 import com.example.fletes.domain.InsertDestinoUseCase
 import com.example.fletes.domain.InsertJourneyUseCase
 import com.example.fletes.domain.SearchComisionistaUseCase
 import com.example.fletes.domain.SearchLocalidadUseCase
 import com.example.fletes.domain.UpdateDestinoUseCase
+import com.example.fletes.domain.UpdateJourneyUseCase
 import com.example.fletes.domain.UpdateTruckIsActiveUseCase
 import com.example.fletes.domain.validators.DniValidator
 import com.example.fletes.domain.validators.PatenteValidator
@@ -84,6 +86,8 @@ val domainModule = module {
     single { GetAllTrucks(get()) }
     single { UpdateTruckIsActiveUseCase(get()) }
     single { InsertJourneyUseCase(get()) }
+    single { UpdateJourneyUseCase(get()) }
+    single { GetAllJourneyUseCase(get()) }
 
 }
 
@@ -102,7 +106,9 @@ val dispatchModule = module {
             updateDestinoUseCase = get(),
             getAllTrucks = get(),
             updateTruckIsActiveUseCase = get(),
-            insertJourneyUseCase = get()
+            insertJourneyUseCase = get(),
+            updateJourneyUseCase = get(),
+            getAllJourneys = get()
         )
     }
 }

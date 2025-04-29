@@ -33,7 +33,8 @@ import org.koin.androidx.compose.koinViewModel
 fun TrucksDetailsScreen(
     modifier: Modifier = Modifier,
     viewModel: DispatchViewModel = koinViewModel(),
-    onClickFab: () -> Unit = {}
+    onClickFab: () -> Unit = {},
+    onClickAction: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val activeDispatchCount by viewModel.activeDispatchCount.collectAsState(0)
@@ -43,6 +44,7 @@ fun TrucksDetailsScreen(
     val trucksList by viewModel.allTrucks.collectAsState(emptyList())
     val truckJourneyUiState by viewModel.truckJourneyUiState.collectAsState()
     val truckJourneyData = truckJourneyUiState.truckJourneyData
+    val allJourneys by viewModel.allJourneys.collectAsState(emptyList())
 
 
     LaunchedEffect(uiState.showSnackbar) {
@@ -62,7 +64,10 @@ fun TrucksDetailsScreen(
         modifier = modifier.imePadding(),
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
-            TrucksTopAppBar(count = activeDispatchCount)
+            TrucksTopAppBar(
+                count = activeDispatchCount,
+                onClick = onClickAction
+            )
         },
         floatingActionButton = {
             TruckFab(
@@ -128,8 +133,8 @@ fun TruckFab(
 @Composable
 fun TrucksTopAppBar(
     modifier: Modifier = Modifier,
-    onClick: () -> Unit = {},
-    count: Int = 0
+    count: Int = 0,
+    onClick: () -> Unit = {}
 ) {
     CenterAlignedTopAppBar(
         title = {

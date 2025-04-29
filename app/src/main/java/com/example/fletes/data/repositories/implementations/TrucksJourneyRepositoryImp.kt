@@ -11,7 +11,7 @@ class TrucksJourneyRepositoryImp(private val trucksRegistrationDao: TrucksRegist
     }
 
     override suspend fun deleteCamionesRegistro(camionesRegistro: CamionesRegistro) {
-        return trucksRegistrationDao.updateCamionRegistro(camionesRegistro)
+        return trucksRegistrationDao.deleteCamionRegistro(camionesRegistro)
     }
 
     override suspend fun updateCamionesRegistro(camionesRegistro: CamionesRegistro) {

@@ -164,14 +164,20 @@ class DispatchViewModel(
     fun onTruckSelected(camion: Camion) {
         savedStateHandle[TRUCK_SELECTED_ID] = camion.id
         viewModelScope.launch {
+            updateTruckIsActive(camion)
+        }
+    }
+    fun updateTruckIsActive(truck: Camion) {
+        viewModelScope.launch {
+            Log.d("DispatchViewModel", "updateTruckIsActive: $truck")
             _uiState.update { currentState ->
                 currentState.copy(
-                    truckSelected = camion.copy(
-                        isActive = !camion.isActive
+                    truckSelected = truck.copy(
+                        isActive = false
                     ),
                 )
             }
-            updateTruckIsActive(camion)
+            updateTruckIsActiveUseCase(truck)
         }
     }
     // Funciones para actualizar cada valor y guardar en SavedStateHandle
@@ -553,14 +559,7 @@ class DispatchViewModel(
         }
     }
 
-    fun updateTruckIsActive(truck: Camion) {
-        viewModelScope.launch {
-            val updatedTruck = truck.copy(isActive = !truck.isActive)
-            Log.d("DispatchViewModel", "updateTruckIsActive: $updatedTruck")
 
-            updateTruckIsActiveUseCase(updatedTruck)
-        }
-    }
 
     fun saveJourney(desinoId: Int){
         viewModelScope.launch {

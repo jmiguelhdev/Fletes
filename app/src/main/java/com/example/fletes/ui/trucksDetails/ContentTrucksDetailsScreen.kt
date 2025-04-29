@@ -267,12 +267,12 @@ fun DispatchCard(
                         Spacer(modifier = Modifier.padding(vertical = 2.dp))
                         HorizontalDivider(modifier = Modifier, thickness = 1.dp)
                         JourneyCard(
-                            modifier = modifier,
+                            modifier = Modifier,
                             camion = camion,
                             truckJourneyData = truckJourneyData,
                         )
                         SaveOrUpdateTripButton(
-                            modifier = modifier,
+                            modifier = Modifier,
                             destinationId = dispatch.id,
                             isActive = dispatch.isActive,
                             onClickSaveOrUpdateTrip = onClickSaveOrUpdateTrip
@@ -288,7 +288,7 @@ fun DispatchCard(
 fun SaveOrUpdateTripButton(
     modifier: Modifier = Modifier,
     destinationId: Int,
-    isActive: Boolean,
+    isActive: Boolean, //implementar
     onClickSaveOrUpdateTrip: (destinoId: Int) -> Unit = {},
 ) {
     OutlinedButton(

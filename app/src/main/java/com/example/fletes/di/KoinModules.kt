@@ -4,7 +4,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.room.Room
 import com.example.fletes.data.repositories.implementations.DestinationRepositoryImpl
 import com.example.fletes.data.repositories.implementations.TruckRepositoryImpl
+import com.example.fletes.data.repositories.implementations.TrucksJourneyRepositoryImp
 import com.example.fletes.data.repositories.interfaces.DestinationRepositoryInterface
+import com.example.fletes.data.repositories.interfaces.TrucksJourneyRepositoryInterface
 import com.example.fletes.data.room.AppDatabase
 import com.example.fletes.domain.DeleteDestinoUseCase
 import com.example.fletes.domain.GetActiveDestinosUseCase
@@ -51,6 +53,9 @@ val appDatabaseModule = module {
     }
     single<DestinationRepositoryInterface> {
         DestinationRepositoryImpl(get())
+    }
+    single<TrucksJourneyRepositoryInterface> {
+        TrucksJourneyRepositoryImp(get())
     }
 }
 

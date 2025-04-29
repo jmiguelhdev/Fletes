@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 data class DispatchUiState(
     val isActive: Boolean = true,
@@ -44,7 +45,16 @@ data class DispatchUiState(
     val isInsertButtonEnabled: Boolean = false,
     val isLoading: Boolean = false,
     val showSnackbar: Boolean = false,
-    val snackbarMessage: String = ""
+    val snackbarMessage: String = "",
+    val truckSelected: Camion = Camion(
+        id = 1,
+        createdAt = LocalDate.now(),
+        choferName = "",
+        choferDni = 0,
+        patenteTractor = "",
+        patenteJaula = "",
+        isActive = true
+    )
 ) {
     val isFormValid: Boolean
         get() = isValidComisionista && isValidLocalidad && isValidDespacho
@@ -371,6 +381,17 @@ class DispatchViewModel(
             val updatedTruck = truck.copy(isActive = !truck.isActive)
             Log.d("DispatchViewModel", "updateTruckIsActive: $updatedTruck")
 
+            updateTruckIsActiveUseCase(updatedTruck)
+        }
+    }
+
+    fun onTruckSelected(camion: Camion) {
+        viewModelScope.launch {
+            _uiState.update { currentState ->
+                currentState.copy(truckSelected = camion)
+            }
+            val updatedTruck = camion.copy(isActive = !camion.isActive)
+            Log.d("DispatchViewModel", "updateTruckIsActive: $updatedTruck")
             updateTruckIsActiveUseCase(updatedTruck)
         }
     }

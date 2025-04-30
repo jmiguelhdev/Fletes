@@ -4,9 +4,9 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.fletes.ui.camion.CamionScreen
-import com.example.fletes.ui.dispatch.DispatchScreen
-import com.example.fletes.ui.trucksDetails.TrucksDetailsScreen
+import com.example.fletes.ui.screenTruck.TruckScreen
+import com.example.fletes.ui.screenDispatch.NewDispatchScreen
+import com.example.fletes.ui.screenActiveDispatch.ActiveDispatchDetailsScreen
 
 @Composable
 fun MyNavHost(
@@ -17,7 +17,7 @@ fun MyNavHost(
         startDestination = TrucksDetailScreenRoute,
     ) {
         composable<TrucksDetailScreenRoute> {
-            TrucksDetailsScreen(
+            ActiveDispatchDetailsScreen(
                 onClickFab = {
                     navController.navigate(DispatchScreenRoute)
                 },
@@ -27,12 +27,12 @@ fun MyNavHost(
             )
         }
         composable<DispatchScreenRoute> {
-            DispatchScreen {
+            NewDispatchScreen {
                 navController.popBackStack()
             }
         }
         composable<TruckScreenRoute> {
-            CamionScreen {
+            TruckScreen {
                 navController.popBackStack()
             }
         }

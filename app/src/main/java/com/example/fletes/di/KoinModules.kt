@@ -13,18 +13,16 @@ import com.example.fletes.domain.GetActiveDestinosUseCase
 import com.example.fletes.domain.GetActiveDispatchCount
 import com.example.fletes.domain.GetAllDestinosUseCase
 import com.example.fletes.domain.GetAllJourneyUseCase
-import com.example.fletes.domain.GetAllTrucks
 import com.example.fletes.domain.InsertDestinoUseCase
 import com.example.fletes.domain.InsertJourneyUseCase
 import com.example.fletes.domain.SearchComisionistaUseCase
 import com.example.fletes.domain.SearchLocalidadUseCase
 import com.example.fletes.domain.UpdateDestinoUseCase
 import com.example.fletes.domain.UpdateJourneyUseCase
-import com.example.fletes.domain.UpdateTruckIsActiveUseCase
 import com.example.fletes.domain.validators.DniValidator
 import com.example.fletes.domain.validators.PatenteValidator
-import com.example.fletes.ui.camion.CamionViewModel
-import com.example.fletes.ui.dispatch.DispatchViewModel
+import com.example.fletes.ui.screenTruck.TruckViewModel
+import com.example.fletes.ui.screenDispatch.NewDispatchViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -63,7 +61,7 @@ val appDatabaseModule = module {
 
 val camionModule = module {
     viewModel {
-        CamionViewModel(
+        TruckViewModel(
             camionRepository = get(),
             dniValidator = get(),
             licenseStringValidatorResult = get()
@@ -83,8 +81,6 @@ val domainModule = module {
     single { UpdateDestinoUseCase(get()) }
     single { GetActiveDestinosUseCase(get()) }
     single { GetActiveDispatchCount(get()) }
-    single { GetAllTrucks(get()) }
-    single { UpdateTruckIsActiveUseCase(get()) }
     single { InsertJourneyUseCase(get()) }
     single { UpdateJourneyUseCase(get()) }
     single { GetAllJourneyUseCase(get()) }
@@ -94,8 +90,8 @@ val domainModule = module {
 val dispatchModule = module {
     viewModel {parameters ->
         val savedStateHandle = parameters.get<SavedStateHandle>()
-        DispatchViewModel(
-            savedStateHandle = savedStateHandle,
+        NewDispatchViewModel(
+            //savedStateHandle = savedStateHandle,
             getActiveDispatch = get(),
             getActiveDispatchCount = get(),
             searchComisionistaUseCase = get(),
@@ -104,11 +100,6 @@ val dispatchModule = module {
             insertDestinoUseCase = get(),
             deleteDestinoUseCase = get(),
             updateDestinoUseCase = get(),
-            getActiveTrucks = get(),
-            updateTruckIsActiveUseCase = get(),
-            insertJourneyUseCase = get(),
-            updateJourneyUseCase = get(),
-            getAllJourneys = get()
         )
     }
 }

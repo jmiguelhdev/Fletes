@@ -1,4 +1,4 @@
-package com.example.fletes.ui.camion
+package com.example.fletes.ui.screenTruck
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
-data class CamionUiState(
+data class TruckUiState(
     val choferName: String = "",
     val choferDni: String = "",
     val driverDniErrorMessage: String? = "Insert Dni",
@@ -33,7 +33,7 @@ data class CamionUiState(
 )
 
 
-class CamionViewModel(
+class TruckViewModel(
     private val camionRepository: TruckRepositoryImpl,
     private val dniValidator: DniValidator,
     private val licenseStringValidatorResult: PatenteValidator
@@ -43,11 +43,11 @@ class CamionViewModel(
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = emptyList()
     )
-    private val _uiState = MutableStateFlow(CamionUiState())
+    private val _uiState = MutableStateFlow(TruckUiState())
     val uiState = _uiState.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
-        initialValue = CamionUiState()
+        initialValue = TruckUiState()
     )
 
     fun showDialog() {

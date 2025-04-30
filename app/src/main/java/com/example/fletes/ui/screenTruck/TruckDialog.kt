@@ -1,4 +1,4 @@
-package com.example.fletes.ui.camion
+package com.example.fletes.ui.screenTruck
 
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -7,13 +7,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import com.example.fletes.data.room.Camion
-import com.example.fletes.ui.camion.components.MyInsertTruckDialogContent
+import com.example.fletes.ui.screenTruck.components.MyInsertTruckDialogContent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CamionDialog(
-    camionUiState: CamionUiState,
-    camionViewModel: CamionViewModel,
+fun TruckDialog(
+    camionUiState: TruckUiState,
+    camionViewModel: TruckViewModel,
     onDismiss: () -> Unit,
     onConfirm: () -> Unit
 ) {
@@ -67,8 +67,8 @@ fun CamionDialog(
 @Composable
 fun CamionUpdateDialog(
     camion: Camion,
-    camionUiState: CamionUiState,
-    camionViewModel: CamionViewModel,
+    camionUiState: TruckUiState,
+    camionViewModel: TruckViewModel,
     onDismiss: () -> Unit,
     onConfirm: (id: Int) -> Unit
 ) {

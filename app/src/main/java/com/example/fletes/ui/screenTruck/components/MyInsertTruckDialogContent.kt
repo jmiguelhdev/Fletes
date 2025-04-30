@@ -1,4 +1,4 @@
-package com.example.fletes.ui.camion.components
+package com.example.fletes.ui.screenTruck.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

@@ -1,4 +1,4 @@
-package com.example.fletes.ui.camion
+package com.example.fletes.ui.screenTruck
 
 import android.util.Log
 import androidx.compose.foundation.clickable
@@ -40,8 +40,8 @@ import org.koin.androidx.compose.koinViewModel
 import java.time.LocalDate
 
 @Composable
-fun CamionScreen(
-    camionViewModel: CamionViewModel = koinViewModel(),
+fun TruckScreen(
+    camionViewModel: TruckViewModel = koinViewModel(),
     onNavBack: () -> Unit
 ) {
     val camiones = camionViewModel.camiones.collectAsStateWithLifecycle()
@@ -82,7 +82,7 @@ fun CamionScreen(
 
             )
             if (uiState.value.showInsertDialog) {
-                CamionDialog(
+                TruckDialog(
                     camionUiState = uiState.value,
                     camionViewModel = camionViewModel,
                     onDismiss = { camionViewModel.hideDialog() },

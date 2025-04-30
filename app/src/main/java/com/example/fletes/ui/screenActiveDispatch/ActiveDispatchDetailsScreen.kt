@@ -1,4 +1,4 @@
-package com.example.fletes.ui.trucksDetails
+package com.example.fletes.ui.screenActiveDispatch
 
 import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,15 +24,15 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.fletes.R
-import com.example.fletes.ui.dispatch.DispatchViewModel
+import com.example.fletes.ui.screenDispatch.NewDispatchViewModel
 import com.example.fletes.ui.theme.FletesTheme
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun TrucksDetailsScreen(
+fun ActiveDispatchDetailsScreen(
     modifier: Modifier = Modifier,
-    viewModel: DispatchViewModel = koinViewModel(),
+    viewModel: NewDispatchViewModel = koinViewModel(),
     onClickFab: () -> Unit = {},
     onClickAction: () -> Unit = {}
 ) {
@@ -41,11 +41,6 @@ fun TrucksDetailsScreen(
     val activeDispatch by viewModel.activeDispatch.collectAsState(emptyList())
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
-    val trucksList by viewModel.allActiveTrucks.collectAsState(emptyList())
-    val truckJourneyUiState by viewModel.truckJourneyUiState.collectAsState()
-    val truckJourneyData = truckJourneyUiState.truckJourneyData
-    val allJourneys by viewModel.allJourneys.collectAsState(emptyList())
-
 
     LaunchedEffect(uiState.showSnackbar) {
         if (uiState.showSnackbar) {
@@ -77,7 +72,7 @@ fun TrucksDetailsScreen(
             )
         }
     ) {innerPadding ->
-       ContentTrucksDetailsScreen(
+       ContentActiveDispatchScreen(
            modifier = Modifier
                .fillMaxSize()
                .padding(innerPadding),
@@ -97,16 +92,6 @@ fun TrucksDetailsScreen(
            value = uiState.despacho.toString(),
            onValueChange = viewModel::onValueChangeDespacho,
            errorMessage = uiState.despachoErrorMessage,
-           listCamiones = trucksList,
-           onClickChip = {
-               viewModel.onTruckSelected(it)
-           },
-           camion = uiState.truckSelected,
-           truckJourneyData = truckJourneyData,
-           onClickSaveOrUpdateTrip = {
-               viewModel.saveJourney(it)
-           }
-
        )
 
     }
@@ -138,7 +123,7 @@ fun TrucksTopAppBar(
 ) {
     CenterAlignedTopAppBar(
         title = {
-            Text("Prepare Dispatch $count")
+            Text("Active Dispatch: $count")
         },
         modifier = modifier,
         navigationIcon = {
@@ -165,7 +150,7 @@ fun TrucksTopAppBar(
 @Composable
 fun TrucksDetailsScreenPrev(modifier: Modifier = Modifier) {
     FletesTheme {
-        TrucksDetailsScreen(
+        ActiveDispatchDetailsScreen(
             modifier = modifier,
         )
     }

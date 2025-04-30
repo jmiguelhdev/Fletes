@@ -54,6 +54,7 @@ data class DispatchUiState(
     val isLoading: Boolean = false,
     val showSnackbar: Boolean = false,
     val snackbarMessage: String = "",
+    //creo que no a aqui, creare otro viewModel para el trucks detail
     val truckSelected: Camion = Camion(
         choferName = "",
         choferDni = 0,
@@ -183,7 +184,7 @@ class DispatchViewModel(
         try {
             newValue.toDouble()
         } catch (e: NumberFormatException){
-            error = "debe ser un numero"
+            error = "debe ser un numero $e"
         }
         savedStateHandle[KM_CARGA_VALUE] = newValue
         savedStateHandle[KM_CARGA_ERROR] = error
@@ -198,7 +199,7 @@ class DispatchViewModel(
         try {
             newValue.toDouble()
         } catch (e: NumberFormatException){
-            error = "debe ser un numero"
+            error = "debe ser un numero $e"
         }
         savedStateHandle[KM_DESCARGA_VALUE] = newValue
         savedStateHandle[KM_DESCARGA_ERROR] = error
@@ -213,7 +214,7 @@ class DispatchViewModel(
         try {
             newValue.toDouble()
         } catch (e: NumberFormatException){
-            error = "debe ser un numero"
+            error = "debe ser un numero $e"
         }
         savedStateHandle[KM_SURTIDOR_VALUE] = newValue
         savedStateHandle[KM_SURTIDOR_ERROR] = error
@@ -228,7 +229,7 @@ class DispatchViewModel(
         try {
             newValue.toDouble()
         } catch (e: NumberFormatException){
-            error = "debe ser un numero"
+            error = "debe ser un numero $e"
         }
         savedStateHandle[LITROS_VALUE] = newValue
         savedStateHandle[LITROS_ERROR] = error

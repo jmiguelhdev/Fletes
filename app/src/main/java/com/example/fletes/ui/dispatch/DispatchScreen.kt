@@ -69,7 +69,7 @@ fun DispatchScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val activeDispatchCount by viewModel.activeDispatchCount.collectAsState(0)
-    val activeDispatch by viewModel.activeDispatch.collectAsState(emptyList())
+    //val activeDispatch by viewModel.activeDispatch.collectAsState(emptyList())
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 

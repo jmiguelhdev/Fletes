@@ -1,102 +1,84 @@
 package com.example.fletes.ui.screenTruck
 
-import android.util.Log
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Card
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.fletes.R
 import com.example.fletes.data.room.Camion
+import com.example.fletes.ui.screenTruck.components.ListOfTrucks
+import com.example.fletes.ui.screenTruck.components.TruckUpdateDialog
+import com.example.fletes.ui.screenTruck.components.TruckInsertDialog
+import com.example.fletes.ui.screenTruck.components.TruckTopAppBar
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
-import java.time.LocalDate
 
 @Composable
 fun TruckScreen(
-    camionViewModel: TruckViewModel = koinViewModel(),
+    truckViewModel: TruckViewModel = koinViewModel(),
     onNavBack: () -> Unit
 ) {
-    val camiones = camionViewModel.camiones.collectAsStateWithLifecycle()
-    val uiState = camionViewModel.uiState.collectAsStateWithLifecycle()
-    val snackbarHostState = remember { SnackbarHostState() }
+    val listOfTrucks = truckViewModel.camiones.collectAsStateWithLifecycle()
+    val uiState = truckViewModel.uiState.collectAsStateWithLifecycle()
+    val snackBarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(uiState.value.showSnackbar) {
         if (uiState.value.showSnackbar) {
             scope.launch {
-                snackbarHostState.showSnackbar(
+                snackBarHostState.showSnackbar(
                     message = uiState.value.snackbarMessage,
                     withDismissAction = true
                 )
-                camionViewModel.snackbarShown()
+                truckViewModel.snackbarShown()
             }
         }
     }
     Scaffold(
         modifier = Modifier.imePadding(),
-        snackbarHost = { SnackbarHost(snackbarHostState) },
+        snackbarHost = { SnackbarHost(snackBarHostState) },
         topBar = {
-            TopBar(
-                onInsertCamion = { camionViewModel.showDialog() },
-                onDeleteAllCamions = { camionViewModel.deleteAllCamiones() },
+            TruckTopAppBar(
+                onInsertTruck = { truckViewModel.showDialog() },
+                onDeleteAllTrucks = { truckViewModel.deleteAllCamiones() },
                 onBack = onNavBack
             )
         },
         content = { paddingValues ->
-            ListOfCamionesScreen(
-                camiones = camiones.value,
-                ondeleteCamion = { camionViewModel.deleteCamion(it) },
-                onEditCamion = {
-                    camionViewModel.onShowEditDialog(it)
+            ListOfTrucks(
+                listOfTrucks = listOfTrucks.value,
+                onDeleteTruck = { truckViewModel.deleteCamion(it) },
+                onEditTruck = {
+                    truckViewModel.onShowEditDialog(it)
                 },
                 modifier = Modifier
                     .padding(paddingValues)
 
             )
             if (uiState.value.showInsertDialog) {
-                TruckDialog(
+                TruckInsertDialog(
                     camionUiState = uiState.value,
-                    camionViewModel = camionViewModel,
-                    onDismiss = { camionViewModel.hideDialog() },
-                    onConfirm = { camionViewModel.insertCamion() }
+                    camionViewModel = truckViewModel,
+                    onDismiss = { truckViewModel.hideDialog() },
+                    onConfirm = { truckViewModel.insertCamion() }
                 )
             }
             if (uiState.value.showEditDialog) {
-                CamionUpdateDialog(
-                    camion = camiones.value.first(),
+                TruckUpdateDialog(
+                    camion = listOfTrucks.value.first(),
                     camionUiState = uiState.value,
-                    camionViewModel = camionViewModel,
-                    onDismiss = { camionViewModel.hideDialog() },
+                    camionViewModel = truckViewModel,
+                    onDismiss = { truckViewModel.hideDialog() },
                     onConfirm = {
-                        camionViewModel.updateCamion(id = it) }
+                        truckViewModel.updateCamion(id = it)
+                    }
                 )
             }
         },
@@ -107,253 +89,41 @@ fun TruckScreen(
     )
 }
 
-
+@Preview(showSystemUi = true)
 @Composable
-fun ListOfCamionesScreen(
-    camiones: List<Camion>,
-    ondeleteCamion: (Int) -> Unit,
-    onEditCamion: (Int) -> Unit,
-    modifier: Modifier
-) {
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.SpaceBetween,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        LazyColumn(modifier = Modifier) {
-            items(camiones) { camion ->
-                CamionCard(
-                    camion = camion,
-                    onDeleteCamion = ondeleteCamion,
-                    onEditCamion = onEditCamion,
-                    modifier = Modifier
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun CamionCard(
-    camion: Camion,
-    onDeleteCamion: (Int) -> Unit,
-    onEditCamion: (Int) -> Unit,
-    modifier: Modifier
-) {
-    Card(
-        modifier = modifier
-            .padding(2.dp)
-            .fillMaxWidth()
-    ) {
-        Box(modifier = Modifier.fillMaxWidth()) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                CamionDetailsColumn(camion = camion, modifier = Modifier.weight(1f))
-                InteractColum(
-                    camion = camion,
-                    onDeleteCamion = onDeleteCamion,
-                    onEditCamion = onEditCamion
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun InteractColum(
-    camion: Camion,
-    onDeleteCamion: (Int) -> Unit,
-    onEditCamion: (Int) -> Unit
-) {
-    Column(
-        modifier = Modifier,
-        verticalArrangement = Arrangement.SpaceEvenly
-    ) {
-        Text(text = "ID: ${camion.id}", style = MaterialTheme.typography.bodyMedium)
-        Spacer(Modifier.padding(vertical = 8.dp))
-        Icon(
-            painter = painterResource(id = R.drawable.ic_delete_outline_24),
-            contentDescription = "Delete",
-            modifier = Modifier.clickable { onDeleteCamion(camion.id) }
+fun PreviewTruckScreen() {
+    val snackBarHostState = remember { SnackbarHostState() }
+    val mockListOfTrucks = listOf(
+        Camion(
+            choferName = "John Doe",
+            choferDni = 11111111,
+            patenteTractor = "ab123cd",
+            patenteJaula = "ab123cd",
+            isActive = true
+        ),
+        Camion(choferName = "Janne Doe",
+            choferDni = 11111111,
+            patenteTractor = "ab123cd",
+            patenteJaula = "ab123cd",
+            isActive = true
         )
-        Spacer(Modifier.padding(vertical = 8.dp))
-        Icon(
-            painter = painterResource(R.drawable.edit_edit_24),
-            tint = MaterialTheme.colorScheme.primary,
-            contentDescription = "Edit",
-            modifier = Modifier
-                .clickable {
-                    Log.d("CamionViewModel", "Edit camion ${camion.id}")
-                    onEditCamion(camion.id)
-                }
-        )
-    }
-}
-
-
-@Composable
-fun CamionDetailsColumn(camion: Camion, modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-        DetailRow(
-            label = "Chofer",
-            value = camion.choferName,
-            style = MaterialTheme.typography.titleMedium
-        )
-        DetailRow(label = "DNI", value = camion.choferDni.toString())
-        DetailRow(label = "Patente Tractor", value = camion.patenteTractor)
-        DetailRow(label = "Patente Jaula", value = camion.patenteJaula)
-    }
-}
-
-@Composable
-fun DetailRow(
-    label: String,
-    value: String,
-    style: TextStyle = MaterialTheme.typography.bodyMedium
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center
-    ) {
-        Text(
-            text = "$label: $value",
-            style = style
-        )
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun TopBar(
-    onInsertCamion: () -> Unit,
-    onDeleteAllCamions: () -> Unit,
-    onBack: () -> Unit,
-) {
-    CenterAlignedTopAppBar(
-        title = { Text("Camiones") },
-        navigationIcon = {
-            IconButton(onClick = onBack) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_arrow_back_24),
-                    contentDescription = "Atras"
-                )
-            }
+    )
+    Scaffold(
+        modifier = Modifier.imePadding(),
+        snackbarHost = { SnackbarHost(snackBarHostState) },
+        topBar = {
+            TruckTopAppBar(
+                onInsertTruck = {  },
+                onDeleteAllTrucks = {  },
+                onBack = { }
+            )
         },
-        actions = {
-            IconButton(onClick = {
-                onInsertCamion()
-                Log.d("CamionViewModel", "Camion inserted")
-            }) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_add_24),
-                    contentDescription = "Añadir"
-                )
-            }
-            IconButton(onClick = {
-                onDeleteAllCamions()
-                Log.d("CamionViewModel", "Deleted all camiones")
-            }) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_delete_24),
-                    contentDescription = "Borrar"
-                )
-            }
-        })
-}
-
-@Preview(showBackground = true)
-@Composable
-fun TopBarPreview() {
-    TopBar(
-        onInsertCamion = { },
-        onDeleteAllCamions = { },
-        onBack = { }
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun CamionCardPreview() {
-    val mockCamion = Camion(
-        id = 1,
-        choferName = "John Doe",
-        choferDni = 12345678,
-        patenteTractor = "AB123CD",
-        patenteJaula = "EF456GH",
-        createdAt = LocalDate.now(),
-        isActive = true
-    )
-    CamionCard(
-        camion = mockCamion,
-        onDeleteCamion = {},
-        onEditCamion = {},
-        modifier = Modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ListOfCamionesScreenPreview() {
-    val camiones = listOf(
-        Camion(
-            id = 1,
-            createdAt = LocalDate.now(),
-            choferName = "Chofer 1",
-            choferDni = 12345678,
-            patenteTractor = "PATENTE1",
-            patenteJaula = "JAULA1",
-            isActive = true
-        ),
-        Camion(
-            id = 2,
-            createdAt = LocalDate.now(),
-            choferName = "Chofer 1",
-            choferDni = 12345678,
-            patenteTractor = "PATENTE1",
-            patenteJaula = "JAULA1",
-            isActive = true
-        ),
-        Camion(
-            id = 13,
-            createdAt = LocalDate.now(),
-            choferName = "Chofer 1",
-            choferDni = 12345678,
-            patenteTractor = "PATENTE1",
-            patenteJaula = "JAULA1",
-            isActive = true
-        ),
-    )
-
-    Column {
-        ListOfCamionesScreen(
-            camiones = camiones,
-            ondeleteCamion = {},
-            onEditCamion = {},
-            modifier = Modifier
-        )
+    ) {paddingValues ->
+        ListOfTrucks(
+            listOfTrucks = mockListOfTrucks,
+            onDeleteTruck = {},
+            onEditTruck = {},
+            modifier = Modifier.padding(paddingValues))
     }
 }
 
-
-@Preview(showBackground = true)
-@Composable
-fun InteractColumPreview() {
-    val mockCamion = Camion(
-        id = 1,
-        createdAt = LocalDate.now(),
-        choferName = "Jonh Doe",
-        choferDni = 123456789,
-        patenteTractor = "AA123BB",
-        patenteJaula = "CC456DD",
-        isActive = true,
-    )
-    InteractColum(camion = mockCamion, onDeleteCamion = {}, onEditCamion = {})
-}

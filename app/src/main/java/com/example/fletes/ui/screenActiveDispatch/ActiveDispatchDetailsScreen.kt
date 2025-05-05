@@ -1,18 +1,12 @@
 package com.example.fletes.ui.screenActiveDispatch
 
 import android.util.Log
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -20,10 +14,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.fletes.R
+import com.example.fletes.ui.screenActiveDispatch.components.ActiveDispatchTopAppBar
+import com.example.fletes.ui.screenActiveDispatch.components.TruckFab
 import com.example.fletes.ui.screenDispatch.NewDispatchViewModel
 import com.example.fletes.ui.theme.FletesTheme
 import kotlinx.coroutines.launch
@@ -59,7 +54,7 @@ fun ActiveDispatchDetailsScreen(
         modifier = modifier.imePadding(),
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
-            TrucksTopAppBar(
+            ActiveDispatchTopAppBar(
                 count = activeDispatchCount,
                 onClick = onClickAction
             )
@@ -72,79 +67,19 @@ fun ActiveDispatchDetailsScreen(
             )
         }
     ) {innerPadding ->
-       ContentActiveDispatchScreen(
-           modifier = Modifier
-               .fillMaxSize()
-               .padding(innerPadding),
-           activeDispatch = activeDispatch,
-           showDeleteDialog = uiState.showDeleteDialog,
-           showUpdateDialog = uiState.showUpdateDialog,
-           onEditClick = {
-               viewModel.showUpdateDialog()
-           },
-           onDeleteClick = {
-               viewModel.showDeleteDialog()
-           },
-           onDismissRequestDelete = viewModel::hideDeleteDialog,
-           onConfirmDelete = viewModel::deleteDetino,
-           onDismissRequestUpdate = viewModel::hideUpdateDialog,
-           onConfirmUpdate = viewModel::updateDestination,
-           value = uiState.despacho.toString(),
-           onValueChange = viewModel::onValueChangeDespacho,
-           errorMessage = uiState.despachoErrorMessage,
-       )
+        Column(
+            modifier = Modifier.padding(innerPadding)
+        ){
+
+        }
+
 
     }
 }
 
-@Composable
-fun TruckFab(
-    modifier: Modifier = Modifier,
-    icon: Painter,
-    onClick: () -> Unit = {}
-) {
-    FloatingActionButton(
-        modifier = modifier,
-        onClick = onClick,
-    ) {
-        Icon(
-            painter = icon,
-            contentDescription = "Truck Icon"
-        )
-    }
-}
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun TrucksTopAppBar(
-    modifier: Modifier = Modifier,
-    count: Int = 0,
-    onClick: () -> Unit = {}
-) {
-    CenterAlignedTopAppBar(
-        title = {
-            Text("Active Dispatch: $count")
-        },
-        modifier = modifier,
-        navigationIcon = {
-            Icon(
-                painter = painterResource(R.drawable.ic_arrow_back_24),
-                contentDescription = "Back Icon"
-            )
-        },
-        actions = {
-            IconButton(
-                onClick = onClick
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_more_vert_24),
-                    contentDescription = "More Icon"
-                )
-            }
 
-        },
-    )
-}
+
 
 @Preview(showBackground = true)
 @Composable

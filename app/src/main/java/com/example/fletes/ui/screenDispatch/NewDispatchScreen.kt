@@ -58,13 +58,13 @@ fun NewDispatchScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val activeDispatchCount by viewModel.activeDispatchCount.collectAsState(0)
-    val snackbarHostState = remember { SnackbarHostState() }
+    val snackBarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(uiState.showSnackbar) {
         if (uiState.showSnackbar) {
             scope.launch {
-                snackbarHostState.showSnackbar(
+                snackBarHostState.showSnackbar(
                     message = uiState.snackbarMessage,
                     withDismissAction = true
                 )
@@ -75,7 +75,7 @@ fun NewDispatchScreen(
 
     Scaffold(
         modifier = Modifier.imePadding(),
-        snackbarHost = { SnackbarHost(snackbarHostState) },
+        snackbarHost = { SnackbarHost(snackBarHostState) },
         topBar = {
             TopAppBar(
                 title = {
@@ -308,43 +308,7 @@ fun DestinoCard(
     }
 }
 
-@Composable
-fun DeleteDestinoAlertDialog(
-    destino: Destino,
-    onDismissRequestDelete: () -> Unit,
-    onConfirmDelete: (destino: Destino) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    AlertDialog(
-        onDismissRequest = onDismissRequestDelete,
-        confirmButton = {
-            Button(onClick = { onConfirmDelete(destino) }) {
-                Text(text = "Confirm Delete")
-            }
-        },
-        dismissButton = {
-            Button(onClick = onDismissRequestDelete) {
-                Text(text = "Cancel")
-            }
-        },
-        title = {
-            Text(text = "Delete Destination ${destino.localidad}")
-        },
-        text = {
-            Column {
-                Text(text = "Are you sure you want to delete this destination?")
-                Text(text = "This action cannot be undone.")
-                Text(text = "Id: ${destino.id}")
-                Text(text = "Fecha: ${destino.createdAt}")
-                Text(text = "Despacho: ${destino.despacho}")
-                Text(text = "Comisionista: ${destino.comisionista}")
-                Text(text = "Destino: ${destino.localidad}")
-            }
-        },
-        modifier = modifier
-    )
 
-}
 
 
 

@@ -36,8 +36,7 @@ data class TruckJourneyUiState(
 )
 
 
-class TruckJouerneyViewModel(
-
+class TruckJourneyViewModel(
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 

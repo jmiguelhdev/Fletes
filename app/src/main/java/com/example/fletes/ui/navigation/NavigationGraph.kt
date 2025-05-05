@@ -41,6 +41,7 @@ fun MyNavHost(
             if(activeTrucks.isNotEmpty()){
                 ActiveDispatchDetailsScreen(
                     newDispatchViewModel = newDispatchViewModel,
+                    truckViewModel = truckViewModel,
                     alltrucks = activeTrucks,
                     onClickFab = {
                         navController.navigate(DispatchScreenRoute)

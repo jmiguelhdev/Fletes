@@ -3,6 +3,7 @@ package com.example.fletes.ui.screenDispatch
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.fletes.data.room.Camion
 import com.example.fletes.data.room.Destino
 import com.example.fletes.domain.DeleteDestinoUseCase
 import com.example.fletes.domain.GetActiveDestinosUseCase
@@ -42,6 +43,13 @@ data class DispatchUiState(
     val isLoading: Boolean = false,
     val showSnackbar: Boolean = false,
     val snackbarMessage: String = "",
+    val selectedTruck: Camion = Camion(
+        id = 0,
+        choferName = "",
+        choferDni = 0,
+        patenteTractor = "",
+        patenteJaula = "",
+    ),
 
 ) {
     val isFormValid: Boolean
@@ -362,4 +370,17 @@ class NewDispatchViewModel(
             }
         }
     }
+
+    fun selectTruck(truck: Camion) {
+        _uiState.update { currentState ->
+            currentState.copy(selectedTruck = truck)
+        }
+    }
+    fun unSelectTruck(truck: Camion) {
+        val updateTruck = truck.copy(isActive = true)
+        _uiState.update { currentState ->
+            currentState.copy(selectedTruck = updateTruck)
+        }
+    }
+
 }

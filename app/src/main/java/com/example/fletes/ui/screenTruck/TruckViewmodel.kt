@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -72,7 +71,6 @@ class TruckViewModel(
             }
         }
     }
-
 
 
     fun showDialog() {
@@ -142,9 +140,12 @@ class TruckViewModel(
             camionRepository.insertCamion(camionToInsert)
             Log.d("CamionViewModel", "Camion inserted $camionToInsert")
         }
-        _uiState.update { it.copy(
-            showSnackbar = true,
-            snackbarMessage = "Camión insertado correctamente") }
+        _uiState.update {
+            it.copy(
+                showSnackbar = true,
+                snackbarMessage = "Camión insertado correctamente"
+            )
+        }
         hideDialog()
     }
 
@@ -197,11 +198,40 @@ class TruckViewModel(
             }
             Log.d("CamionViewModel", "Camion updated $camionToUpdate")
         }
-        _uiState.update { it.copy(
-            showEditDialog = false,
-            showSnackbar = true,
-            snackbarMessage = "Camión actualizado correctamente") }
+        _uiState.update {
+            it.copy(
+                showEditDialog = false,
+                showSnackbar = true,
+                snackbarMessage = "Camión actualizado correctamente"
+            )
+        }
     }
 
+    fun selectTruck(camion: Camion) {
+        viewModelScope.launch {
+            val updatedCamion = camion.copy(
+                isActive = false
+            )
+            try {
+                camionRepository.updateTruckIsActive(updatedCamion)
+                Log.d("CamionViewModel", "Camion updated $updatedCamion")
+            } catch (e: Exception) {
+                Log.e("CamionViewModel", "Error updating camion", e)
+            }
+        }
+    }
+    fun unSelectTruck(camion: Camion) {
+        viewModelScope.launch {
+            val updatedCamion = camion.copy(
+                isActive = true
+            )
+            try {
+                camionRepository.updateTruckIsActive(updatedCamion)
+                Log.d("CamionViewModel", "Camion unselected updated $updatedCamion")
+            } catch (e: Exception) {
+                Log.e("CamionViewModel", "Error updating camion", e)
+            }
+        }
+    }
 
 }

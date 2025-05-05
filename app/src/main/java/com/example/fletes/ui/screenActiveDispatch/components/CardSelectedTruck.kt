@@ -34,12 +34,21 @@ fun CardSelectedTruck(
             containerColor = if (truck.isActive) Color.Green else Color.Red,
         )
     ) {
-        HorizontalDivider()
+
         Text(
             text = truck.choferName,
             modifier = Modifier.align(Alignment.CenterHorizontally)
             )
         HorizontalDivider()
+        Text(
+            text = "Truck License plate: ${truck.patenteTractor}",
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        )
+        HorizontalDivider()
+        Text(
+            text = "Trailer License plate: ${truck.patenteJaula}",
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        )
     }
 }
 

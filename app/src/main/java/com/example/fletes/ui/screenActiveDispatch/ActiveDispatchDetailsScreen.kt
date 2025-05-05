@@ -4,6 +4,8 @@ import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -18,7 +20,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.fletes.R
 import com.example.fletes.ui.screenActiveDispatch.components.ActiveDispatchTopAppBar
+import com.example.fletes.ui.screenActiveDispatch.components.DeleteDestinationDialog
+import com.example.fletes.ui.screenActiveDispatch.components.DestinationCard
 import com.example.fletes.ui.screenActiveDispatch.components.TruckFab
+import com.example.fletes.ui.screenActiveDispatch.components.UpdateDestinationAlertDialog
 import com.example.fletes.ui.screenDispatch.NewDispatchViewModel
 import com.example.fletes.ui.theme.FletesTheme
 import kotlinx.coroutines.launch
@@ -70,10 +75,38 @@ fun ActiveDispatchDetailsScreen(
         Column(
             modifier = Modifier.padding(innerPadding)
         ){
+            LazyColumn(
+            ){ 
+                items(activeDispatch) { destination ->
+                    DestinationCard(
+                        destination = destination,
+                        onEdit = {
 
+                        },
+                        onDelete = {
+
+                        }
+                    )
+                    if (uiState.showDeleteDialog) {
+                        DeleteDestinationDialog(
+                            destino = destination,
+                            onDismissRequestDelete = viewModel::hideDeleteDialog,
+                            onConfirmDelete = viewModel::deleteDetino,
+                        )
+                    }
+                    if (uiState.showUpdateDialog){
+                        UpdateDestinationAlertDialog(
+                            destino = destination,
+                            onDismissRequest = viewModel::hideUpdateDialog,
+                            onConfirm = viewModel::updateDestination,
+                            value = uiState.despacho.toString(),
+                            onValueChange = viewModel::onValueChangeDespacho,
+                            errorMessage = uiState.despachoErrorMessage,
+                        )
+                    }
+                }
+            }
         }
-
-
     }
 }
 

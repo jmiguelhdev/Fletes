@@ -1,17 +1,14 @@
 package com.example.fletes.ui.screenActiveDispatch.components
 
 import android.content.res.Configuration
-import androidx.compose.animation.core.copy
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Card
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -28,17 +25,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color.Companion.Green
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.Wallpapers
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.fletes.R
-import com.example.fletes.data.model.destinations.Destination
+import com.example.fletes.data.room.Destino
 
 @Composable
 fun DestinationCard(
     modifier: Modifier = Modifier,
-    destination: Destination,
+    destination: Destino,
     onEdit: () -> Unit,
     onDelete: () -> Unit
 ) {
@@ -68,16 +65,12 @@ fun DestinationCard(
                 ,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                (destination.comisionista ?: destination.localidad)?.let {
-                    Text(text = "Commission Agent: $it", modifier = Modifier.padding(4.dp))
-                }
+                Text(text = "Commission Agent: ${destination.comisionista}", modifier = Modifier.padding(4.dp))
                 HorizontalDivider(modifier = Modifier.padding(4.dp))
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    destination.localidad?.let {
-                        Text(text = "Location: $it")
-                    }
+                    Text(text = "Location: ${destination.localidad}")
                     Icon(
                         painter = painterResource(id = R.drawable.ic_location_pin_24),
                         contentDescription = "Location",
@@ -134,11 +127,10 @@ fun DestinationCard(
 )
 @Composable
 fun PreviewDestinationCard() {
-    val destination = Destination(
+    val destination = Destino(
         id = 1,
         comisionista = "Comisionista",
         localidad = "Localidad",
-        despacho = 123
-    )
+        despacho = 1230.0    )
     DestinationCard(destination = destination, onEdit = {}, onDelete = {})
 }

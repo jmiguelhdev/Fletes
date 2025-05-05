@@ -63,9 +63,6 @@ class NewDispatchViewModel(
 ) : ViewModel() {
 
 
-
-
-
     private val _uiState = MutableStateFlow(DispatchUiState())
     val uiState: StateFlow<DispatchUiState> = _uiState.stateIn(
         scope = viewModelScope,

@@ -2,7 +2,6 @@ package com.example.fletes.ui.screenActiveDispatch
 
 import android.util.Log
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -112,7 +111,9 @@ fun ActiveDispatchDetailsScreen(
                         onDeleteDestination = {
                             newDispatchViewModel.showDeleteDialog()
                         },
-                    )
+                    ) {
+                        newDispatchViewModel.selectDestination(it)
+                    }
                     if (uiState.showDeleteDialog) {
                         DeleteDestinationDialog(
                             destino = destination,

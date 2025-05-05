@@ -1,6 +1,7 @@
 package com.example.fletes.ui.screenActiveDispatch.components
 
 import android.content.res.Configuration
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,13 +16,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color.Companion.Green
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -36,15 +32,22 @@ fun DestinationCard(
     modifier: Modifier = Modifier,
     destination: Destino,
     onEditDestination: (destination: Destino) -> Unit,
-    onDeleteDestination: (destination: Destino) -> Unit
+    onDeleteDestination: (destination: Destino) -> Unit,
+    onClicable: (destination: Destino) -> Unit
 ) {
-    var isChecked by remember { mutableStateOf(true) }
-    val cardColor = if (isChecked) Green.copy(alpha = 0.5f) else MaterialTheme.colorScheme.surface
+
+    val cardColor =
+        if (destination.isActive) Green.copy(alpha = 0.5f) else MaterialTheme.colorScheme.surface
 
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(8.dp),
+            .padding(8.dp)
+            .clickable {
+                Log.d("DestinationCard", "Destination clicked: $destination")
+                destination.isActive
+                onClicable(destination)
+            },
         colors = CardDefaults.cardColors(
             containerColor = cardColor
         )
@@ -59,12 +62,13 @@ fun DestinationCard(
             Column(
                 modifier = Modifier
                     .padding(4.dp)
-                    .weight(1f)
-                    .clickable { isChecked = !isChecked }
-                ,
+                    .weight(1f),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = "Commission Agent: ${destination.comisionista}", modifier = Modifier.padding(4.dp))
+                Text(
+                    text = "Commission Agent: ${destination.comisionista}",
+                    modifier = Modifier.padding(4.dp)
+                )
                 HorizontalDivider(modifier = Modifier.padding(4.dp))
                 Row(
                     verticalAlignment = Alignment.CenterVertically
@@ -114,10 +118,11 @@ fun PreviewDestinationCard() {
         id = 1,
         comisionista = "Comisionista",
         localidad = "Localidad",
-        despacho = 1230.0    )
+        despacho = 1230.0
+    )
     DestinationCard(
         destination = destination,
         onEditDestination = {},
         onDeleteDestination = {}
-        )
+    ) {}
 }

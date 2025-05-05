@@ -3,6 +3,7 @@ package com.example.fletes.ui.screenDispatch
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.fletes.data.model.destinations.Destination
 import com.example.fletes.data.room.Camion
 import com.example.fletes.data.room.Destino
 import com.example.fletes.domain.DeleteDestinoUseCase
@@ -13,6 +14,7 @@ import com.example.fletes.domain.InsertDestinoUseCase
 import com.example.fletes.domain.SearchComisionistaUseCase
 import com.example.fletes.domain.SearchLocalidadUseCase
 import com.example.fletes.domain.UpdateDestinoUseCase
+import com.example.fletes.ui.screenActiveDispatch.components.truck
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
@@ -50,6 +52,13 @@ data class DispatchUiState(
         patenteTractor = "",
         patenteJaula = "",
     ),
+    val selectedDestination: Destino = Destino(
+        id = 1,
+        comisionista = "",
+        despacho = 10.0,
+        localidad = "",
+        isActive = true
+    )
 
 ) {
     val isFormValid: Boolean
@@ -380,6 +389,22 @@ class NewDispatchViewModel(
         val updateTruck = truck.copy(isActive = true)
         _uiState.update { currentState ->
             currentState.copy(selectedTruck = updateTruck)
+        }
+    }
+    fun selectDestination(destination: Destino) {
+        val updateDestination = destination.copy(
+            isActive = false
+        )
+        _uiState.update { currentState ->
+            currentState.copy(selectedDestination = updateDestination)
+        }
+    }
+    fun unSelectDestination(destination: Destino) {
+        val updateDestination = destination.copy(
+            isActive = true
+        )
+        _uiState.update { currentState ->
+            currentState.copy(selectedDestination = updateDestination)
         }
     }
 

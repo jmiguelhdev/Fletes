@@ -28,7 +28,7 @@ data class Camion(
     @ColumnInfo(name = "chofer_dni") val choferDni: Int,
     @ColumnInfo(name = "patente_tractor") val patenteTractor: String,
     @ColumnInfo(name = "patente_jaula") val patenteJaula: String,
-    @ColumnInfo(name = "is_active") val isActive: Boolean = true
+    @ColumnInfo(name = "is_active") val isActive: Boolean = false
 )
 
 @Entity(tableName = "destinos")
@@ -38,7 +38,7 @@ data class Destino(
     @ColumnInfo(name = "comisionista") val comisionista: String,
     @ColumnInfo(name = "despacho") val despacho: Double = 0.0,
     @ColumnInfo(name = "localidad") val localidad: String,
-    @ColumnInfo(name = "is_active") val isActive: Boolean = true,
+    @ColumnInfo(name = "is_active") val isActive: Boolean = false,
 )
 
 @Entity(
@@ -67,7 +67,7 @@ data class CamionesRegistro(
     @ColumnInfo(name = "km_descarga") val kmDescarga: Int = 0,
     @ColumnInfo(name = "km_surtidor") val kmSurtidor: Int = 0,
     @ColumnInfo(name = "litros") val litros: Double = 0.0,
-    @ColumnInfo(name = "is_active") val isActive: Boolean = true //new field
+    @ColumnInfo(name = "is_active") val isActive: Boolean = false //new field
 ){
     fun getDistancia(): Int {
         return kmDescarga - kmCarga

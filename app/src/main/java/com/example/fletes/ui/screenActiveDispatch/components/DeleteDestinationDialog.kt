@@ -5,10 +5,14 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import com.example.fletes.data.room.Destino
+import java.time.LocalDate
+import java.util.Date
 
-@Composable
+@Composable //Dialog to delete a Destination
 fun DeleteDestinationDialog(
     destino: Destino,
     onDismissRequestDelete: () -> Unit,
@@ -44,4 +48,22 @@ fun DeleteDestinationDialog(
         modifier = modifier
     )
 
+}
+
+@Preview(showBackground = true)
+@Composable
+fun DeleteDestinationDialogPreview() {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        DeleteDestinationDialog(
+            destino = Destino(
+                id = 1,
+                createdAt = LocalDate.now(),
+                despacho = 1.0,
+                comisionista = "Comisionista 1",
+                localidad = "Localidad 1"
+            ),
+            onDismissRequestDelete = {},
+            onConfirmDelete = {}
+        )
+    }
 }

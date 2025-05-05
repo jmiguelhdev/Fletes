@@ -8,6 +8,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -18,7 +19,7 @@ import java.time.LocalDate
 
 
 @Composable
-fun UpdateDestinoAlertDialog(
+fun UpdateDestinationAlertDialog(
     destino: Destino,
     onDismissRequest: () -> Unit,
     onConfirm: (destino: Destino) -> Unit,
@@ -52,11 +53,15 @@ fun UpdateDestinoAlertDialog(
                 Text(text = "Ingrese nuevo valor de despacho")
                 HorizontalDivider(thickness = 2.dp)
                 DecimalTextField(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.CenterHorizontally),
+
                     value = value,
+
                     onValueChange = onValueChange,
                     label = "Despacho",
                     errorMessage = errorMessage,
-                    modifier = Modifier.fillMaxWidth()
                 )
             }
         }, modifier = Modifier.wrapContentHeight()
@@ -67,7 +72,7 @@ fun UpdateDestinoAlertDialog(
 @Composable
 fun UpdateDestinoAlertDialogPreview(modifier: Modifier = Modifier) {
     FletesTheme {
-        UpdateDestinoAlertDialog(
+        UpdateDestinationAlertDialog(
             destino = Destino(
                 id = 1,
                 createdAt = LocalDate.now(),

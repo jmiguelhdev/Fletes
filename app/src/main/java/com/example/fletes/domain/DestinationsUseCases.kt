@@ -2,22 +2,26 @@ package com.example.fletes.domain
 
 
 
-import com.example.fletes.data.repositories.implementations.TruckRepositoryImpl
 import com.example.fletes.data.repositories.interfaces.DestinationRepositoryInterface
 import com.example.fletes.data.repositories.interfaces.TruckRepositoryInterface
 import com.example.fletes.data.room.Camion
 import com.example.fletes.data.room.Destino
 import kotlinx.coroutines.flow.Flow
 
-class GetActiveDestinosUseCase(private val repository: DestinationRepositoryInterface) {
-    operator fun invoke(): Flow<List<Destino>> {
-        return repository.getActiveDestinosStream()
-    }
-}
 
 class GetActiveDispatchCount(private val repository: DestinationRepositoryInterface) {
     operator fun invoke(): Flow<Int> {
         return repository.getActiveDestinosCountStream()
+    }
+}
+class GetUnActiveDispatchUseCase(private val repository: DestinationRepositoryInterface) {
+    operator fun invoke(): Flow<List<Destino>> {
+        return repository.getUnActiveDestinosStream()
+    }
+}
+class GetActiveDestinosUseCase(private val repository: DestinationRepositoryInterface) {
+    operator fun invoke(): Flow<List<Destino>> {
+        return repository.getActiveDestinosStream()
     }
 }
 
@@ -57,20 +61,3 @@ class UpdateDestinoUseCase(private val repository: DestinationRepositoryInterfac
 
 }
 
-class GetAllTrucks(private val repository: TruckRepositoryInterface){
-    operator fun invoke(): Flow<List<Camion>> {
-        return repository.getAllCamiones()
-    }
-}
-
-class GetActiveTrucks(private val repository: TruckRepositoryInterface){
-     operator fun invoke(): Flow<List<Camion>> {
-        return repository.getActiveTrucks()
-    }
-}
-
-class UpdateTruckIsActiveUseCase(private val repository: TruckRepositoryInterface){
-    suspend operator fun invoke(truck: Camion){
-        repository.updateTruckIsActive(truck)
-    }
-}

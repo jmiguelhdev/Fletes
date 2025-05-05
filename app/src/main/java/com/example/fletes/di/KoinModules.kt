@@ -13,6 +13,7 @@ import com.example.fletes.domain.GetActiveDestinosUseCase
 import com.example.fletes.domain.GetActiveDispatchCount
 import com.example.fletes.domain.GetAllDestinosUseCase
 import com.example.fletes.domain.GetAllJourneyUseCase
+import com.example.fletes.domain.GetUnActiveDispatchUseCase
 import com.example.fletes.domain.InsertDestinoUseCase
 import com.example.fletes.domain.InsertJourneyUseCase
 import com.example.fletes.domain.SearchComisionistaUseCase
@@ -81,6 +82,7 @@ val domainModule = module {
     single { UpdateDestinoUseCase(get()) }
     single { GetActiveDestinosUseCase(get()) }
     single { GetActiveDispatchCount(get()) }
+    single { GetUnActiveDispatchUseCase(get()) }
     single { InsertJourneyUseCase(get()) }
     single { UpdateJourneyUseCase(get()) }
     single { GetAllJourneyUseCase(get()) }
@@ -93,6 +95,7 @@ val dispatchModule = module {
         NewDispatchViewModel(
             //savedStateHandle = savedStateHandle,
             getActiveDispatch = get(),
+            getUnActiveDispatch = get(),
             getActiveDispatchCount = get(),
             searchComisionistaUseCase = get(),
             searchLocalidadUseCase = get(),

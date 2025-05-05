@@ -3,18 +3,17 @@ package com.example.fletes.ui.screenDispatch
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.fletes.data.model.destinations.Destination
 import com.example.fletes.data.room.Camion
 import com.example.fletes.data.room.Destino
 import com.example.fletes.domain.DeleteDestinoUseCase
 import com.example.fletes.domain.GetActiveDestinosUseCase
 import com.example.fletes.domain.GetActiveDispatchCount
 import com.example.fletes.domain.GetAllDestinosUseCase
+import com.example.fletes.domain.GetUnActiveDispatchUseCase
 import com.example.fletes.domain.InsertDestinoUseCase
 import com.example.fletes.domain.SearchComisionistaUseCase
 import com.example.fletes.domain.SearchLocalidadUseCase
 import com.example.fletes.domain.UpdateDestinoUseCase
-import com.example.fletes.ui.screenActiveDispatch.components.truck
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
@@ -70,6 +69,7 @@ data class DispatchUiState(
 
 class NewDispatchViewModel(
     getActiveDispatch: GetActiveDestinosUseCase,
+    getUnActiveDispatch: GetUnActiveDispatchUseCase,
     getActiveDispatchCount: GetActiveDispatchCount,
     private val searchComisionistaUseCase: SearchComisionistaUseCase,
     private val searchLocalidadUseCase: SearchLocalidadUseCase,
@@ -79,6 +79,12 @@ class NewDispatchViewModel(
     private val updateDestinoUseCase: UpdateDestinoUseCase,
 ) : ViewModel() {
 
+
+    val unActiveDestinations: StateFlow<List<Destino>> = getUnActiveDispatch().stateIn(
+        scope = viewModelScope,
+        started = WhileSubscribed(5000), // Consider shorter timeout if feasible
+        initialValue = emptyList()
+    )
 
     private val _uiState = MutableStateFlow(DispatchUiState())
     val uiState: StateFlow<DispatchUiState> = _uiState.stateIn(
@@ -393,8 +399,16 @@ class NewDispatchViewModel(
     }
     fun selectDestination(destination: Destino) {
         val updateDestination = destination.copy(
-            isActive = false
+            isActive = true
         )
+        Log.d("DispatchViewModel", "selectDestination: $updateDestination")
+       viewModelScope.launch {
+           try {
+               updateDestinoUseCase(updateDestination)
+           }catch (e: Exception){
+
+           }
+       }
         _uiState.update { currentState ->
             currentState.copy(selectedDestination = updateDestination)
         }

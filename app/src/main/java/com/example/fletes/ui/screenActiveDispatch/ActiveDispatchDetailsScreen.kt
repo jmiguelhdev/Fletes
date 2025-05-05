@@ -20,10 +20,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import com.example.fletes.R
 import com.example.fletes.data.room.Camion
+import com.example.fletes.data.room.Destino
 import com.example.fletes.ui.screenActiveDispatch.components.ActiveDispatchTopAppBar
 import com.example.fletes.ui.screenActiveDispatch.components.CardSelectedTruck
 import com.example.fletes.ui.screenActiveDispatch.components.DeleteDestinationDialog
 import com.example.fletes.ui.screenActiveDispatch.components.DestinationCard
+import com.example.fletes.ui.screenActiveDispatch.components.DestinationDropdown
 import com.example.fletes.ui.screenActiveDispatch.components.TruckFab
 import com.example.fletes.ui.screenActiveDispatch.components.TrucksDropdown
 import com.example.fletes.ui.screenActiveDispatch.components.UpdateDestinationAlertDialog
@@ -38,6 +40,7 @@ fun ActiveDispatchDetailsScreen(
     newDispatchViewModel: NewDispatchViewModel,
     truckViewModel: TruckViewModel,
     alltrucks: List<Camion>,
+    unActiveDestinations: List<Destino>,
     onClickFab: () -> Unit = {},
     onClickAction: () -> Unit = {}
 ) {
@@ -99,7 +102,16 @@ fun ActiveDispatchDetailsScreen(
                     modifier = Modifier
                 )
             }
-            // List of trucks dropdown menu
+            // List of destination dropdown menu
+            DestinationDropdown(
+                onClickDestination = {
+                    newDispatchViewModel.selectDestination(destination = it)
+                },
+                list = unActiveDestinations
+            )
+            HorizontalDivider()
+            // List of destinations
+
             LazyColumn(
             ) {
                 items(activeDispatch, key = { it.id }) { destination ->

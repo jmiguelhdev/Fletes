@@ -67,7 +67,6 @@ data class DispatchUiState(
 }
 
 
-
 class NewDispatchViewModel(
     getActiveDispatch: GetActiveDestinosUseCase,
     getUnActiveDispatch: GetUnActiveDispatchUseCase,
@@ -326,6 +325,7 @@ class NewDispatchViewModel(
             currentState.copy(showDeleteDialog = false)
         }
     }
+
     fun showUpdateDialog() {
         _uiState.update { currentState ->
             currentState.copy(showUpdateDialog = true)
@@ -357,7 +357,7 @@ class NewDispatchViewModel(
         viewModelScope.launch {
             Log.d("DispatchViewModel", "pre update ${destino.despacho}")
             try {
-               val  updatedDestino = destino.copy(
+                val updatedDestino = destino.copy(
                     despacho = uiState.value.despacho
                 )
                 Log.d("DispatchViewModel", "updatedDestino: $updatedDestino")
@@ -388,45 +388,66 @@ class NewDispatchViewModel(
             currentState.copy(selectedTruck = truck)
         }
     }
+
     fun unSelectTruck(truck: Camion) {
         val updateTruck = truck.copy(isActive = true)
         _uiState.update { currentState ->
             currentState.copy(selectedTruck = updateTruck)
         }
     }
+
     fun selectDestination(destination: Destino) {
         val updateDestination = destination.copy(
             isActive = false
         )
         Log.d("DispatchViewModel", "selectDestination: $updateDestination")
-       viewModelScope.launch {
-           try {
-               updateDestinoUseCase(updateDestination)
-               _uiState.update {
-                   it.copy(
-                       showSnackbar = true,
-                       snackbarMessage = "Destino seleccionado correctamente"
-                   )
-               }
-           }catch (e: Exception){
+        viewModelScope.launch {
+            try {
+                updateDestinoUseCase(updateDestination)
+                _uiState.update {
+                    it.copy(
+                        showSnackbar = true,
+                        snackbarMessage = "Destino seleccionado correctamente"
+                    )
+                }
+            } catch (e: Exception) {
                 _uiState.update {
                     it.copy(
                         showSnackbar = true,
                         snackbarMessage = "Error al seleccionar el destino: ${e.message}"
                     )
                 }
-           }
-       }
+            }
+        }
         _uiState.update { currentState ->
             currentState.copy(selectedDestination = updateDestination)
         }
     }
+
     fun unSelectDestination(destination: Destino) {
         val updateDestination = destination.copy(
             isActive = true
         )
-        _uiState.update { currentState ->
-            currentState.copy(selectedDestination = updateDestination)
+        viewModelScope.launch {
+            try {
+                updateDestinoUseCase(updateDestination)
+                _uiState.update {
+                    it.copy(
+                        showSnackbar = true,
+                        snackbarMessage = "Destino seleccionado correctamente"
+                    )
+                }
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(
+                        showSnackbar = true,
+                        snackbarMessage = "Error al seleccionar el destino: ${e.message}"
+                    )
+                }
+            }
+            _uiState.update { currentState ->
+                currentState.copy(selectedDestination = updateDestination)
+            }
         }
     }
 

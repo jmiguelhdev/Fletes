@@ -40,13 +40,14 @@ fun ActiveDispatchDetailsScreen(
     newDispatchViewModel: NewDispatchViewModel,
     truckViewModel: TruckViewModel,
     alltrucks: List<Camion>,
+    activeDispatch: List<Destino>,
     unActiveDestinations: List<Destino>,
     onClickFab: () -> Unit = {},
     onClickAction: () -> Unit = {}
 ) {
     val uiState by newDispatchViewModel.uiState.collectAsState()
     val activeDispatchCount by newDispatchViewModel.activeDispatchCount.collectAsState(0)
-    val activeDispatch by newDispatchViewModel.activeDispatch.collectAsState(emptyList())
+
     val snackBarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
@@ -102,48 +103,44 @@ fun ActiveDispatchDetailsScreen(
                     modifier = Modifier
                 )
             }
+            HorizontalDivider()
             // List of destination dropdown menu
             DestinationDropdown(
                 onClickDestination = {
                     newDispatchViewModel.selectDestination(destination = it)
                 },
-                list = unActiveDestinations
+                list = activeDispatch
             )
             HorizontalDivider()
-            // List of destinations
-
-            LazyColumn(
-            ) {
-                items(activeDispatch, key = { it.id }) { destination ->
-                    DestinationCard(
-                        destination = destination,
-                        onEditDestination = {
-                            newDispatchViewModel.showUpdateDialog()
-                        },
-                        onDeleteDestination = {
-                            newDispatchViewModel.showDeleteDialog()
-                        },
-                    ) {
-                        newDispatchViewModel.selectDestination(it)
-                    }
-                    if (uiState.showDeleteDialog) {
-                        DeleteDestinationDialog(
-                            destino = destination,
-                            onDismissRequestDelete = newDispatchViewModel::hideDeleteDialog,
-                            onConfirmDelete = newDispatchViewModel::deleteDetino,
-                        )
-                    }
-                    if (uiState.showUpdateDialog) {
-                        UpdateDestinationAlertDialog(
-                            destino = destination,
-                            onDismissRequest = newDispatchViewModel::hideUpdateDialog,
-                            onConfirm = newDispatchViewModel::updateDestination,
-                            value = uiState.despacho.toString(),
-                            onValueChange = newDispatchViewModel::onValueChangeDespacho,
-                            errorMessage = uiState.despachoErrorMessage,
-                        )
-                    }
-                }
+            if (!uiState.selectedDestination.isActive) {
+                DestinationCard(
+                    modifier = modifier,
+                    destination = uiState.selectedDestination,
+                    onEditDestination = {
+                        newDispatchViewModel.showUpdateDialog()
+                    },
+                    onDeleteDestination = {
+                        newDispatchViewModel.showDeleteDialog()
+                    },
+                    onClicable = newDispatchViewModel::unSelectDestination
+                )
+            }
+            if (uiState.showDeleteDialog) {
+                DeleteDestinationDialog(
+                    destino = uiState.selectedDestination,
+                    onDismissRequestDelete = newDispatchViewModel::hideDeleteDialog,
+                    onConfirmDelete = newDispatchViewModel::deleteDetino,
+                )
+            }
+            if (uiState.showUpdateDialog) {
+                UpdateDestinationAlertDialog(
+                    destino = uiState.selectedDestination,
+                    onDismissRequest = newDispatchViewModel::hideUpdateDialog,
+                    onConfirm = newDispatchViewModel::updateDestination,
+                    value = uiState.despacho.toString(),
+                    onValueChange = newDispatchViewModel::onValueChangeDespacho,
+                    errorMessage = uiState.despachoErrorMessage,
+                )
             }
         }
     }

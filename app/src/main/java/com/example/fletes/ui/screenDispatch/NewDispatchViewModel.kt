@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
@@ -94,7 +95,7 @@ class NewDispatchViewModel(
     )
 
     val activeDispatch: StateFlow<List<Destino>> =
-        getActiveDispatch().stateIn(
+        getAllDestinosUseCase().stateIn(
             scope = viewModelScope,
             started = WhileSubscribed(5000), // Consider shorter timeout if feasible
             initialValue = emptyList()
@@ -106,10 +107,6 @@ class NewDispatchViewModel(
             started = WhileSubscribed(5000), // Consider shorter timeout if feasible
             initialValue = 0
         )
-
-
-
-
 
     // Comisionista StateFlows
     private val _comisionistaQuery = MutableStateFlow("")
@@ -399,14 +396,25 @@ class NewDispatchViewModel(
     }
     fun selectDestination(destination: Destino) {
         val updateDestination = destination.copy(
-            isActive = true
+            isActive = false
         )
         Log.d("DispatchViewModel", "selectDestination: $updateDestination")
        viewModelScope.launch {
            try {
                updateDestinoUseCase(updateDestination)
+               _uiState.update {
+                   it.copy(
+                       showSnackbar = true,
+                       snackbarMessage = "Destino seleccionado correctamente"
+                   )
+               }
            }catch (e: Exception){
-
+                _uiState.update {
+                    it.copy(
+                        showSnackbar = true,
+                        snackbarMessage = "Error al seleccionar el destino: ${e.message}"
+                    )
+                }
            }
        }
         _uiState.update { currentState ->
@@ -419,6 +427,16 @@ class NewDispatchViewModel(
         )
         _uiState.update { currentState ->
             currentState.copy(selectedDestination = updateDestination)
+        }
+    }
+
+    fun loadDestinations() {
+        viewModelScope.launch {
+            try {
+                getAllDestinosUseCase()
+            } catch (e: Exception) {
+                Log.e("DispatchViewModel", "Error loading destinations", e)
+            }
         }
     }
 

@@ -28,10 +28,12 @@ fun MyNavHost(
     val truckViewModel: TruckViewModel = koinViewModel()
     val activeTrucks by truckViewModel.camiones.collectAsState(emptyList())
     val unActiveDestinations by newDispatchViewModel.unActiveDestinations.collectAsState(emptyList())
+    val activeDispatch by newDispatchViewModel.activeDispatch.collectAsState(emptyList())
 
     // Load the camiones when the parent composable is launched
     LaunchedEffect(key1 = true) {
         truckViewModel.loadCamiones()
+        newDispatchViewModel.loadDestinations()
     }
 
     NavHost(
@@ -39,11 +41,12 @@ fun MyNavHost(
         startDestination = TrucksDetailScreenRoute,
     ) {
         composable<TrucksDetailScreenRoute> {
-            if(activeTrucks.isNotEmpty() && unActiveDestinations.isNotEmpty()){
+            if(activeTrucks.isNotEmpty() && activeDispatch.isNotEmpty()){
                 ActiveDispatchDetailsScreen(
                     newDispatchViewModel = newDispatchViewModel,
                     truckViewModel = truckViewModel,
                     alltrucks = activeTrucks,
+                    activeDispatch = activeDispatch,
                     unActiveDestinations = unActiveDestinations,
                     onClickFab = {
                         navController.navigate(DispatchScreenRoute)

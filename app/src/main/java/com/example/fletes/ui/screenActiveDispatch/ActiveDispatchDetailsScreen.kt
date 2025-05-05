@@ -81,10 +81,10 @@ fun ActiveDispatchDetailsScreen(
                     DestinationCard(
                         destination = destination,
                         onEdit = {
-
+                            viewModel.showUpdateDialog()
                         },
                         onDelete = {
-
+                            viewModel.showDeleteDialog()
                         }
                     )
                     if (uiState.showDeleteDialog) {

@@ -10,8 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -25,13 +23,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color.Companion.Green
-import androidx.compose.ui.layout.boundsInRoot
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.Wallpapers
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.example.fletes.R
 import com.example.fletes.data.room.Destino
@@ -43,10 +38,8 @@ fun DestinationCard(
     onEditDestination: (destination: Destino) -> Unit,
     onDeleteDestination: (destination: Destino) -> Unit
 ) {
-    var expanded by remember { mutableStateOf(false) }
     var isChecked by remember { mutableStateOf(true) }
     val cardColor = if (isChecked) Green.copy(alpha = 0.5f) else MaterialTheme.colorScheme.surface
-    var iconPosition by remember { mutableStateOf(Rect.Zero) }
 
     Card(
         modifier = modifier

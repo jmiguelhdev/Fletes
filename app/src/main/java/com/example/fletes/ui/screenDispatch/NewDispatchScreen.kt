@@ -53,7 +53,7 @@ import org.koin.androidx.compose.koinViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NewDispatchScreen(
-    viewModel: NewDispatchViewModel = koinViewModel(),
+    viewModel: NewDispatchViewModel,
     onBackClick: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()

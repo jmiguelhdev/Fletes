@@ -9,6 +9,9 @@ import com.example.fletes.domain.validators.DniValidator
 import com.example.fletes.domain.validators.PatenteValidator
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -38,17 +41,39 @@ class TruckViewModel(
     private val dniValidator: DniValidator,
     private val licenseStringValidatorResult: PatenteValidator
 ) : ViewModel() {
-    val camiones = camionRepository.getAllCamiones().stateIn(
+    private val _camiones = MutableStateFlow<List<Camion>>(emptyList())
+    val camiones: StateFlow<List<Camion>> = _camiones.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = emptyList()
     )
+
+
     private val _uiState = MutableStateFlow(TruckUiState())
     val uiState = _uiState.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = TruckUiState()
     )
+
+    // Function to load the list of camiones
+    fun loadCamiones() {
+        viewModelScope.launch {
+            try {
+                // Update the list of camiones in the state flow
+                camionRepository.getAllCamiones()
+                    .collectLatest { camiones ->
+                        _camiones.value = camiones
+                    }
+            } catch (e: Exception) {
+                // Handle the error
+                Log.e("TruckViewModel", "Error loading camiones", e)
+                // You could also update the UI state here to display an error message
+            }
+        }
+    }
+
+
 
     fun showDialog() {
         _uiState.update { it.copy(showInsertDialog = true) }

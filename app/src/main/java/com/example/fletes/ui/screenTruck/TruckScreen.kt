@@ -22,7 +22,7 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun TruckScreen(
-    truckViewModel: TruckViewModel = koinViewModel(),
+    truckViewModel: TruckViewModel,
     onNavBack: () -> Unit
 ) {
     val listOfTrucks = truckViewModel.camiones.collectAsStateWithLifecycle()

@@ -73,7 +73,7 @@ fun TruckCard(
                 TruckDetailsColumn(
                     truck = truck,
                     modifier = Modifier.weight(1f))
-                InteractColum(
+                InteractColumTruck(
                     truck = truck,
                     onDeleteTruck = onDeleteTruck,
                     onEditTruck = onEditTruck
@@ -84,7 +84,7 @@ fun TruckCard(
 }
 
 @Composable
-private fun InteractColum(
+private fun InteractColumTruck(
     truck: Camion,
     onDeleteTruck: (Int) -> Unit,
     onEditTruck: (Int) -> Unit
@@ -159,7 +159,7 @@ fun InteractColumPreview() {
         patenteJaula = "CC456DD",
         isActive = true,
     )
-    InteractColum(truck = mockCamion, onDeleteTruck = {}, onEditTruck = {})
+    InteractColumTruck(truck = mockCamion, onDeleteTruck = {}, onEditTruck = {})
 }
 
 @Preview(showBackground = true)

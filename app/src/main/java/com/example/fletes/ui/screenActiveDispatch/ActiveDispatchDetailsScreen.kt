@@ -11,11 +11,15 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.fletes.R
@@ -77,15 +81,18 @@ fun ActiveDispatchDetailsScreen(
         ){
             LazyColumn(
             ){ 
-                items(activeDispatch) { destination ->
+                items(activeDispatch, key = { it.id }) { destination ->
+
+
+
                     DestinationCard(
                         destination = destination,
-                        onEdit = {
+                        onEditDestination = {
                             viewModel.showUpdateDialog()
                         },
-                        onDelete = {
+                        onDeleteDestination =  {
                             viewModel.showDeleteDialog()
-                        }
+                        },
                     )
                     if (uiState.showDeleteDialog) {
                         DeleteDestinationDialog(

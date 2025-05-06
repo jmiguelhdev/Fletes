@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.fletes.data.room.Destino
 import com.example.fletes.ui.screenActiveDispatch.ActiveDispatchDetailsScreen
 import com.example.fletes.ui.screenDispatch.NewDispatchScreen
 import com.example.fletes.ui.screenDispatch.NewDispatchViewModel
@@ -23,12 +24,20 @@ import org.koin.androidx.compose.koinViewModel
 fun MyNavHost(
     navController: NavHostController,
     ) {
-
     val newDispatchViewModel: NewDispatchViewModel = koinViewModel()
     val truckViewModel: TruckViewModel = koinViewModel()
     val activeTrucks by truckViewModel.camiones.collectAsState(emptyList())
     val unActiveDestinations by newDispatchViewModel.unActiveDestinations.collectAsState(emptyList())
-    val activeDispatch by newDispatchViewModel.activeDispatch.collectAsState(emptyList())
+    val initialActiveDipatch  = listOf(
+        Destino(
+            id = 1,
+            comisionista = "",
+            despacho = 0.0,
+            localidad = "",
+            isActive = true
+        )
+    )
+    val activeDispatch by newDispatchViewModel.activeDispatch.collectAsState(initialActiveDipatch)
 
     // Load the camiones when the parent composable is launched
     LaunchedEffect(key1 = true) {
@@ -41,7 +50,7 @@ fun MyNavHost(
         startDestination = TrucksDetailScreenRoute,
     ) {
         composable<TrucksDetailScreenRoute> {
-            if(activeTrucks.isNotEmpty() && activeDispatch.isNotEmpty()){
+            if(activeTrucks.isNotEmpty()){
                 ActiveDispatchDetailsScreen(
                     newDispatchViewModel = newDispatchViewModel,
                     truckViewModel = truckViewModel,

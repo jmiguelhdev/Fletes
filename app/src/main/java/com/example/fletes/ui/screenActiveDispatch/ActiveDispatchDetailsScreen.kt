@@ -63,8 +63,6 @@ fun ActiveDispatchDetailsScreen(
         }
     }
 
-    Log.d("TrucksDetailsScreen", "activeDispatch: $activeDispatch")
-
     Scaffold(
         modifier = modifier.imePadding(),
         snackbarHost = { SnackbarHost(snackBarHostState) },
@@ -109,7 +107,7 @@ fun ActiveDispatchDetailsScreen(
                 onClickDestination = {
                     newDispatchViewModel.selectDestination(destination = it)
                 },
-                list = activeDispatch
+                list = unActiveDestinations
             )
             HorizontalDivider()
             if (!uiState.selectedDestination.isActive) {

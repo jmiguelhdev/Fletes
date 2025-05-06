@@ -92,12 +92,30 @@ class NewDispatchViewModel(
         started = WhileSubscribed(5000),
         initialValue = DispatchUiState()
     )
+    val selectedDestination: Destino = Destino(
+        id = 1,
+        comisionista = "",
+        despacho = 0.0,
+        localidad = "",
+        isActive = true
+    )
+    val selectedDestination2: Destino = Destino(
+        id = 1,
+        comisionista = "",
+        despacho = 0.0,
+        localidad = "",
+        isActive = true
+    )
+    val initialList: List<Destino> = listOf(
+        selectedDestination,
+        selectedDestination2
+    )
 
     val activeDispatch: StateFlow<List<Destino>> =
-        getAllDestinosUseCase().stateIn(
+        getActiveDispatch().stateIn(
             scope = viewModelScope,
             started = WhileSubscribed(5000), // Consider shorter timeout if feasible
-            initialValue = emptyList()
+            initialValue = initialList
         )
 
     val activeDispatchCount: StateFlow<Int> =

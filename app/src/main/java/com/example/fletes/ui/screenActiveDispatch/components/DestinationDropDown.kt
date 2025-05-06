@@ -32,9 +32,7 @@ fun DestinationDropdown(
     onClickDestination: (Destino) -> Unit
 ) {
     val listOfDestinos: List<String> = list.filter { it.comisionista.isNotBlank() }.map { it.comisionista }
-
-
-    val options: List<String> = listOfDestinos
+    val options: List<String> = if (listOfDestinos.isEmpty()) listOf("") else listOfDestinos
     var expanded by remember { mutableStateOf(false) }
     val textFieldState = rememberTextFieldState(options[0])
 

@@ -115,7 +115,7 @@ class NewDispatchViewModel(
         getActiveDispatch().stateIn(
             scope = viewModelScope,
             started = WhileSubscribed(5000), // Consider shorter timeout if feasible
-            initialValue = initialList
+            initialValue = emptyList()
         )
 
     val activeDispatchCount: StateFlow<Int> =

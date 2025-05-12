@@ -92,24 +92,7 @@ class NewDispatchViewModel(
         started = WhileSubscribed(5000),
         initialValue = DispatchUiState()
     )
-    val selectedDestination: Destino = Destino(
-        id = 1,
-        comisionista = "",
-        despacho = 0.0,
-        localidad = "",
-        isActive = true
-    )
-    val selectedDestination2: Destino = Destino(
-        id = 1,
-        comisionista = "",
-        despacho = 0.0,
-        localidad = "",
-        isActive = true
-    )
-    val initialList: List<Destino> = listOf(
-        selectedDestination,
-        selectedDestination2
-    )
+
 
     val activeDispatch: StateFlow<List<Destino>> =
         getActiveDispatch().stateIn(
@@ -323,7 +306,7 @@ class NewDispatchViewModel(
             )
         }
     }
-
+    // implenetar este boton en la nueva pantalla ActiveDispatchDetailsScreen
     private fun updateInsertButton() {
         _uiState.update { currentState ->
             currentState.copy(

@@ -15,15 +15,14 @@ import com.example.fletes.data.room.Destino
 fun ExeDispatchButton(
     activeTruck: Boolean,
     activeDispatch: Boolean,
-    isvalidForm: Boolean,
-    onClickSave: (camion: Camion, destino: Destino) -> Unit,
+    onClickSave: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     OutlinedButton(
-        onClick = { onClickSave },
+        onClick = onClickSave,
         modifier = modifier,
-        enabled = activeTruck && activeDispatch && isvalidForm,
-        colors = if (activeTruck && activeDispatch && isvalidForm) ButtonDefaults.outlinedButtonColors() else ButtonDefaults.outlinedButtonColors(
+        enabled = activeTruck && activeDispatch,
+        colors = if (activeTruck && activeDispatch) ButtonDefaults.outlinedButtonColors() else ButtonDefaults.outlinedButtonColors(
             containerColor = MaterialTheme.colorScheme.errorContainer
         )
     ) {
@@ -40,8 +39,7 @@ fun ExeDispatchButtonPreview() {
     ExeDispatchButton(
         activeTruck = true,
         activeDispatch = true,
-        isvalidForm = true,
-        onClickSave = { _, _ -> }
+        onClickSave = { }
     )
 }
 
@@ -51,8 +49,7 @@ fun ExeDispatchButtonDisabledPreview() {
     ExeDispatchButton(
         activeTruck = false,
         activeDispatch = true,
-        isvalidForm = true,
-        onClickSave = { _, _ -> }
+        onClickSave = { }
     )
 }
 

@@ -26,6 +26,7 @@ import com.example.fletes.ui.screenActiveDispatch.components.CardSelectedTruck
 import com.example.fletes.ui.screenActiveDispatch.components.DeleteDestinationDialog
 import com.example.fletes.ui.screenActiveDispatch.components.DestinationCard
 import com.example.fletes.ui.screenActiveDispatch.components.DestinationDropdown
+import com.example.fletes.ui.screenActiveDispatch.components.ExeDispatchButton
 import com.example.fletes.ui.screenActiveDispatch.components.TruckFab
 import com.example.fletes.ui.screenActiveDispatch.components.TrucksDropdown
 import com.example.fletes.ui.screenActiveDispatch.components.UpdateDestinationAlertDialog
@@ -123,6 +124,17 @@ fun ActiveDispatchDetailsScreen(
                     onClicable = newDispatchViewModel::unSelectDestination
                 )
             }
+            HorizontalDivider()
+            ExeDispatchButton(
+                activeTruck = true,//uiState.selectedTruck.isActive,
+                activeDispatch = true,//uiState.selectedDestination.isActive,
+                onClickSave = {
+                    Log.d("ActiveDispatchDetailsScreen", "onClickSave: ${uiState.selectedTruck.isActive}")
+                    Log.d("ActiveDispatchDetailsScreen", "onClickSave: ${uiState.selectedDestination.isActive}")
+                },
+                modifier = modifier
+            )
+
             if (uiState.showDeleteDialog) {
                 DeleteDestinationDialog(
                     destino = uiState.selectedDestination,

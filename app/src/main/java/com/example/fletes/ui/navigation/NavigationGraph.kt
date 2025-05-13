@@ -2,7 +2,9 @@ package com.example.fletes.ui.navigation
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -23,12 +25,12 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun MyNavHost(
     navController: NavHostController,
-    ) {
+) {
     val newDispatchViewModel: NewDispatchViewModel = koinViewModel()
     val truckViewModel: TruckViewModel = koinViewModel()
     val activeTrucks by truckViewModel.camiones.collectAsState(emptyList())
     val unActiveDestinations by newDispatchViewModel.unActiveDestinations.collectAsState(emptyList())
-    val initialActiveDipatch  = listOf(
+    val initialActiveDipatch = listOf(
         Destino(
             id = 1,
             comisionista = "",
@@ -44,45 +46,51 @@ fun MyNavHost(
         truckViewModel.loadCamiones()
         newDispatchViewModel.loadDestinations()
     }
-
-    NavHost(
-        navController = navController,
-        startDestination = TrucksDetailScreenRoute,
-    ) {
-        composable<TrucksDetailScreenRoute> {
-            if(activeTrucks.isNotEmpty()){
-                ActiveDispatchDetailsScreen(
-                    newDispatchViewModel = newDispatchViewModel,
-                    truckViewModel = truckViewModel,
-                    alltrucks = activeTrucks,
-                    activeDispatch = activeDispatch,
-                    unActiveDestinations = unActiveDestinations,
-                    onClickFab = {
-                        navController.navigate(DispatchScreenRoute)
-                    },
-                    onClickAction = {
-                        navController.navigate(TruckScreenRoute)
+    Scaffold(
+        bottomBar = {
+            BottomNavigationBar(navController = navController)
+        }
+    ) { innerPadding ->
+        NavHost(
+            navController = navController,
+            startDestination = TrucksDetailScreenRoute,
+            modifier = Modifier.padding(innerPadding)
+        ) {
+            composable<TrucksDetailScreenRoute> {
+                if (activeTrucks.isNotEmpty()) {
+                    ActiveDispatchDetailsScreen(
+                        newDispatchViewModel = newDispatchViewModel,
+                        truckViewModel = truckViewModel,
+                        alltrucks = activeTrucks,
+                        activeDispatch = activeDispatch,
+                        unActiveDestinations = unActiveDestinations,
+                        onClickFab = {
+                            navController.navigate(DispatchScreenRoute)
+                        },
+                        onClickAction = {
+                            navController.navigate(TruckScreenRoute)
+                        }
+                    )
+                } else {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
                     }
-                )
-            }else{
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
-                    CircularProgressIndicator()
-                }
 
+                }
             }
-        }
-        composable<DispatchScreenRoute> {
-            NewDispatchScreen(
-                viewModel = newDispatchViewModel,
-            ) {
-                navController.popBackStack()
+            composable<DispatchScreenRoute> {
+                NewDispatchScreen(
+                    viewModel = newDispatchViewModel,
+                ) {
+                    navController.popBackStack()
+                }
             }
-        }
-        composable<TruckScreenRoute> {
-            TruckScreen(
-                truckViewModel = truckViewModel,
-            ) {
-                navController.popBackStack()
+            composable<TruckScreenRoute> {
+                TruckScreen(
+                    truckViewModel = truckViewModel,
+                ) {
+                    navController.popBackStack()
+                }
             }
         }
     }

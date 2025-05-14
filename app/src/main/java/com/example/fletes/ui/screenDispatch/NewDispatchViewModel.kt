@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fletes.data.room.Camion
+import com.example.fletes.data.room.CamionesRegistro
 import com.example.fletes.data.room.Destino
 import com.example.fletes.domain.DeleteDestinoUseCase
 import com.example.fletes.domain.GetActiveDestinosUseCase
@@ -11,6 +12,7 @@ import com.example.fletes.domain.GetActiveDispatchCount
 import com.example.fletes.domain.GetAllDestinosUseCase
 import com.example.fletes.domain.GetUnActiveDispatchUseCase
 import com.example.fletes.domain.InsertDestinoUseCase
+import com.example.fletes.domain.InsertJourneyUseCases
 import com.example.fletes.domain.SearchComisionistaUseCase
 import com.example.fletes.domain.SearchLocalidadUseCase
 import com.example.fletes.domain.UpdateDestinoUseCase
@@ -19,7 +21,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
@@ -77,6 +78,7 @@ class NewDispatchViewModel(
     private val insertDestinoUseCase: InsertDestinoUseCase,
     private val deleteDestinoUseCase: DeleteDestinoUseCase,
     private val updateDestinoUseCase: UpdateDestinoUseCase,
+    private val createJourneyUseCase: InsertJourneyUseCases
 ) : ViewModel() {
 
 
@@ -467,6 +469,29 @@ class NewDispatchViewModel(
                 Log.e("DispatchViewModel", "Error loading destinations", e)
             }
         }
+    }
+
+    fun createJourney(camion: Camion, destino: Destino) {
+            viewModelScope.launch {
+                try {
+                    val truckIdForeignKey = camion.id
+                    val destinationIdForeignKey = destino.id
+                    val journeyToinsert = CamionesRegistro(
+                        camionId = truckIdForeignKey,
+                        destinoId = destinationIdForeignKey
+                    )
+                    createJourneyUseCase(journeyToinsert)
+                    _uiState.update {
+                        it.copy(
+                            showSnackbar = true,
+                            snackbarMessage = "Jornada creada correctamente"
+                        )
+                    }
+                    //agregar una flag para deshabilitar el boton de crear jornada
+                }catch (e: Exception){
+                    Log.e("DispatchViewModel", "Error creating journey", e)
+                }
+            }
     }
 
 }

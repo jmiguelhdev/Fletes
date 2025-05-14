@@ -86,6 +86,7 @@ val domainModule = module {
     single { InsertJourneyUseCase(get()) }
     single { UpdateJourneyUseCase(get()) }
     single { GetAllJourneyUseCase(get()) }
+    single { InsertJourneyUseCase(get()) }
 
 }
 
@@ -103,6 +104,7 @@ val dispatchModule = module {
             insertDestinoUseCase = get(),
             deleteDestinoUseCase = get(),
             updateDestinoUseCase = get(),
+            createJourneyUseCase = get()
         )
     }
 }

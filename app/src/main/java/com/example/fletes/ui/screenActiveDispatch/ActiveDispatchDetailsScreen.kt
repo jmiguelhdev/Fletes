@@ -133,7 +133,8 @@ fun ActiveDispatchDetailsScreen(
                 onClickSave = {
                     Log.d("ActiveDispatchDetailsScreen", "onClickSave: ${uiState.selectedTruck.isActive}")
                     Log.d("ActiveDispatchDetailsScreen", "onClickSave: ${uiState.selectedDestination.isActive}")
-                },
+                        newDispatchViewModel.createJourney(uiState.selectedTruck, uiState.selectedDestination)
+                              },
                 modifier = modifier
             )
 

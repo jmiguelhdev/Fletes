@@ -73,7 +73,6 @@ val camionModule = module {
 val domainModule = module {
     single { DniValidator() } // Provide DniValidator as a singleton
     single { PatenteValidator() }
-    single { InsertDestinoUseCase(get()) }
     single { GetAllDestinosUseCase(get()) }
     single { SearchComisionistaUseCase(get()) }
     single { SearchLocalidadUseCase(get()) }
@@ -86,7 +85,7 @@ val domainModule = module {
     single { InsertJourneyUseCase(get()) }
     single { UpdateJourneyUseCase(get()) }
     single { GetAllJourneyUseCase(get()) }
-    single { InsertJourneyUseCase(get()) }
+
 
 }
 

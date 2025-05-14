@@ -12,7 +12,7 @@ import com.example.fletes.domain.GetActiveDispatchCount
 import com.example.fletes.domain.GetAllDestinosUseCase
 import com.example.fletes.domain.GetUnActiveDispatchUseCase
 import com.example.fletes.domain.InsertDestinoUseCase
-import com.example.fletes.domain.InsertJourneyUseCases
+import com.example.fletes.domain.InsertJourneyUseCase
 import com.example.fletes.domain.SearchComisionistaUseCase
 import com.example.fletes.domain.SearchLocalidadUseCase
 import com.example.fletes.domain.UpdateDestinoUseCase
@@ -78,7 +78,7 @@ class NewDispatchViewModel(
     private val insertDestinoUseCase: InsertDestinoUseCase,
     private val deleteDestinoUseCase: DeleteDestinoUseCase,
     private val updateDestinoUseCase: UpdateDestinoUseCase,
-    private val createJourneyUseCase: InsertJourneyUseCases
+    private val createJourneyUseCase: InsertJourneyUseCase
 ) : ViewModel() {
 
 
@@ -480,6 +480,7 @@ class NewDispatchViewModel(
                         camionId = truckIdForeignKey,
                         destinoId = destinationIdForeignKey
                     )
+                    Log.d("DispatchViewModel", "journeyToinsert: $journeyToinsert")
                     createJourneyUseCase(journeyToinsert)
                     _uiState.update {
                         it.copy(
@@ -487,6 +488,7 @@ class NewDispatchViewModel(
                             snackbarMessage = "Jornada creada correctamente"
                         )
                     }
+
                     //agregar una flag para deshabilitar el boton de crear jornada
                 }catch (e: Exception){
                     Log.e("DispatchViewModel", "Error creating journey", e)

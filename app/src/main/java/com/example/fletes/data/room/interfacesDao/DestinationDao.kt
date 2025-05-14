@@ -30,7 +30,7 @@ interface DestinationDao {
     @Query("SELECT * FROM destinos WHERE is_active = 1")
     fun getActiveDestinos(): Flow<List<Destino>>
 
-    @Query("SELECT * FROM destinos WHERE is_active = 1")
+    @Query("SELECT * FROM destinos WHERE is_active = 0")
     fun getUnActiveDestinos(): Flow<List<Destino>>
 
     @Query("SELECT COUNT(*) FROM destinos WHERE is_active = 1")

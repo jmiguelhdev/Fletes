@@ -98,7 +98,14 @@ class NewDispatchViewModel(
         getActiveDispatch().stateIn(
             scope = viewModelScope,
             started = WhileSubscribed(5000), // Consider shorter timeout if feasible
-            initialValue = emptyList()
+            initialValue = listOf(
+                Destino(
+                    id = 1,
+                    comisionista = "",
+                    despacho = 0.0,
+                    localidad = "",
+                    isActive = true)
+            )
         )
 
     val activeDispatchCount: StateFlow<Int> =

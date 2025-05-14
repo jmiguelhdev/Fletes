@@ -104,12 +104,14 @@ fun ActiveDispatchDetailsScreen(
             }
             HorizontalDivider()
             // List of destination dropdown menu
-            DestinationDropdown(
-                onClickDestination = {
-                    newDispatchViewModel.selectDestination(destination = it)
-                },
-                list = unActiveDestinations
-            )
+            if (activeDispatch.isNotEmpty()) {
+                DestinationDropdown(
+                    onClickDestination = {
+                        newDispatchViewModel.selectDestination(destination = it)
+                    },
+                    list = activeDispatch
+                )
+            }
             HorizontalDivider()
             if (!uiState.selectedDestination.isActive) {
                 DestinationCard(
@@ -126,8 +128,8 @@ fun ActiveDispatchDetailsScreen(
             }
             HorizontalDivider()
             ExeDispatchButton(
-                activeTruck = true,//uiState.selectedTruck.isActive,
-                activeDispatch = true,//uiState.selectedDestination.isActive,
+                activeTruck = !uiState.selectedTruck.isActive,
+                activeDispatch = !uiState.selectedDestination.isActive,
                 onClickSave = {
                     Log.d("ActiveDispatchDetailsScreen", "onClickSave: ${uiState.selectedTruck.isActive}")
                     Log.d("ActiveDispatchDetailsScreen", "onClickSave: ${uiState.selectedDestination.isActive}")

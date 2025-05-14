@@ -3,10 +3,14 @@ package com.example.fletes.ui.navigation
 import kotlinx.serialization.Serializable
 
 @Serializable
-object TrucksDetailScreenRoute
+object CreateJourneyRoute
 
 @Serializable
-object TruckScreenRoute
+object CreateTruckRoute
 
 @Serializable
-object DispatchScreenRoute
+object CreateDispatchRoute
+
+@Serializable
+object ActiveJourneysRoute
+

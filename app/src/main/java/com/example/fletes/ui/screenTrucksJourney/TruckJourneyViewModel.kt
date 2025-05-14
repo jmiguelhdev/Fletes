@@ -7,9 +7,11 @@ import androidx.lifecycle.viewModelScope
 import com.example.fletes.data.model.DecimalTextFieldData
 import com.example.fletes.data.model.truckJourneyData.TruckJourneyData
 import com.example.fletes.data.room.Camion
+import com.example.fletes.domain.GetAllJourneyUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -37,7 +39,8 @@ data class TruckJourneyUiState(
 
 
 class TruckJourneyViewModel(
-    private val savedStateHandle: SavedStateHandle
+    private val savedStateHandle: SavedStateHandle,
+    getAllJourneyUseCase: GetAllJourneyUseCase
 ) : ViewModel() {
 
     // Claves para SavedStateHandle
@@ -188,4 +191,10 @@ class TruckJourneyViewModel(
 
         }
     }
+
+    val allJourneys = getAllJourneyUseCase().stateIn(
+        scope = viewModelScope,
+        started = kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
 }

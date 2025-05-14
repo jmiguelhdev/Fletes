@@ -24,6 +24,7 @@ import com.example.fletes.domain.validators.DniValidator
 import com.example.fletes.domain.validators.PatenteValidator
 import com.example.fletes.ui.screenTruck.TruckViewModel
 import com.example.fletes.ui.screenDispatch.NewDispatchViewModel
+import com.example.fletes.ui.screenTrucksJourney.TruckJourneyViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -104,6 +105,15 @@ val dispatchModule = module {
             deleteDestinoUseCase = get(),
             updateDestinoUseCase = get(),
             createJourneyUseCase = get()
+        )
+    }
+}
+
+val journeyModule = module {
+    viewModel{parameters ->
+        val savedStateHandle = parameters.get<SavedStateHandle>()
+        TruckJourneyViewModel(
+            savedStateHandle = savedStateHandle,
         )
     }
 }

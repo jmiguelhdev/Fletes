@@ -20,6 +20,8 @@ import com.example.fletes.ui.screenDispatch.NewDispatchScreen
 import com.example.fletes.ui.screenDispatch.NewDispatchViewModel
 import com.example.fletes.ui.screenTruck.TruckScreen
 import com.example.fletes.ui.screenTruck.TruckViewModel
+import com.example.fletes.ui.screenTrucksJourney.JourneyRegistrationScreen
+import com.example.fletes.ui.screenTrucksJourney.TruckJourneyViewModel
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -28,6 +30,7 @@ fun MyNavHost(
 ) {
     val newDispatchViewModel: NewDispatchViewModel = koinViewModel()
     val truckViewModel: TruckViewModel = koinViewModel()
+    val truckJourneyViewModel: TruckJourneyViewModel = koinViewModel()
     val activeTrucks by truckViewModel.camiones.collectAsState(emptyList())
     val unActiveDestinations by newDispatchViewModel.unActiveDestinations.collectAsState(emptyList())
     val initialActiveDipatch = listOf(
@@ -53,10 +56,10 @@ fun MyNavHost(
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = TrucksDetailScreenRoute,
+            startDestination = CreateJourneyRoute,
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable<TrucksDetailScreenRoute> {
+            composable<CreateJourneyRoute> {
                 if (activeTrucks.isNotEmpty()) {
                     ActiveDispatchDetailsScreen(
                         newDispatchViewModel = newDispatchViewModel,
@@ -65,10 +68,10 @@ fun MyNavHost(
                         activeDispatch = activeDispatch,
                         unActiveDestinations = unActiveDestinations,
                         onClickFab = {
-                            navController.navigate(DispatchScreenRoute)
+                            navController.navigate(CreateDispatchRoute)
                         },
                         onClickAction = {
-                            navController.navigate(TruckScreenRoute)
+                            navController.navigate(CreateTruckRoute)
                         }
                     )
                 } else {
@@ -78,19 +81,24 @@ fun MyNavHost(
 
                 }
             }
-            composable<DispatchScreenRoute> {
+            composable<CreateDispatchRoute> {
                 NewDispatchScreen(
                     viewModel = newDispatchViewModel,
                 ) {
                     navController.popBackStack()
                 }
             }
-            composable<TruckScreenRoute> {
+            composable<CreateTruckRoute> {
                 TruckScreen(
                     truckViewModel = truckViewModel,
                 ) {
                     navController.popBackStack()
                 }
+            }
+            composable<ActiveJourneysRoute> {
+                JourneyRegistrationScreen(
+                    truckJourneyViewModel = truckJourneyViewModel
+                )
             }
         }
     }

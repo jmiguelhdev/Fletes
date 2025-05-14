@@ -6,6 +6,7 @@ import com.example.fletes.di.appDatabaseModule
 import com.example.fletes.di.camionModule
 import com.example.fletes.di.dispatchModule
 import com.example.fletes.di.domainModule
+import com.example.fletes.di.journeyModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -22,7 +23,8 @@ class FletesApplication : Application() {
                 appDatabaseModule,
                 camionModule,
                 domainModule,
-                dispatchModule
+                dispatchModule,
+                journeyModule
 
             ) // Your module with database
             // ... other modules

@@ -23,7 +23,7 @@ import com.example.fletes.ui.theme.FletesTheme
 import java.time.LocalDate
 
 @Composable
-fun JourneyCard(
+fun JourneyCardExpanded(
     modifier: Modifier = Modifier,
     camion: Camion,
     truckJourneyData: TruckJourneyData,
@@ -137,7 +137,7 @@ fun JourneyCardPreview() {
     )
 
     FletesTheme {
-        JourneyCard(
+        JourneyCardExpanded(
             camion = sampleCamion,
             truckJourneyData = sampleTruckJourneyData,
         )

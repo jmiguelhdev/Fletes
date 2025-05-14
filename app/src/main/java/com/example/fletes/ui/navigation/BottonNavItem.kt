@@ -15,21 +15,26 @@ import com.example.fletes.R
 
 sealed class BottomNavItem(val route: Any, val iconResourceId: Int, val label: String) {
     object TrucksDetail : BottomNavItem(
-        TrucksDetailScreenRoute,
+        CreateJourneyRoute,
          R.drawable.ic_add_24,
-        "Details"
+        "Create Journey"
     )
 
     object Dispatch : BottomNavItem(
-        DispatchScreenRoute,
+        CreateDispatchRoute,
         R.drawable.ic_location_pin_24,
-        "Dispatch"
+        "Create Dispatch"
     )
 
     object Trucks : BottomNavItem(
-        TruckScreenRoute,
+        CreateTruckRoute,
         R.drawable.icl_shipping_24,
-        "Trucks"
+        "Create Trucks"
+    )
+    object ActiveJourneys : BottomNavItem(
+        ActiveJourneysRoute,
+        R.drawable.ic_format_list_numbered_24,
+        "Active Journeys"
     )
 }
 

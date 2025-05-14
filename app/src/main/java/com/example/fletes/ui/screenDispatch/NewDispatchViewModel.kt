@@ -485,10 +485,11 @@ class NewDispatchViewModel(
                     _uiState.update {
                         it.copy(
                             showSnackbar = true,
-                            snackbarMessage = "Jornada creada correctamente"
+                            snackbarMessage = "Jornada creada correctamente",
+                            selectedDestination = destino.copy(isActive = true),
+                            selectedTruck = camion.copy(isActive = true)
                         )
                     }
-
                     //agregar una flag para deshabilitar el boton de crear jornada
                 }catch (e: Exception){
                     Log.e("DispatchViewModel", "Error creating journey", e)

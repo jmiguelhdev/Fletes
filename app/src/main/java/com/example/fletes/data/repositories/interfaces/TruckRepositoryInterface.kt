@@ -8,7 +8,7 @@ interface TruckRepositoryInterface {
     suspend fun deleteCamion(camion: Camion)
     suspend fun deleteAlllCamiones()
     suspend fun updateCamion(camion: Camion)
-    suspend fun getCamionById(id: Int): Camion?
+    suspend fun getCamionById(id: Int): Flow<Camion?>
     fun getAllCamiones(): Flow<List<Camion>>
     suspend fun updateTruckIsActive(camion: Camion)
     fun getActiveTrucks(): Flow<List<Camion>>

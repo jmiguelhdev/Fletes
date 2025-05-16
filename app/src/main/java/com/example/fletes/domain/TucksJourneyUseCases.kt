@@ -1,7 +1,11 @@
 package com.example.fletes.domain
 
+import com.example.fletes.data.repositories.interfaces.DestinationRepositoryInterface
+import com.example.fletes.data.repositories.interfaces.TruckRepositoryInterface
 import com.example.fletes.data.repositories.interfaces.TrucksJourneyRepositoryInterface
+import com.example.fletes.data.room.Camion
 import com.example.fletes.data.room.CamionesRegistro
+import com.example.fletes.data.room.Destino
 import kotlinx.coroutines.flow.Flow
 
 class InsertJourneyUseCase(private val repository: TrucksJourneyRepositoryInterface) {
@@ -20,5 +24,25 @@ class GetAllJourneyUseCase(private val repository: TrucksJourneyRepositoryInterf
     operator fun invoke(): Flow<List<CamionesRegistro>> {
         return repository.getAllCamionesRegistrosStream()
     }
+
+}
+
+class GetTruckByIdUseCase(private val repository: TruckRepositoryInterface) {
+    suspend operator fun invoke(id: Int): Flow<Camion?> {
+        return repository.getCamionById(id)
+    }
+}
+
+class GetDestinationByIdUseCase(private val repository: DestinationRepositoryInterface) {
+     suspend operator fun invoke(id: Int): Flow<Destino?> {
+        return repository.getDestinoStream(id)
+    }
+}
+
+class GetTruckJourneyByIdUseCase(private val repository: TrucksJourneyRepositoryInterface) {
+    suspend operator fun invoke(id: Int): Flow<CamionesRegistro?> {
+        return repository.getCamionesRegistroStream(id)
+    }
+
 
 }

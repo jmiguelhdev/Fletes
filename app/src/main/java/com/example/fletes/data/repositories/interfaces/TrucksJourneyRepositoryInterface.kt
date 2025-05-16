@@ -8,7 +8,7 @@ interface TrucksJourneyRepositoryInterface {
     suspend fun deleteCamionesRegistro(camionesRegistro: CamionesRegistro)
     suspend fun updateCamionesRegistro(camionesRegistro: CamionesRegistro)
     fun getAllCamionesRegistrosStream(): Flow<List<CamionesRegistro>>
-    fun getCamionesRegistroStream(id: Int): Flow<CamionesRegistro?>
+    suspend fun getCamionesRegistroStream(id: Int): Flow<CamionesRegistro?>
     fun getLastTripByCamionId(camionId: Int): Flow<CamionesRegistro?>
     fun getCamionesRegistroByCamionIdStream(camionId: Int): Flow<List<CamionesRegistro>>
 }

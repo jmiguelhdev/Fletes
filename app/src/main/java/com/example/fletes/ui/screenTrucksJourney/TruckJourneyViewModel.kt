@@ -8,6 +8,9 @@ import com.example.fletes.data.model.DecimalTextFieldData
 import com.example.fletes.data.model.truckJourneyData.TruckJourneyData
 import com.example.fletes.data.room.Camion
 import com.example.fletes.domain.GetAllJourneyUseCase
+import com.example.fletes.domain.GetDestinationByIdUseCase
+import com.example.fletes.domain.GetTruckByIdUseCase
+import com.example.fletes.domain.GetTruckJourneyByIdUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -40,7 +43,10 @@ data class TruckJourneyUiState(
 
 class TruckJourneyViewModel(
     private val savedStateHandle: SavedStateHandle,
-    getAllJourneyUseCase: GetAllJourneyUseCase
+    getAllJourneyUseCase: GetAllJourneyUseCase,
+    getTruckByIdUseCase: GetTruckByIdUseCase,
+    getDestinationByIdUseCase: GetDestinationByIdUseCase,
+    getTruckJourneyByIdUseCase: GetTruckJourneyByIdUseCase,
 ) : ViewModel() {
 
     // Claves para SavedStateHandle

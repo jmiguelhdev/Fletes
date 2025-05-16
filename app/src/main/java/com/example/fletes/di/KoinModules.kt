@@ -13,6 +13,9 @@ import com.example.fletes.domain.GetActiveDestinosUseCase
 import com.example.fletes.domain.GetActiveDispatchCount
 import com.example.fletes.domain.GetAllDestinosUseCase
 import com.example.fletes.domain.GetAllJourneyUseCase
+import com.example.fletes.domain.GetDestinationByIdUseCase
+import com.example.fletes.domain.GetTruckByIdUseCase
+import com.example.fletes.domain.GetTruckJourneyByIdUseCase
 import com.example.fletes.domain.GetUnActiveDispatchUseCase
 import com.example.fletes.domain.InsertDestinoUseCase
 import com.example.fletes.domain.InsertJourneyUseCase
@@ -86,6 +89,9 @@ val domainModule = module {
     single { InsertJourneyUseCase(get()) }
     single { UpdateJourneyUseCase(get()) }
     single { GetAllJourneyUseCase(get()) }
+    single { GetTruckByIdUseCase(get()) }
+    single { GetDestinationByIdUseCase(get()) }
+    single { GetTruckJourneyByIdUseCase(get()) }
 
 
 }
@@ -114,7 +120,10 @@ val journeyModule = module {
         val savedStateHandle = parameters.get<SavedStateHandle>()
         TruckJourneyViewModel(
             savedStateHandle = savedStateHandle,
-            getAllJourneyUseCase = get()
+            getAllJourneyUseCase = get(),
+            getTruckByIdUseCase = get(),
+            getDestinationByIdUseCase = get(),
+            getTruckJourneyByIdUseCase = get()
         )
     }
 }

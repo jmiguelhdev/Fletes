@@ -23,14 +23,14 @@ import com.example.fletes.ui.theme.FletesTheme
 import java.time.LocalDate
 
 @Composable
-fun JourneyCardExpanded(
+fun JourneyCardItems(
     modifier: Modifier = Modifier,
     camion: Camion,
     truckJourneyData: TruckJourneyData,
 ) {
     Card(modifier = Modifier.padding(8.dp)) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().padding(8.dp),
             horizontalArrangement = Arrangement.Center
         ) {
             Text(text = "Registro de viaje Chofer: ")
@@ -137,7 +137,7 @@ fun JourneyCardPreview() {
     )
 
     FletesTheme {
-        JourneyCardExpanded(
+        JourneyCardItems(
             camion = sampleCamion,
             truckJourneyData = sampleTruckJourneyData,
         )

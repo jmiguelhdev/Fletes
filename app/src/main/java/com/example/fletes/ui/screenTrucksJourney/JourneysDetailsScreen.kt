@@ -4,10 +4,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 
 @Composable
 fun JourneyRegistrationScreen(truckJourneyViewModel: TruckJourneyViewModel) {
+    val listOfActiveDestinations = truckJourneyViewModel.allJourneys.collectAsState()
 
 }
 
@@ -28,6 +30,8 @@ fun SaveOrUpdateTripButton(
     }
 
 }
+
+
 
 
 

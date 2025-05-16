@@ -66,6 +66,11 @@ fun DestinationCard(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
+                    text = "Created At: ${destination.createdAt}",
+                    modifier = Modifier.padding(4.dp)
+                )
+                HorizontalDivider(modifier = Modifier.padding(4.dp))
+                Text(
                     text = "Commission Agent: ${destination.comisionista}",
                     modifier = Modifier.padding(4.dp)
                 )

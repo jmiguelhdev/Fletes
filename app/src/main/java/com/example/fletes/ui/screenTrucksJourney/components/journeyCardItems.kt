@@ -16,6 +16,7 @@ import com.example.fletes.R
 import com.example.fletes.data.model.DecimalTextFieldData
 import com.example.fletes.data.model.truckJourneyData.TruckJourneyData
 import com.example.fletes.data.room.Camion
+import com.example.fletes.data.room.CamionesRegistro
 import com.example.fletes.data.room.Destino
 import java.time.LocalDate
 
@@ -24,7 +25,9 @@ fun JourneyCardAnimated(
     expanded: Boolean,
     destino: Destino,
     camion: Camion,
+    camionesRegistro: CamionesRegistro,
     truckJourneyData: TruckJourneyData,
+    onClickCard:(journey: CamionesRegistro) -> Unit,
     modifier: Modifier = Modifier) {
     Column(
         modifier = modifier.animateContentSize(
@@ -36,8 +39,8 @@ fun JourneyCardAnimated(
     ) {
         SingleDestinationCard(
             modifier = modifier,
-            destination = destino,
-            onClicable = { }
+            journey = camionesRegistro,
+            onClickCard = onClickCard
         )
         Row {
             IconButton(
@@ -59,8 +62,8 @@ fun JourneyCardAnimated(
         }
         if(expanded) {
             JourneyCardItems(
-                modifier = modifier,
                 camion = camion,
+                destino = destino,
                 truckJourneyData = truckJourneyData
             )
         }
@@ -114,6 +117,17 @@ val mockDestino = Destino(
     isActive = true
 )
 
+val mockCamionesRegistro = CamionesRegistro(
+    id = 1,
+    camionId = 1,
+    destinoId = 1,
+    createdAt = LocalDate.now(),
+    kmCarga = 1000,
+    kmDescarga = 2000,
+    kmSurtidor = 500,
+    litros = 200.0,
+    isActive = true
+)
 @Preview(showBackground = true)
 @Composable
 fun JourneyCardAnimatedPreview() {
@@ -121,6 +135,8 @@ fun JourneyCardAnimatedPreview() {
         expanded = true,
         destino = mockDestino,
         camion = mockCamion,
-        truckJourneyData = mockTruckJourneyData
+        camionesRegistro = mockCamionesRegistro,
+        truckJourneyData = mockTruckJourneyData,
+        onClickCard = {},
     )
 }

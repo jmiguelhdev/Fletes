@@ -16,13 +16,17 @@ fun JourneyRegistrationScreen(truckJourneyViewModel: TruckJourneyViewModel) {
     val uiState = truckJourneyViewModel.truckJourneyUiState.collectAsState()
 
     LazyColumn { 
-        items(listOfActiveDestinations){
+        items(listOfActiveDestinations.value){
             JourneyCardAnimated(
-                expanded = TODO(),
-                destino = TODO(),
-                camion = TODO(),
-                truckJourneyData = TODO(),
-                modifier = TODO()
+                expanded = true,
+                destino = uiState.value.destinationSelected,
+                camion = uiState.value.truckSelected,
+                camionesRegistro = it,
+                truckJourneyData = uiState.value.truckJourneyData,
+                onClickCard = {
+                    truckJourneyViewModel.onClickJourneyCard(it.id)
+                },
+                modifier = Modifier
             )
         }
     }

@@ -28,7 +28,7 @@ class GetAllJourneyUseCase(private val repository: TrucksJourneyRepositoryInterf
 }
 
 class GetTruckByIdUseCase(private val repository: TruckRepositoryInterface) {
-    suspend operator fun invoke(id: Int): Flow<Camion?> {
+    suspend operator fun invoke(id: Int): Camion? {
         return repository.getCamionById(id)
     }
 }

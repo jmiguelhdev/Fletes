@@ -22,7 +22,7 @@ class TrucksJourneyRepositoryImp(private val trucksRegistrationDao: TrucksRegist
         return trucksRegistrationDao.getAllCamionesRegistros()
     }
 
-    override fun getCamionesRegistroStream(id: Int): Flow<CamionesRegistro?> {
+    override suspend fun getCamionesRegistroStream(id: Int): Flow<CamionesRegistro?> {
         return trucksRegistrationDao.getCamionesRegistroById(id)
     }
 

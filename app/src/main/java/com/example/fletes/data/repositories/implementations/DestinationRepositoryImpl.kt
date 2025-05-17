@@ -6,6 +6,8 @@ import com.example.fletes.data.room.interfacesDao.DestinationDao
 import kotlinx.coroutines.flow.Flow
 
 class DestinationRepositoryImpl(private val destinationsDao: DestinationDao) : DestinationRepositoryInterface {
+
+
     override suspend fun insertDestino(destino: Destino) {
         return destinationsDao.insertDestino(destino)
     }
@@ -18,7 +20,7 @@ class DestinationRepositoryImpl(private val destinationsDao: DestinationDao) : D
         return destinationsDao.updateDestino(destino)
     }
 
-    override fun getDestinoStream(id: Int): Flow<Destino?> {
+    override suspend fun getDestinoStream(id: Int): Flow<Destino?> {
         return destinationsDao.getDestinoById(id)
     }
 

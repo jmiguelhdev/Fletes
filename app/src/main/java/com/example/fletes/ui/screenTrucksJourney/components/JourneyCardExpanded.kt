@@ -12,12 +12,14 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.fletes.data.model.DecimalTextFieldData
 import com.example.fletes.data.model.truckJourneyData.TruckJourneyData
 import com.example.fletes.data.room.Camion
+import com.example.fletes.data.room.Destino
 import com.example.fletes.ui.screenDispatch.DecimalTextField
 import com.example.fletes.ui.theme.FletesTheme
 import java.time.LocalDate
@@ -26,15 +28,19 @@ import java.time.LocalDate
 fun JourneyCardItems(
     modifier: Modifier = Modifier,
     camion: Camion,
+    destino: Destino,
     truckJourneyData: TruckJourneyData,
 ) {
+    destino.comisionista
     Card(modifier = Modifier.padding(8.dp)) {
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(8.dp),
-            horizontalArrangement = Arrangement.Center
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Text(text = "Registro de viaje Chofer: ")
-            Text(text = camion.choferName)
+            Text(text = "Registro de Viaje")
+            Text(text = "Chofer: ${camion.choferName}")
+            Text(text = "Destino: ${destino.localidad}")
+            Text(text = "Comisionista: ${destino.comisionista}")
         }
         HorizontalDivider(thickness = DividerDefaults.Thickness)
         Row(
@@ -135,11 +141,20 @@ fun JourneyCardPreview() {
         ),
         isActive = false
     )
+    val sampleDestino = Destino(
+        id = 1,
+        createdAt = LocalDate.now(),
+        comisionista = "John Doe",
+        despacho = 12345.0,
+        localidad = "Silent Hill",
+        isActive = true
+    )
 
     FletesTheme {
         JourneyCardItems(
             camion = sampleCamion,
-            truckJourneyData = sampleTruckJourneyData,
+            destino = sampleDestino,
+            truckJourneyData = sampleTruckJourneyData
         )
     }
 }

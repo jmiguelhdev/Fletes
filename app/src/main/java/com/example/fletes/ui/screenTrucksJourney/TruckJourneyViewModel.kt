@@ -7,15 +7,18 @@ import androidx.lifecycle.viewModelScope
 import com.example.fletes.data.model.DecimalTextFieldData
 import com.example.fletes.data.model.truckJourneyData.TruckJourneyData
 import com.example.fletes.data.room.Camion
+import com.example.fletes.data.room.Destino
 import com.example.fletes.domain.GetAllJourneyUseCase
 import com.example.fletes.domain.GetDestinationByIdUseCase
 import com.example.fletes.domain.GetTruckByIdUseCase
 import com.example.fletes.domain.GetTruckJourneyByIdUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 
@@ -37,6 +40,12 @@ data class TruckJourneyUiState(
         patenteTractor = "",
         patenteJaula = "",
         isActive = true
+    ),
+    val destinationSelected: Destino = Destino(
+        comisionista = "",
+        despacho = 0.0,
+        localidad = "",
+        isActive = true
     )
 )
 
@@ -44,9 +53,9 @@ data class TruckJourneyUiState(
 class TruckJourneyViewModel(
     private val savedStateHandle: SavedStateHandle,
     getAllJourneyUseCase: GetAllJourneyUseCase,
-    getTruckByIdUseCase: GetTruckByIdUseCase,
-    getDestinationByIdUseCase: GetDestinationByIdUseCase,
-    getTruckJourneyByIdUseCase: GetTruckJourneyByIdUseCase,
+    private val getTruckByIdUseCase: GetTruckByIdUseCase,
+    private val getDestinationByIdUseCase: GetDestinationByIdUseCase,
+    private val getTruckJourneyByIdUseCase: GetTruckJourneyByIdUseCase,
 ) : ViewModel() {
 
     // Claves para SavedStateHandle
@@ -200,7 +209,25 @@ class TruckJourneyViewModel(
 
     val allJourneys = getAllJourneyUseCase().stateIn(
         scope = viewModelScope,
-        started = kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5000),
+        started = SharingStarted.WhileSubscribed(5000),
         initialValue = emptyList()
     )
+
+
+    fun onClickJourneyCard(id: Int){
+        viewModelScope.launch {
+            val selectedJorney = allJourneys.firstOrNull()?.find { it.id == id }
+            val selectedTruck = getTruckByIdUseCase(selectedJorney?.camionId ?: 0)
+            val selectedDestination = getDestinationByIdUseCase(selectedJorney?.destinoId ?: 0).firstOrNull()
+            if (selectedJorney != null && selectedTruck != null && selectedDestination != null) {
+                _truckJourneyUiState.update {
+                    it.copy(
+                        truckSelected = selectedTruck,
+                        destinationSelected = selectedDestination
+                    )
+                }
+            }
+
+        }
+    }
 }

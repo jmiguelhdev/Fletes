@@ -1,5 +1,6 @@
 package com.example.fletes.ui.navigation
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -32,6 +33,7 @@ fun MyNavHost(
     val truckViewModel: TruckViewModel = koinViewModel()
     val truckJourneyViewModel: TruckJourneyViewModel = koinViewModel()
     val activeTrucks by truckViewModel.camiones.collectAsState(emptyList())
+    val allJourneys by truckJourneyViewModel.allJourneys.collectAsState(emptyList())
     val unActiveDestinations by newDispatchViewModel.unActiveDestinations.collectAsState(emptyList())
     val initialActiveDipatch = listOf(
         Destino(
@@ -44,11 +46,16 @@ fun MyNavHost(
     )
     val activeDispatch by newDispatchViewModel.activeDispatch.collectAsState(initialActiveDipatch)
 
-    // Load the camiones when the parent composable is launched
+
     LaunchedEffect(key1 = true) {
-        truckViewModel.loadCamiones()
+        truckViewModel.loadCamiones()  // Load the camiones when the parent composable is launched
+        truckJourneyViewModel.loadJourneys()
         newDispatchViewModel.loadDestinations()
     }
+
+    Log.d("MyNavHost", "Active Trucks: $activeTrucks")
+    Log.d("MyNavHost", "All Journeys: $allJourneys")
+
     Scaffold(
         bottomBar = {
             BottomNavigationBar(navController = navController)
@@ -96,9 +103,16 @@ fun MyNavHost(
                 }
             }
             composable<ActiveJourneysRoute> {
-                JourneyRegistrationScreen(
-                    truckJourneyViewModel = truckJourneyViewModel
-                )
+                if (allJourneys.isNotEmpty()){
+                    JourneyRegistrationScreen(
+                        truckJourneyViewModel = truckJourneyViewModel,
+                        allJourneys = allJourneys
+                    )
+                } else {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
+                    }
+                }
             }
         }
     }

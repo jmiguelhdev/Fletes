@@ -3,7 +3,7 @@ package com.example.fletes.ui.screenTruck
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.fletes.data.repositories.implementations.TruckRepositoryImpl
+import com.example.fletes.data.repositories.interfaces.TruckRepositoryInterface
 import com.example.fletes.data.room.Camion
 import com.example.fletes.domain.validators.DniValidator
 import com.example.fletes.domain.validators.PatenteValidator
@@ -36,7 +36,7 @@ data class TruckUiState(
 
 
 class TruckViewModel(
-    private val camionRepository: TruckRepositoryImpl,
+    private val camionRepository: TruckRepositoryInterface,
     private val dniValidator: DniValidator,
     private val licenseStringValidatorResult: PatenteValidator
 ) : ViewModel() {

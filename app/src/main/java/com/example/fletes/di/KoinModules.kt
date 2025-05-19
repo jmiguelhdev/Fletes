@@ -6,6 +6,7 @@ import com.example.fletes.data.repositories.implementations.DestinationRepositor
 import com.example.fletes.data.repositories.implementations.TruckRepositoryImpl
 import com.example.fletes.data.repositories.implementations.TrucksJourneyRepositoryImp
 import com.example.fletes.data.repositories.interfaces.DestinationRepositoryInterface
+import com.example.fletes.data.repositories.interfaces.TruckRepositoryInterface
 import com.example.fletes.data.repositories.interfaces.TrucksJourneyRepositoryInterface
 import com.example.fletes.data.room.AppDatabase
 import com.example.fletes.domain.DeleteDestinoUseCase
@@ -53,7 +54,7 @@ val appDatabaseModule = module {
     }
 
     // Provide Repositories
-    single<TruckRepositoryImpl> {
+    single<TruckRepositoryInterface> {
         TruckRepositoryImpl(get())
     }
     single<DestinationRepositoryInterface> {

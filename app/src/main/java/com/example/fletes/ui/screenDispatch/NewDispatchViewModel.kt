@@ -219,7 +219,8 @@ class NewDispatchViewModel(
                     Destino(
                         comisionista = _uiState.value.comisionista,
                         localidad = _uiState.value.localidad,
-                        despacho = _uiState.value.despacho
+                        despacho = _uiState.value.despacho,
+                        isActive = true
                     )
                 )
                 _uiState.update {
@@ -478,7 +479,8 @@ class NewDispatchViewModel(
                     val destinationIdForeignKey = destino.id
                     val journeyToinsert = CamionesRegistro(
                         camionId = truckIdForeignKey,
-                        destinoId = destinationIdForeignKey
+                        destinoId = destinationIdForeignKey,
+                        isActive = true
                     )
                     Log.d("DispatchViewModel", "journeyToinsert: $journeyToinsert")
                     createJourneyUseCase(journeyToinsert)

@@ -12,13 +12,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.fletes.data.room.Camion
 import com.example.fletes.data.room.CamionesRegistro
+import com.example.fletes.data.room.Destino
 import java.time.LocalDate
 
 @Composable
 fun SingleDestinationCard(
     modifier: Modifier = Modifier,
     journey: CamionesRegistro,
+    camion: Camion,
+    destino: Destino,
     onClickCard: (journey: CamionesRegistro) -> Unit
 ) {
 
@@ -46,6 +50,14 @@ fun SingleDestinationCard(
                     text = "Created At: ${journey.createdAt}",
                     modifier = Modifier.padding(bottom = 4.dp)
                 )
+                Text(
+                    text = "Destino: ${destino.localidad}",
+                    modifier = Modifier.padding(bottom = 4.dp)
+                )
+                Text(
+                    text = "Chofer: ${camion.choferName}",
+                    modifier = Modifier.padding(bottom = 4.dp)
+                )
             }
         }
     }
@@ -65,9 +77,28 @@ fun SingleDestinationCardPreview() {
         litros = 100.0,
         isActive = true
     )
+    val mockCamion = Camion(
+        id = 1,
+        createdAt = LocalDate.now(),
+        choferName = "John Doe",
+        choferDni = 12345678,
+        patenteTractor = "ABC123",
+        patenteJaula = "DEF456",
+        isActive = true
+    )
+    val mockDestino = Destino(
+        id = 1,
+        createdAt = LocalDate.now(),
+        comisionista = "Miguel",
+        despacho = 1012.0,
+        localidad = "Tucuman",
+        isActive = true
+    )
 
     SingleDestinationCard(
         journey = mockJourney,
+        camion = mockCamion,
+        destino = mockDestino,
         onClickCard = {}
     )
 }

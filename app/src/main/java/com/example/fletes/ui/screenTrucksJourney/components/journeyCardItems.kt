@@ -28,6 +28,7 @@ fun JourneyCardAnimated(
     camionesRegistro: CamionesRegistro,
     truckJourneyData: TruckJourneyData,
     onClickCard:(journey: CamionesRegistro) -> Unit,
+    onExpandClick: () -> Unit,
     modifier: Modifier = Modifier) {
     Column(
         modifier = modifier.animateContentSize(
@@ -40,11 +41,13 @@ fun JourneyCardAnimated(
         SingleDestinationCard(
             modifier = modifier,
             journey = camionesRegistro,
+            camion = camion,
+            destino = destino,
             onClickCard = onClickCard
         )
         Row {
             IconButton(
-                onClick = {},
+                onClick = onExpandClick,
                 modifier = modifier.fillMaxWidth(),
             ) {
                 if (expanded) {
@@ -137,6 +140,7 @@ fun JourneyCardAnimatedPreview() {
         camion = mockCamion,
         camionesRegistro = mockCamionesRegistro,
         truckJourneyData = mockTruckJourneyData,
+        onExpandClick = {},
         onClickCard = {},
     )
 }

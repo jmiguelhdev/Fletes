@@ -36,8 +36,7 @@ data class TruckJourneyUiState(
     ),
     val isLoading: Boolean = false,
     val isError: Boolean = false,
-    //creo que no a aqui, creare otro viewModel para el trucks detail
-    val truckSelected: Camion = Camion(
+        val truckSelected: Camion = Camion(
         choferName = "",
         choferDni = 0,
         patenteTractor = "",
@@ -49,7 +48,9 @@ data class TruckJourneyUiState(
         despacho = 0.0,
         localidad = "",
         isActive = true
-    )
+    ),
+    val expandedJourneyId: Int? = null,
+    val expandedJourneyDetails: CamionesRegistro? = null
 )
 
 
@@ -255,20 +256,71 @@ class TruckJourneyViewModel(
 
 
 
-    fun onClickJourneyCard(id: Int){
+    fun onClickJourneyCard(journeyId: Int) {
         viewModelScope.launch {
-            val selectedJorney = allJourneys.firstOrNull()?.find { it.id == id }
-            val selectedTruck = getTruckByIdUseCase(selectedJorney?.camionId ?: 0)
-            val selectedDestination = getDestinationByIdUseCase(selectedJorney?.destinoId ?: 0).firstOrNull()
-            if (selectedJorney != null && selectedTruck != null && selectedDestination != null) {
+            val currentUiState = _truckJourneyUiState.value
+
+            // If this card is already expanded, collapse it
+            if (currentUiState.expandedJourneyId == journeyId) {
                 _truckJourneyUiState.update {
                     it.copy(
-                        truckSelected = selectedTruck,
-                        destinationSelected = selectedDestination
+                        expandedJourneyId = null,
+                        expandedJourneyDetails = null
                     )
                 }
+                Log.d("TruckJourneyViewModel", "Collapsed journey ID: $journeyId")
+            } else {
+                // Otherwise, expand this card and fetch its details
+                _truckJourneyUiState.update {
+                    it.copy(
+                        isLoading = true, // Show loading for detail fetch
+                        expandedJourneyId = journeyId, // Set the new expanded ID
+                        expandedJourneyDetails = null // Clear previous details
+                    )
+                }
+                Log.d("TruckJourneyViewModel", "Expanding journey ID: $journeyId. Fetching details...")
+                try {
+                    // Fetch details for the newly expanded journey
+                    // Assuming getTruckJourneyByIdUseCase returns Flow<CamionesRegistro?>
+                    val journeyDetailsFlow = getTruckJourneyByIdUseCase(journeyId)
+                    val journeyDetails = journeyDetailsFlow.firstOrNull() // Get the first emission
+
+                    if (journeyDetails != null) {
+                        Log.d("TruckJourneyViewModel", "Successfully fetched details for $journeyId: $journeyDetails")
+                        val selectedTruck = getTruckByIdUseCase(journeyDetails.camionId)
+                        val selectedDestinationFlow = getDestinationByIdUseCase(journeyDetails.destinoId)
+                        val selectedDestination = selectedDestinationFlow.firstOrNull()
+                        _truckJourneyUiState.update {
+                            it.copy(
+                                isLoading = false,
+                                expandedJourneyDetails = journeyDetails,
+                                truckSelected = selectedTruck!!,
+                                destinationSelected = selectedDestination!!,
+                                // Potentially fetch related Truck and Destination details here if needed
+                                // and if they are not part of CamionesRegistro or a combined DTO
+                            )
+                        }
+                    } else {
+                        Log.w("TruckJourneyViewModel", "No details found for journey ID: $journeyId")
+                        _truckJourneyUiState.update {
+                            it.copy(
+                                isLoading = false,
+                                isError = true, // Or a specific error message for not found
+                                expandedJourneyId = null // Collapse if details not found
+                            )
+                        }
+                    }
+                } catch (e: Exception) {
+                    Log.e("TruckJourneyViewModel", "Error fetching journey details for ID: $journeyId", e)
+                    _truckJourneyUiState.update {
+                        it.copy(
+                            isLoading = false,
+                            isError = true,
+                            expandedJourneyId = null // Collapse on error
+                        )
+                    }
+                }
             }
-            Log.d("TruckJourneyViewModel", "Selected truck: ${_truckJourneyUiState.value.truckSelected}")
         }
     }
 }

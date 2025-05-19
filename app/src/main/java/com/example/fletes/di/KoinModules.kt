@@ -124,7 +124,8 @@ val journeyModule = module {
             getAllJourneyUseCase = get(),
             getTruckByIdUseCase = get(),
             getDestinationByIdUseCase = get(),
-            getTruckJourneyByIdUseCase = get()
+            getTruckJourneyByIdUseCase = get(),
+            updateJourneyUseCase = get()
         )
     }
 }

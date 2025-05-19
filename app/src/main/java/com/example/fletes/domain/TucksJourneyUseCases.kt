@@ -43,6 +43,5 @@ class GetTruckJourneyByIdUseCase(private val repository: TrucksJourneyRepository
     suspend operator fun invoke(id: Int): Flow<CamionesRegistro?> {
         return repository.getCamionesRegistroStream(id)
     }
-
-
 }
+

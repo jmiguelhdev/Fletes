@@ -13,6 +13,7 @@ import com.example.fletes.domain.GetAllJourneyUseCase
 import com.example.fletes.domain.GetDestinationByIdUseCase
 import com.example.fletes.domain.GetTruckByIdUseCase
 import com.example.fletes.domain.GetTruckJourneyByIdUseCase
+import com.example.fletes.domain.UpdateJourneyUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -63,6 +64,7 @@ class TruckJourneyViewModel(
     private val getTruckByIdUseCase: GetTruckByIdUseCase,
     private val getDestinationByIdUseCase: GetDestinationByIdUseCase,
     private val getTruckJourneyByIdUseCase: GetTruckJourneyByIdUseCase,
+    private val updateJourneyUseCase: UpdateJourneyUseCase
 ) : ViewModel() {
 
     // Claves para SavedStateHandle
@@ -485,6 +487,8 @@ class TruckJourneyViewModel(
     fun saveExpandedJourneyDetails() {
         val currentExpandedData = _truckJourneyUiState.value.editableExpandedJourneyData
         val originalDetails = _truckJourneyUiState.value.expandedJourneyDetails
+        Log.d("TruckJourneyVM", "current id: ${_truckJourneyUiState.value.expandedJourneyId}")
+        Log.d("TruckJourneyVM", "originalDetails current id: ${_truckJourneyUiState.value.expandedJourneyDetails!!.id}")
 
         if (currentExpandedData != null && originalDetails != null) {
             // 1. Validate currentExpandedData (check errorMessages)
@@ -517,6 +521,7 @@ class TruckJourneyViewModel(
 
                 viewModelScope.launch {
                     // 3. Call your update use case
+                    updateJourneyUseCase(updatedJourney)
                     // e.g., updateJourneyUseCase(updatedJourney)
                     Log.d("TruckJourneyVM", "Attempting to save updated journey: $updatedJourney")
                     // After successful save, you might want to:

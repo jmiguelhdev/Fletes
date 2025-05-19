@@ -19,13 +19,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.fletes.data.model.DecimalTextFieldData
 import com.example.fletes.data.model.truckJourneyData.TruckJourneyData
 import com.example.fletes.data.room.Camion
 import com.example.fletes.data.room.CamionesRegistro
 import com.example.fletes.data.room.Destino
 import com.example.fletes.ui.screenTrucksJourney.components.JourneyCardItems
-import com.example.fletes.ui.screenTrucksJourney.components.SingleDestinationCard
 import java.time.format.DateTimeFormatter
 
 @Composable
@@ -59,6 +57,7 @@ fun JourneyRegistrationScreen(
                         Log.d("JourneyRegScreen", "onClick for ${journeySummary.id}")
                         truckJourneyViewModel.onClickJourneyCard(journeySummary.id)
                     },
+                    onSaveClick = {truckJourneyViewModel.saveExpandedJourneyDetails()}
                 )
             }
         }
@@ -73,6 +72,7 @@ fun JourneyCard(
     isExpanded: Boolean,
     truckJourneyDataForDisplayOrEdit: TruckJourneyData?, // Renamed for clarity
     isLoadingDetails: Boolean,
+    onSaveClick: () -> Unit,
     onClick: () -> Unit
 ) {
     Card(
@@ -105,12 +105,9 @@ fun JourneyCard(
                         )
                         SaveOrUpdateTripButton(
                             modifier = Modifier,
-                            destinationId = journeySummary.destinoId,
                             isActive = true,
                             onClickSaveOrUpdateTrip = {
-                                // Collect data from truckJourneyDataForDisplayOrEdit
-                                // and call a save function in the ViewModel
-                                // truckJourneyViewModel.saveExpandedJourneyDetails(truckJourn
+                                onSaveClick()
                             }
                         )
                     } else {
@@ -168,12 +165,11 @@ fun SingleDestinationCardFromDetails(
 @Composable
 fun SaveOrUpdateTripButton(
     modifier: Modifier = Modifier,
-    destinationId: Int,
     isActive: Boolean, //implementar
-    onClickSaveOrUpdateTrip: (destinoId: Int) -> Unit = {},
+    onClickSaveOrUpdateTrip: () -> Unit = {},
 ) {
     OutlinedButton(
-        onClick = { onClickSaveOrUpdateTrip(destinationId) },
+        onClick = { onClickSaveOrUpdateTrip() },
         modifier = modifier.fillMaxWidth(),
         enabled = isActive
     ) {

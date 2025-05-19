@@ -153,6 +153,7 @@ fun NewDispatchScreen(
                     Button(
                         onClick = {
                             viewModel.insertNewDestino()
+                            onBackClick()
                         },
                         enabled = uiState.isInsertButtonEnabled
                     ) {
@@ -189,7 +190,7 @@ fun AutoCompleteTextField(
             value = value,
             onValueChange = {
                 onValueChange(it)
-                onQueryChange(it)
+                onQueryChange(it) // Keep this to trigger suggestion fetching
             },
             label = { Text(label) },
             isError = errorMessage != null
@@ -201,22 +202,33 @@ fun AutoCompleteTextField(
                 color = MaterialTheme.colorScheme.error
             )
         }
-        if (suggestions.isNotEmpty()) {
+
+        // --- MODIFICATION START ---
+        // Show suggestions only if the input field is not empty AND there are suggestions
+        if (value.isNotEmpty() && suggestions.isNotEmpty()) {
+            // --- MODIFICATION END ---
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth(),
+                // Consider adding a max height to the LazyColumn if suggestions can be very long
+                // .heightIn(max = 200.dp) // Example max height
                 contentPadding = PaddingValues(horizontal = 16.dp)
             ) {
                 items(suggestions) { suggestion ->
                     SuggestionItem(
                         suggestion = suggestion,
-                        onSuggestionSelected = {
-                            onSuggestionSelected(it)
+                        onSuggestionSelected = { selectedSuggestion ->
+                            onSuggestionSelected(selectedSuggestion)
+                            // Optionally, you might want to clear suggestions or update the query
+                            // after a selection, depending on desired UX.
+                            // For example, to hide suggestions after selection:
+                            // onQueryChange("") // or pass the selectedSuggestion if you want to keep it
+                            onQueryChange("")
                         }
                     )
                     HorizontalDivider(
                         modifier = Modifier,
-                        thickness = 4.dp,
+                        thickness = 1.dp, // Adjusted thickness for a common look
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
                     )
                 }

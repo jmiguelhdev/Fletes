@@ -52,7 +52,7 @@ fun JourneyRegistrationScreen(
                     camion = if (isCurrentJourneyExpanded) uiState.value.expandedJourneyTruck else null,
                     destino = if (isCurrentJourneyExpanded) uiState.value.expandedJourneyDestination else null,
                     isExpanded = isCurrentJourneyExpanded,
-                    expandedDetails = if (isCurrentJourneyExpanded) uiState.value.expandedJourneyDetails else null,
+                    truckJourneyDataForDisplayOrEdit = if (isCurrentJourneyExpanded) uiState.value.editableExpandedJourneyData else null,
                     isLoadingDetails = uiState.value.isLoading && isCurrentJourneyExpanded,
                     // For JourneyCardItems, we'll derive data from expandedDetails
                     onClick = {

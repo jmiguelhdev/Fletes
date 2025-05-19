@@ -1,8 +1,10 @@
 package com.example.fletes.ui.screenTrucksJourney
 
 import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -13,18 +15,18 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.fletes.data.model.DecimalTextFieldData
 import com.example.fletes.data.model.truckJourneyData.TruckJourneyData
 import com.example.fletes.data.room.Camion
 import com.example.fletes.data.room.CamionesRegistro
 import com.example.fletes.data.room.Destino
-import com.example.fletes.ui.screenTrucksJourney.components.JourneyCardAnimated
 import com.example.fletes.ui.screenTrucksJourney.components.JourneyCardItems
 import com.example.fletes.ui.screenTrucksJourney.components.SingleDestinationCard
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun JourneyRegistrationScreen(
@@ -41,17 +43,22 @@ fun JourneyRegistrationScreen(
     } else {
         LazyColumn {
             items(allJourneys, key = { journey -> journey.id }) { journeySummary ->
+                val isCurrentJourneyExpanded = uiState.value.expandedJourneyId == journeySummary.id
+                Log.d("JourneyRegScreen",
+                    "Journey: ${journeySummary.id}, IsExpanded: $isCurrentJourneyExpanded, ExpandedID: ${uiState.value.expandedJourneyId}")
                 JourneyCard(
-                    journeySummary = journeySummary, // Contains basic info for the card
-                    isExpanded = uiState.value.expandedJourneyId == journeySummary.id,
-                    camion = uiState.value.truckSelected,
-                    destino = uiState.value.destinationSelected,
-                    expandedDetails = if (uiState.value.expandedJourneyId == journeySummary.id) uiState.value.expandedJourneyDetails else null,
-                    isLoadingDetails = uiState.value.isLoading && uiState.value.expandedJourneyId == journeySummary.id,
-                    truckJourneyData = uiState.value.truckJourneyData,
+                    journeySummary = journeySummary,
+                    // Pass the Camion and Destino specific to the expanded journey
+                    camion = if (isCurrentJourneyExpanded) uiState.value.expandedJourneyTruck else null,
+                    destino = if (isCurrentJourneyExpanded) uiState.value.expandedJourneyDestination else null,
+                    isExpanded = isCurrentJourneyExpanded,
+                    expandedDetails = if (isCurrentJourneyExpanded) uiState.value.expandedJourneyDetails else null,
+                    isLoadingDetails = uiState.value.isLoading && isCurrentJourneyExpanded,
+                    // For JourneyCardItems, we'll derive data from expandedDetails
                     onClick = {
+                        Log.d("JourneyRegScreen", "onClick for ${journeySummary.id}")
                         truckJourneyViewModel.onClickJourneyCard(journeySummary.id)
-                    }
+                    },
                 )
             }
         }
@@ -60,13 +67,12 @@ fun JourneyRegistrationScreen(
 
 @Composable
 fun JourneyCard(
-    journeySummary: CamionesRegistro, // Or a summary DTO
-    camion: Camion,
-    destino: Destino,
+    journeySummary: CamionesRegistro,
+    camion: Camion?, // Now nullable, represents the camion of expandedDetails
+    destino: Destino?, // Now nullable, represents the destino of expandedDetails
     isExpanded: Boolean,
-    expandedDetails: CamionesRegistro?, // The full details for this specific card when expanded
+    truckJourneyDataForDisplayOrEdit: TruckJourneyData?, // Renamed for clarity
     isLoadingDetails: Boolean,
-    truckJourneyData: TruckJourneyData,
     onClick: () -> Unit
 ) {
     Card(
@@ -76,31 +82,89 @@ fun JourneyCard(
             .clickable(onClick = onClick)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            SingleDestinationCard(
-                modifier = Modifier,
-                journey = journeySummary,
-                camion = camion,
-                destino = destino
-            ) { }
+            // AnimatedVisibility for the collapsed state
+            AnimatedVisibility(visible = !isExpanded) {
+                SingleDestinationCardFromDetails(
+                    journey = journeySummary, // Or pass expandedDetails if it's the source of truth for display
+                    camion = camion,     // This is the camion of the expanded item
+                    destino = destino    // This is the destino of the expanded item
+                )
+            }
+            // AnimatedVisibility for the expanded state
+            AnimatedVisibility(visible = isExpanded) {
+                Column { // Wrap expanded content in a Column for proper animation
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                    if (isLoadingDetails) {
+                        CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+                    } else if (truckJourneyDataForDisplayOrEdit != null && camion != null && destino != null) {
 
-            if (isExpanded) {
-                // This content is shown only for the expanded card
-                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-                if (isLoadingDetails) {
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
-                } else if (expandedDetails != null) {
-                    JourneyCardItems(
-                        camion = camion,
-                        destino = destino,
-                        truckJourneyData = truckJourneyData
-                    )
-                } else {
-                    Text("Details not available or error loading details.")
+                        JourneyCardItems(
+                            camion = camion, // Pass the correct camion
+                            destino = destino, // Pass the correct destino
+                            truckJourneyData = truckJourneyDataForDisplayOrEdit // Pass data derived from expandedDetails
+                        )
+                        SaveOrUpdateTripButton(
+                            modifier = Modifier,
+                            destinationId = journeySummary.destinoId,
+                            isActive = true,
+                            onClickSaveOrUpdateTrip = {
+                                // Collect data from truckJourneyDataForDisplayOrEdit
+                                // and call a save function in the ViewModel
+                                // truckJourneyViewModel.saveExpandedJourneyDetails(truckJourn
+                            }
+                        )
+                    } else {
+                        Text("Details not available or error loading details.")
+                    }
                 }
             }
         }
     }
 }
+
+// Renamed for clarity or adjust original SingleDestinationCard
+@Composable
+fun SingleDestinationCardFromDetails(
+    modifier: Modifier = Modifier,
+    journey: CamionesRegistro, // Still useful for things like createdAt
+    camion: Camion?, // Nullable, as it might not be loaded yet or if not expanded
+    destino: Destino?, // Nullable
+    onClickCard: ((journey: CamionesRegistro) -> Unit)? = null // Make optional if not always used
+) {
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(4.dp)
+            .then(if (onClickCard != null) Modifier.clickable { onClickCard(journey) } else Modifier),
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(
+                modifier = Modifier.weight(1f),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "Created At: ${journey.createdAt.format(DateTimeFormatter.ISO_LOCAL_DATE)}", // Example formatting
+                    modifier = Modifier.padding(bottom = 4.dp)
+                )
+                Text(
+                    // Display placeholder if destino is not yet loaded for summary view
+                    text = "Destino: ${destino?.localidad ?: journey.destinoId}", // Or "Loading..."
+                    modifier = Modifier.padding(bottom = 4.dp)
+                )
+                Text(
+                    text = "Chofer: ${camion?.choferName ?: journey.camionId}", // Or "Loading..."
+                    modifier = Modifier.padding(bottom = 4.dp)
+                )
+            }
+        }
+    }
+}
+
 @Composable
 fun SaveOrUpdateTripButton(
     modifier: Modifier = Modifier,

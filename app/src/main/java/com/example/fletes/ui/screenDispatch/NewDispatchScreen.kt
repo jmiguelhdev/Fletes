@@ -287,36 +287,6 @@ fun DecimalTextField(
     }
 }
 
-@Composable
-fun DestinoCard(
-    destino: Destino,
-    onDeleteClick: () -> Unit
-) {
-    Card(
-        modifier = Modifier
-            .width(IntrinsicSize.Max)
-            .height(IntrinsicSize.Min)
-            .padding(0.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-    ) {
-        Row(modifier = Modifier.padding(16.dp)) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(text = "Id: ${destino.id}")
-                Text(text = "Date: ${destino.createdAt}")
-                Text(text = "Despacho: ${destino.despacho}")
-                Text(text = "Comisionista: ${destino.comisionista}")
-                Text(text = "Destino: ${destino.localidad}")
-            }
-            IconButton(onClick = { onDeleteClick() }) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_delete_24),
-                    contentDescription = "Delete"
-                )
-            }
-        }
-
-    }
-}
 
 
 

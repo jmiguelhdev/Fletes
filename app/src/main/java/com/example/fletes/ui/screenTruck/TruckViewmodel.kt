@@ -16,22 +16,28 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
+sealed class DialogState {
+    object None : DialogState()
+    object Insert : DialogState()
+    object Edit : DialogState()
+}
+
 data class TruckUiState(
     val choferName: String = "",
     val choferDni: String = "",
-    val driverDniErrorMessage: String? = "Insert Dni",
-    val isValidDni: Boolean = true,
+    val driverDniErrorMessage: String? = null,
+    val isValidDni: Boolean = true, // Based on DniValidator.validateDni("") currently returning isValid = true
     val patenteTractor: String = "",
     val patenteTractorErrorMessage: String? = null,
     val isValidPatenteTractor: Boolean = true,
     val patenteJaula: String = "",
     val patenteJaulaErrorMessage: String? = null,
     val isValidPatenteJaula: Boolean = true,
-    val kmService: Int = 20000,
-    val showInsertDialog: Boolean = false,
-    val showEditDialog: Boolean = false,
+    // val kmService: Int = 20000, // Removed as it's unused
+    val currentDialog: DialogState = DialogState.None,
     val showSnackbar: Boolean = false,
-    val snackbarMessage: String = ""
+    val snackbarMessage: String = "",
+    val editingTruckId: Int? = null
 )
 
 
@@ -67,14 +73,20 @@ class TruckViewModel(
             } catch (e: Exception) {
                 // Handle the error
                 Log.e("TruckViewModel", "Error loading camiones", e)
-                // You could also update the UI state here to display an error message
+                _uiState.update {
+                    it.copy(
+                        showSnackbar = true,
+                        snackbarMessage = "Error loading trucks. Please try again."
+                    )
+                }
             }
         }
     }
 
 
     fun showDialog() {
-        _uiState.update { it.copy(showInsertDialog = true) }
+        // This function is used to show the insert dialog
+        _uiState.update { it.copy(currentDialog = DialogState.Insert) }
     }
 
     fun snackbarShown() {
@@ -84,8 +96,16 @@ class TruckViewModel(
     }
 
     fun hideDialog() {
-        _uiState.update { it.copy(showInsertDialog = false) }
-        _uiState.update { it.copy(showEditDialog = false) }
+        _uiState.update {
+            it.copy(
+                currentDialog = DialogState.None,
+                editingTruckId = null,
+                choferName = "",
+                choferDni = "",
+                patenteTractor = "",
+                patenteJaula = ""
+            )
+        }
     }
 
     fun onChoferNameValueChange(newValue: String) {
@@ -140,13 +160,14 @@ class TruckViewModel(
             camionRepository.insertCamion(camionToInsert)
             Log.d("CamionViewModel", "Camion inserted $camionToInsert")
         }
+        // hideDialog() will set currentDialog = DialogState.None and clear fields
+        hideDialog()
         _uiState.update {
             it.copy(
                 showSnackbar = true,
                 snackbarMessage = "Camión insertado correctamente"
             )
         }
-        hideDialog()
     }
 
     fun deleteAllCamiones() {
@@ -167,12 +188,13 @@ class TruckViewModel(
     }
 
     fun onShowEditDialog(id: Int) {
-        _uiState.update { it.copy(showEditDialog = true) }
         viewModelScope.launch {
             val camionToUpdate = camionRepository.getCamionById(id)
             if (camionToUpdate != null) {
                 _uiState.update {
                     it.copy(
+                        currentDialog = DialogState.Edit,
+                        editingTruckId = id,
                         choferName = camionToUpdate.choferName,
                         choferDni = camionToUpdate.choferDni.toString(),
                         patenteTractor = camionToUpdate.patenteTractor,
@@ -183,9 +205,23 @@ class TruckViewModel(
         }
     }
 
-    fun updateCamion(id: Int) {
+    fun updateCamion() {
+        val currentEditingId = _uiState.value.editingTruckId
+        if (currentEditingId == null) {
+            Log.e("TruckViewModel", "editingTruckId is null, cannot update.")
+            // hideDialog() will set currentDialog = DialogState.None
+            hideDialog()
+            _uiState.update {
+                it.copy(
+                    showSnackbar = true,
+                    snackbarMessage = "Error: No se pudo actualizar el camión."
+                )
+            }
+            return
+        }
+
         viewModelScope.launch {
-            val camionToUpdate = camionRepository.getCamionById(id)
+            val camionToUpdate = camionRepository.getCamionById(currentEditingId)
             Log.d("CamionViewModel", "name ${_uiState.value.choferName}")
             if (camionToUpdate != null) {
                 val updatedCamion = camionToUpdate.copy(
@@ -195,41 +231,52 @@ class TruckViewModel(
                     patenteJaula = _uiState.value.patenteJaula,
                 )
                 camionRepository.updateCamion(updatedCamion)
+                Log.d("CamionViewModel", "Camion updated $updatedCamion")
+                // hideDialog() will set currentDialog = DialogState.None and clear fields
+                hideDialog()
+                _uiState.update {
+                    it.copy(
+                        showSnackbar = true,
+                        snackbarMessage = "Camión actualizado correctamente"
+                    )
+                }
+            } else {
+                Log.e("TruckViewModel", "Camion with id $currentEditingId not found for update.")
+                // hideDialog() will set currentDialog = DialogState.None
+                hideDialog()
+                _uiState.update {
+                    it.copy(
+                        showSnackbar = true,
+                        snackbarMessage = "Error: Camión no encontrado."
+                    )
+                }
             }
-            Log.d("CamionViewModel", "Camion updated $camionToUpdate")
-        }
-        _uiState.update {
-            it.copy(
-                showEditDialog = false,
-                showSnackbar = true,
-                snackbarMessage = "Camión actualizado correctamente"
-            )
         }
     }
 
-    fun selectTruck(camion: Camion) {
+    fun deactivateTruck(camion: Camion) {
         viewModelScope.launch {
             val updatedCamion = camion.copy(
                 isActive = false
             )
             try {
                 camionRepository.updateTruckIsActive(updatedCamion)
-                Log.d("CamionViewModel", "Camion updated $updatedCamion")
+                Log.d("TruckViewModel", "Camion deactivated $updatedCamion")
             } catch (e: Exception) {
-                Log.e("CamionViewModel", "Error updating camion", e)
+                Log.e("TruckViewModel", "Error deactivating camion", e)
             }
         }
     }
-    fun unSelectTruck(camion: Camion) {
+    fun activateTruck(camion: Camion) {
         viewModelScope.launch {
             val updatedCamion = camion.copy(
                 isActive = true
             )
             try {
                 camionRepository.updateTruckIsActive(updatedCamion)
-                Log.d("CamionViewModel", "Camion unselected updated $updatedCamion")
+                Log.d("TruckViewModel", "Camion activated $updatedCamion")
             } catch (e: Exception) {
-                Log.e("CamionViewModel", "Error updating camion", e)
+                Log.e("TruckViewModel", "Error activating camion", e)
             }
         }
     }

@@ -67,11 +67,10 @@ fun TruckInsertDialog(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TruckUpdateDialog(
-    camion: Camion,
     camionUiState: TruckUiState,
     camionViewModel: TruckViewModel,
     onDismiss: () -> Unit,
-    onConfirm: (id: Int) -> Unit
+    onConfirm: () -> Unit
 ) {
 
     AlertDialog(
@@ -106,7 +105,7 @@ fun TruckUpdateDialog(
         confirmButton = {
             Button(
                 onClick = {
-                    onConfirm(camion.id)
+                    onConfirm()
                 }
             ) {
                 Text("Confirmar")

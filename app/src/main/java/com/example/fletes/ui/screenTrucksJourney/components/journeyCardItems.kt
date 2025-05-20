@@ -11,7 +11,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import com.example.fletes.R
 import com.example.fletes.data.model.DecimalTextFieldData
 import com.example.fletes.data.model.truckJourneyData.TruckJourneyData
@@ -67,7 +66,8 @@ fun JourneyCardAnimated(
             JourneyCardItems(
                 camion = camion,
                 destino = destino,
-                truckJourneyData = truckJourneyData
+                truckJourneyData = truckJourneyData,
+                onIsActiveChange = {}
             )
         }
     }
@@ -131,16 +131,16 @@ val mockCamionesRegistro = CamionesRegistro(
     litros = 200.0,
     isActive = true
 )
-@Preview(showBackground = true)
-@Composable
-fun JourneyCardAnimatedPreview() {
-    JourneyCardAnimated(
-        expanded = true,
-        destino = mockDestino,
-        camion = mockCamion,
-        camionesRegistro = mockCamionesRegistro,
-        truckJourneyData = mockTruckJourneyData,
-        onExpandClick = {},
-        onClickCard = {},
-    )
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun JourneyCardAnimatedPreview() {
+//    JourneyCardAnimated(
+//        expanded = true,
+//        destino = mockDestino,
+//        camion = mockCamion,
+//        camionesRegistro = mockCamionesRegistro,
+//        truckJourneyData = mockTruckJourneyData,
+//        onExpandClick = {},
+//        onClickCard = {},
+//    )
+//}

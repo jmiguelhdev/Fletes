@@ -293,7 +293,10 @@ class TruckJourneyViewModel(
 
     // In TruckJourneyViewModel
     fun onClickJourneyCard(journeyId: Int) {
-        Log.d("TruckJourneyVM", "onClickJourneyCard called with ID: $journeyId. Current expandedID: ${_truckJourneyUiState.value.expandedJourneyId}")
+        Log.d(
+            "TruckJourneyVM",
+            "onClickJourneyCard called with ID: $journeyId. Current expandedID: ${_truckJourneyUiState.value.expandedJourneyId}"
+        )
         viewModelScope.launch {
             val currentUiState = _truckJourneyUiState.value
             if (currentUiState.expandedJourneyId == journeyId) {
@@ -323,7 +326,8 @@ class TruckJourneyViewModel(
                     val journeyDetails = getTruckJourneyByIdUseCase(journeyId).firstOrNull()
                     if (journeyDetails != null) {
                         val camion = getTruckByIdUseCase(journeyDetails.camionId)
-                        val destino = getDestinationByIdUseCase(journeyDetails.destinoId).firstOrNull()
+                        val destino =
+                            getDestinationByIdUseCase(journeyDetails.destinoId).firstOrNull()
 
                         // Create TruckJourneyData from the fetched journeyDetails
                         val editableData = TruckJourneyData(
@@ -366,13 +370,30 @@ class TruckJourneyViewModel(
                                 editableExpandedJourneyData = editableData // Set the editable data
                             )
                         }
-                        Log.d("TruckJourneyVM", "Updated state. New expandedID: ${_truckJourneyUiState.value.expandedJourneyId}, Details Loaded, EditableData Populated")
+                        Log.d(
+                            "TruckJourneyVM",
+                            "Updated state. New expandedID: ${_truckJourneyUiState.value.expandedJourneyId}, Details Loaded, EditableData Populated"
+                        )
                     } else {
-                        _truckJourneyUiState.update { it.copy(isLoading = false, isError = true, expandedJourneyId = null, editableExpandedJourneyData = null) }
+                        _truckJourneyUiState.update {
+                            it.copy(
+                                isLoading = false,
+                                isError = true,
+                                expandedJourneyId = null,
+                                editableExpandedJourneyData = null
+                            )
+                        }
                     }
                 } catch (e: Exception) {
                     Log.e("TruckJourneyVM", "Error fetching details for $journeyId", e)
-                    _truckJourneyUiState.update { it.copy(isLoading = false, isError = true, expandedJourneyId = null, editableExpandedJourneyData = null) }
+                    _truckJourneyUiState.update {
+                        it.copy(
+                            isLoading = false,
+                            isError = true,
+                            expandedJourneyId = null,
+                            editableExpandedJourneyData = null
+                        )
+                    }
                 }
             }
         }
@@ -380,10 +401,30 @@ class TruckJourneyViewModel(
 
     // In TruckJourneyViewModel
 
-// For NEW JOURNEY (existing functions - no change needed to their internals)
+    // For NEW JOURNEY (existing functions - no change needed to their internals)
 // private fun updateKmCargaValue(newValue: String) { ... }
 // private fun updateKmDescargaValue(newValue: String) { ... }
 // ... and so on
+    fun updateExpandedIsActiveValue(newValue: Boolean) { // Removed 'id' as it's implicit
+        _truckJourneyUiState.value.editableExpandedJourneyData?.let { currentEditableData ->
+            // Only update if the new value is different, to avoid unnecessary recompositions (optional optimization)
+            if (currentEditableData.isActive != newValue) {
+                _truckJourneyUiState.update {
+                    it.copy(
+                        editableExpandedJourneyData = currentEditableData.copy(
+                            isActive = newValue
+                        )
+                    )
+                }
+                saveExpandedJourneyDetails()
+                // Optional: If you want to immediately persist this change to the database
+                // you might call saveExpandedJourneyDetails() here, or have a separate
+                // mechanism for auto-saving or explicit save.
+                // For now, this just updates the UI state.
+                Log.d("TruckJourneyVM", "Expanded isActive updated in UI state to: $newValue")
+            }
+        }
+    }
 
     // For EXPANDED JOURNEY
     fun updateExpandedKmCargaValue(newValue: String) {
@@ -394,13 +435,24 @@ class TruckJourneyViewModel(
             } catch (e: NumberFormatException) {
                 error = "Debe ser un número"
             }
-            _truckJourneyUiState.update {
-                it.copy(
-                    editableExpandedJourneyData = currentEditableData.copy(
-                        kmCargaData = currentEditableData.kmCargaData.copy(
-                            value = newValue,
-                            errorMessage = error
-                        )
+
+            _truckJourneyUiState.update { currentState ->
+                val updatedEditableData = currentEditableData.copy(
+                    kmCargaData = currentEditableData.kmCargaData.copy(
+                        value = newValue,
+                        errorMessage = error
+                    )
+                )
+
+                // Automatically update isActive based on completeness
+                // If you want isActive to be FALSE when complete:
+                val newIsActiveState = !isEditableExpandedJourneyComplete(updatedEditableData)
+                // If you want isActive to be TRUE when complete:
+                // val newIsActiveState = isEditableExpandedJourneyComplete(updatedEditableData)
+
+                currentState.copy(
+                    editableExpandedJourneyData = updatedEditableData.copy(
+                        isActive = newIsActiveState
                     )
                 )
             }
@@ -415,13 +467,23 @@ class TruckJourneyViewModel(
             } catch (e: NumberFormatException) {
                 error = "Debe ser un número"
             }
-            _truckJourneyUiState.update {
-                it.copy(
-                    editableExpandedJourneyData = currentEditableData.copy(
-                        kmDescargaData = currentEditableData.kmDescargaData.copy(
-                            value = newValue,
-                            errorMessage = error
-                        )
+            _truckJourneyUiState.update { currentState ->
+                val updatedEditableData = currentEditableData.copy(
+                    kmDescargaData = currentEditableData.kmDescargaData.copy(
+                        value = newValue,
+                        errorMessage = error
+                    )
+                )
+
+                // Automatically update isActive based on completeness
+                // If you want isActive to be FALSE when complete:
+                val newIsActiveState = !isEditableExpandedJourneyComplete(updatedEditableData)
+                // If you want isActive to be TRUE when complete:
+                // val newIsActiveState = isEditableExpandedJourneyComplete(updatedEditableData)
+
+                currentState.copy(
+                    editableExpandedJourneyData = updatedEditableData.copy(
+                        isActive = newIsActiveState
                     )
                 )
             }
@@ -436,13 +498,23 @@ class TruckJourneyViewModel(
             } catch (e: NumberFormatException) {
                 error = "Debe ser un número"
             }
-            _truckJourneyUiState.update {
-                it.copy(
-                    editableExpandedJourneyData = currentEditableData.copy(
-                        kmSurtidorData = currentEditableData.kmSurtidorData.copy(
-                            value = newValue,
-                            errorMessage = error
-                        )
+            _truckJourneyUiState.update { currentState ->
+                val updatedEditableData = currentEditableData.copy(
+                    kmSurtidorData = currentEditableData.kmSurtidorData.copy(
+                        value = newValue,
+                        errorMessage = error
+                    )
+                )
+
+                // Automatically update isActive based on completeness
+                // If you want isActive to be FALSE when complete:
+                val newIsActiveState = !isEditableExpandedJourneyComplete(updatedEditableData)
+                // If you want isActive to be TRUE when complete:
+                // val newIsActiveState = isEditableExpandedJourneyComplete(updatedEditableData)
+
+                currentState.copy(
+                    editableExpandedJourneyData = updatedEditableData.copy(
+                        isActive = newIsActiveState
                     )
                 )
             }
@@ -457,38 +529,55 @@ class TruckJourneyViewModel(
             } catch (e: NumberFormatException) {
                 error = "Debe ser un número"
             }
-            _truckJourneyUiState.update {
-                it.copy(
-                    editableExpandedJourneyData = currentEditableData.copy(
-                        litrosData = currentEditableData.litrosData.copy(
-                            value = newValue,
-                            errorMessage = error
-                        )
+            _truckJourneyUiState.update { currentState ->
+                val updatedEditableData = currentEditableData.copy(
+                    litrosData = currentEditableData.litrosData.copy(
+                        value = newValue,
+                        errorMessage = error
+                    )
+                )
+
+                // Automatically update isActive based on completeness
+                // If you want isActive to be FALSE when complete:
+                val newIsActiveState = !isEditableExpandedJourneyComplete(updatedEditableData)
+                // If you want isActive to be TRUE when complete:
+                // val newIsActiveState = isEditableExpandedJourneyComplete(updatedEditableData)
+
+                currentState.copy(
+                    editableExpandedJourneyData = updatedEditableData.copy(
+                        isActive = newIsActiveState
                     )
                 )
             }
         }
     }
 
-    // You might also want a way to update the 'isActive' for an expanded journey
-    fun updateExpandedIsActiveValue(newValue: Boolean) {
-        _truckJourneyUiState.value.editableExpandedJourneyData?.let { currentEditableData ->
-            _truckJourneyUiState.update {
-                it.copy(
-                    editableExpandedJourneyData = currentEditableData.copy(
-                        isActive = newValue
-                    )
-                )
-            }
-        }
+    // Inside TruckJourneyViewModel
+    private fun isEditableExpandedJourneyComplete(editableData: TruckJourneyData?): Boolean {
+        editableData ?: return false // If there's no editable data, it's not complete
+
+        return editableData.camionId != 0 && // Or other relevant ID check
+                editableData.kmCargaData.value.isNotBlank() &&
+                editableData.kmDescargaData.value.isNotBlank() &&
+                editableData.kmSurtidorData.value.isNotBlank() &&
+                editableData.litrosData.value.isNotBlank() &&
+                // Ensure no validation errors
+                editableData.kmCargaData.errorMessage.isEmpty() &&
+                editableData.kmDescargaData.errorMessage.isEmpty() &&
+                editableData.kmSurtidorData.errorMessage.isEmpty() &&
+                editableData.litrosData.errorMessage.isEmpty()
     }
+
 
     // In TruckJourneyViewModel
     fun saveExpandedJourneyDetails() {
         val currentExpandedData = _truckJourneyUiState.value.editableExpandedJourneyData
         val originalDetails = _truckJourneyUiState.value.expandedJourneyDetails
         Log.d("TruckJourneyVM", "current id: ${_truckJourneyUiState.value.expandedJourneyId}")
-        Log.d("TruckJourneyVM", "originalDetails current id: ${_truckJourneyUiState.value.expandedJourneyDetails!!.id}")
+        Log.d(
+            "TruckJourneyVM",
+            "originalDetails current id: ${_truckJourneyUiState.value.expandedJourneyDetails!!.id}"
+        )
 
         if (currentExpandedData != null && originalDetails != null) {
             // 1. Validate currentExpandedData (check errorMessages)
@@ -500,7 +589,10 @@ class TruckJourneyViewModel(
             ).any { it.isNotEmpty() }
 
             if (hasErrors) {
-                Log.w("TruckJourneyVM", "Cannot save, validation errors exist in expanded journey data.")
+                Log.w(
+                    "TruckJourneyVM",
+                    "Cannot save, validation errors exist in expanded journey data."
+                )
                 // Optionally update UI state to show a general error message
                 // _truckJourneyUiState.update { it.copy(isError = true, /* some error message */) }
                 return
@@ -510,14 +602,19 @@ class TruckJourneyViewModel(
             // This assumes you can update CamionesRegistro directly or have an update DTO
             // You might need to parse string values back to Double/Int
             try {
-                val updatedJourney = originalDetails.copy( // Create a new instance based on original
-                    kmCarga = currentExpandedData.kmCargaData.value.toDoubleOrNull()?.toInt() ?: originalDetails.kmCarga,
-                    kmDescarga = currentExpandedData.kmDescargaData.value.toDoubleOrNull()?.toInt() ?: originalDetails.kmDescarga,
-                    kmSurtidor = currentExpandedData.kmSurtidorData.value.toDoubleOrNull()?.toInt() ?: originalDetails.kmSurtidor,
-                    litros = currentExpandedData.litrosData.value.toDoubleOrNull() ?: originalDetails.litros,
-                    isActive = currentExpandedData.isActive
-                    // ... any other fields from TruckJourneyData
-                )
+                val updatedJourney =
+                    originalDetails.copy( // Create a new instance based on original
+                        kmCarga = currentExpandedData.kmCargaData.value.toDoubleOrNull()?.toInt()
+                            ?: originalDetails.kmCarga,
+                        kmDescarga = currentExpandedData.kmDescargaData.value.toDoubleOrNull()
+                            ?.toInt() ?: originalDetails.kmDescarga,
+                        kmSurtidor = currentExpandedData.kmSurtidorData.value.toDoubleOrNull()
+                            ?.toInt() ?: originalDetails.kmSurtidor,
+                        litros = currentExpandedData.litrosData.value.toDoubleOrNull()
+                            ?: originalDetails.litros,
+                        isActive = currentExpandedData.isActive
+                        // ... any other fields from TruckJourneyData
+                    )
 
                 viewModelScope.launch {
                     // 3. Call your update use case

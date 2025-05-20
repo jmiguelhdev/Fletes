@@ -10,6 +10,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -30,8 +31,14 @@ fun JourneyCardItems(
     camion: Camion,
     destino: Destino,
     truckJourneyData: TruckJourneyData,
+    onIsActiveChange: (Boolean) -> Unit,
 ) {
-    destino.comisionista
+    // Handle cases where data might be null, common when nothing is expanded
+    if (truckJourneyData == null || camion == null || destino == null) {
+        // Optionally show a loading indicator or an empty state
+        // Text("Loading details or no journey selected...")
+        return
+    }
     Card(modifier = Modifier.padding(8.dp)) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -95,6 +102,21 @@ fun JourneyCardItems(
             }
         }
         HorizontalDivider(thickness = DividerDefaults.Thickness)
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(text = "Viaje Activo")
+            Switch(
+                checked = truckJourneyData.isActive,
+                onCheckedChange = { newCheckedState ->
+                    onIsActiveChange(newCheckedState)
+                }
+            )
+        }
+        HorizontalDivider(thickness = DividerDefaults.Thickness)
+
     }
 }
 
@@ -154,7 +176,9 @@ fun JourneyCardPreview() {
         JourneyCardItems(
             camion = sampleCamion,
             destino = sampleDestino,
-            truckJourneyData = sampleTruckJourneyData
+            truckJourneyData = sampleTruckJourneyData,
+            onIsActiveChange = {
+            }
         )
     }
 }

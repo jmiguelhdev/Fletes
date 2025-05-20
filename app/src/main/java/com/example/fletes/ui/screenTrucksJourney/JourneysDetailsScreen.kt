@@ -57,7 +57,12 @@ fun JourneyRegistrationScreen(
                         Log.d("JourneyRegScreen", "onClick for ${journeySummary.id}")
                         truckJourneyViewModel.onClickJourneyCard(journeySummary.id)
                     },
-                    onSaveClick = {truckJourneyViewModel.saveExpandedJourneyDetails()}
+                    onSaveClick = {
+                        truckJourneyViewModel.saveExpandedJourneyDetails()
+                                  },
+                    onCheckedChange = {
+                        truckJourneyViewModel.updateExpandedIsActiveValue(it)
+                    }
                 )
             }
         }
@@ -73,7 +78,8 @@ fun JourneyCard(
     truckJourneyDataForDisplayOrEdit: TruckJourneyData?, // Renamed for clarity
     isLoadingDetails: Boolean,
     onSaveClick: () -> Unit,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onCheckedChange: (Boolean) -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -101,8 +107,9 @@ fun JourneyCard(
                         JourneyCardItems(
                             camion = camion, // Pass the correct camion
                             destino = destino, // Pass the correct destino
-                            truckJourneyData = truckJourneyDataForDisplayOrEdit // Pass data derived from expandedDetails
-                        )
+                            truckJourneyData = truckJourneyDataForDisplayOrEdit, // Pass data derived from expandedDetails
+                            onIsActiveChange = onCheckedChange
+                            )
                         SaveOrUpdateTripButton(
                             modifier = Modifier,
                             isActive = true,

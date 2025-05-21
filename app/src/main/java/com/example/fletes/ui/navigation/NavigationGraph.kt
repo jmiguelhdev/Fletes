@@ -33,7 +33,16 @@ fun MyNavHost(
     val truckViewModel: TruckViewModel = koinViewModel()
     val truckJourneyViewModel: TruckJourneyViewModel = koinViewModel()
     val activeTrucks by truckViewModel.camiones.collectAsState(emptyList())
+
     val allJourneys by truckJourneyViewModel.allJourneys.collectAsState(emptyList())
+    val allActiveJourneys by truckJourneyViewModel.allActiveJourneys.collectAsState(emptyList())
+    val uiState by truckJourneyViewModel.truckJourneyUiState.collectAsState()
+    val journeyToDisplay = if (uiState.activeJourney) allActiveJourneys else allJourneys
+
+    Log.d("MyNavHost", "Active Trucks: $allActiveJourneys")
+    Log.d("MyNavHost", "All Journeys: $allJourneys")
+    Log.d("MyNavHost", "journeyToDisplay: $journeyToDisplay")
+
     val unActiveDestinations by newDispatchViewModel.unActiveDestinations.collectAsState(emptyList())
     val initialActiveDipatch = listOf(
         Destino(
@@ -50,6 +59,7 @@ fun MyNavHost(
     LaunchedEffect(key1 = true) {
         truckViewModel.loadCamiones()  // Load the camiones when the parent composable is launched
         truckJourneyViewModel.loadJourneys()
+        truckJourneyViewModel.loadActiveJourneys()
         newDispatchViewModel.loadDestinations()
     }
 
@@ -106,7 +116,7 @@ fun MyNavHost(
                 if (allJourneys.isNotEmpty()){
                     JourneyRegistrationScreen(
                         truckJourneyViewModel = truckJourneyViewModel,
-                        allJourneys = allJourneys
+                        allJourneys = journeyToDisplay,
                     )
                 } else {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

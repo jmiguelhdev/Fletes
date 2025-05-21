@@ -12,13 +12,17 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.fletes.data.model.truckJourneyData.TruckJourneyData
 import com.example.fletes.data.room.Camion
 import com.example.fletes.data.room.CamionesRegistro
@@ -33,12 +37,30 @@ fun JourneyRegistrationScreen(
     ) {
     val uiState = truckJourneyViewModel.truckJourneyUiState.collectAsState()
 
-
     if (uiState.value.isLoading && allJourneys.isEmpty()) { // Overall loading for the list
         CircularProgressIndicator()
     } else if (uiState.value.isError) {
         Text("Error loading journeys.")
     } else {
+        Column {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = if (uiState.value.activeJourney) "Showing Active Journeys" else "Showing all Journeys",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.weight(1f)
+                )
+                Switch(
+                    checked = uiState.value.activeJourney,
+                    onCheckedChange = {
+                        truckJourneyViewModel.toggleActiveJourneys(it)
+                    }
+                )
+            }
         LazyColumn {
             items(allJourneys, key = { journey -> journey.id }) { journeySummary ->
                 val isCurrentJourneyExpanded = uiState.value.expandedJourneyId == journeySummary.id
@@ -66,8 +88,11 @@ fun JourneyRegistrationScreen(
                 )
             }
         }
+        }
     }
 }
+
+
 
 @Composable
 fun JourneyCard(

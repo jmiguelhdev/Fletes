@@ -9,6 +9,7 @@ import com.example.fletes.data.model.truckJourneyData.TruckJourneyData
 import com.example.fletes.data.room.Camion
 import com.example.fletes.data.room.CamionesRegistro
 import com.example.fletes.data.room.Destino
+import com.example.fletes.domain.GetAllActiveJourneyUseCase
 import com.example.fletes.domain.GetAllJourneyUseCase
 import com.example.fletes.domain.GetDestinationByIdUseCase
 import com.example.fletes.domain.GetTruckByIdUseCase
@@ -54,13 +55,15 @@ data class TruckJourneyUiState(
     val expandedJourneyDetails: CamionesRegistro? = null,
     val expandedJourneyTruck: Camion? = null,
     val expandedJourneyDestination: Destino? = null,
-    val editableExpandedJourneyData: TruckJourneyData? = null
+    val editableExpandedJourneyData: TruckJourneyData? = null,
+    val activeJourney: Boolean = false
 )
 
 
 class TruckJourneyViewModel(
     private val savedStateHandle: SavedStateHandle,
     private val getAllJourneyUseCase: GetAllJourneyUseCase,
+    private val getAllActiveJouerneysUseCase: GetAllActiveJourneyUseCase,
     private val getTruckByIdUseCase: GetTruckByIdUseCase,
     private val getDestinationByIdUseCase: GetDestinationByIdUseCase,
     private val getTruckJourneyByIdUseCase: GetTruckJourneyByIdUseCase,
@@ -251,6 +254,12 @@ class TruckJourneyViewModel(
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = emptyList()
     )
+    private val _allActiveJourneys = MutableStateFlow<List<CamionesRegistro>>(emptyList())
+    val allActiveJourneys: StateFlow<List<CamionesRegistro>> = _allActiveJourneys.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
 
 
     fun loadJourneys() {
@@ -290,6 +299,50 @@ class TruckJourneyViewModel(
         }
     }
 
+    fun loadActiveJourneys() {
+        Log.d("TruckJourneyViewModel", "loadJourneys called")
+        viewModelScope.launch {
+            _truckJourneyUiState.update { it.copy(isLoading = true, isError = false) }
+            try {
+                Log.d("TruckJourneyViewModel", "Attempting to collect from getAllJourneyUseCase")
+                getAllActiveJouerneysUseCase()
+                    .onStart {
+                        Log.d("TruckJourneyViewModel", "getAllJourneyUseCase Flow started")
+                    }
+                    .onCompletion { cause ->
+                        if (cause != null && cause !is kotlinx.coroutines.CancellationException) {
+                            Log.e("TruckJourneyViewModel", "Flow completed with error", cause)
+                        } else if (cause is kotlinx.coroutines.CancellationException) {
+                            Log.w("TruckJourneyViewModel", "Flow collection was cancelled", cause)
+                        } else {
+                            Log.d("TruckJourneyViewModel", "Flow collection completed successfully")
+                        }
+                    }
+                    .collect { journeys ->
+                        Log.d("TruckJourneyViewModel", "Collected journeys: $journeys")
+                        _allActiveJourneys.value = journeys
+                        _truckJourneyUiState.update { it.copy(isLoading = false) }
+                        Log.d(
+                            "TruckJourneyViewModel",
+                            "isLoading set to false. Current _allJourneys: ${_allJourneys.value}"
+                        )
+                    }
+            } catch (e: Exception) {
+                Log.e("TruckJourneyViewModel", "Error loading journeys in try-catch", e)
+                _truckJourneyUiState.update { it.copy(isLoading = false, isError = true) }
+            } finally {
+                Log.d("TruckJourneyViewModel", "Coroutine in loadJourneys finished.")
+            }
+        }
+    }
+    fun toggleActiveJourneys(active: Boolean) {
+        _truckJourneyUiState.update { it.copy(activeJourney = active) }
+        if (active) {
+            loadActiveJourneys()
+        } else {
+            loadJourneys()
+        }
+    }
 
     // In TruckJourneyViewModel
     fun onClickJourneyCard(journeyId: Int) {

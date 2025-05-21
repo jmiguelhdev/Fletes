@@ -84,7 +84,7 @@ fun ActiveDispatchDetailsScreen(
         ) {
             TrucksDropdown(
                 onClickTruck = {
-                    truckViewModel.selectTruck(it)
+                    truckViewModel.activateTruck(it)
                     newDispatchViewModel.selectTruck(it)
                 },
                 list = alltrucks,
@@ -94,7 +94,7 @@ fun ActiveDispatchDetailsScreen(
                 CardSelectedTruck(
                     truck = uiState.selectedTruck,
                     unSelectTruck = {
-                        truckViewModel.unSelectTruck(it)
+                        truckViewModel.deactivateTruck(it)
                         newDispatchViewModel.unSelectTruck(it)
                     },
                     modifier = Modifier

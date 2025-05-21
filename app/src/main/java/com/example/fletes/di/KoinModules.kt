@@ -12,6 +12,7 @@ import com.example.fletes.data.room.AppDatabase
 import com.example.fletes.domain.DeleteDestinoUseCase
 import com.example.fletes.domain.GetActiveDestinosUseCase
 import com.example.fletes.domain.GetActiveDispatchCount
+import com.example.fletes.domain.GetAllActiveJourneyUseCase
 import com.example.fletes.domain.GetAllDestinosUseCase
 import com.example.fletes.domain.GetAllJourneyUseCase
 import com.example.fletes.domain.GetDestinationByIdUseCase
@@ -90,6 +91,7 @@ val domainModule = module {
     single { InsertJourneyUseCase(get()) }
     single { UpdateJourneyUseCase(get()) }
     single { GetAllJourneyUseCase(get()) }
+    single { GetAllActiveJourneyUseCase(get()) }
     single { GetTruckByIdUseCase(get()) }
     single { GetDestinationByIdUseCase(get()) }
     single { GetTruckJourneyByIdUseCase(get()) }
@@ -125,7 +127,8 @@ val journeyModule = module {
             getTruckByIdUseCase = get(),
             getDestinationByIdUseCase = get(),
             getTruckJourneyByIdUseCase = get(),
-            updateJourneyUseCase = get()
+            updateJourneyUseCase = get(),
+            getAllActiveJouerneysUseCase = get()
         )
     }
 }

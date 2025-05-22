@@ -1,9 +1,11 @@
 package com.example.fletes.data.room
 
 import androidx.room.ColumnInfo
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import androidx.room.Relation
 import androidx.room.TypeConverter
 import java.time.LocalDate
 
@@ -100,3 +102,17 @@ data class CamionesRegistro(
  *         }
  * }
  */
+
+data class JourneyWithDetails(
+    @Embedded val journey: CamionesRegistro,
+    @Relation(
+        parentColumn = "camion_id", // This is a field in CamionesRegistro
+        entityColumn = "id"         // This is the primary key in Camion
+    )
+    val camion: Camion,
+    @Relation(
+        parentColumn = "destino_id", // This is a field in CamionesRegistro
+        entityColumn = "id"          // This is the primary key in Destino
+    )
+    val destino: Destino
+)

@@ -1,6 +1,7 @@
 package com.example.fletes.data.repositories.interfaces
 
 import com.example.fletes.data.room.CamionesRegistro
+import com.example.fletes.data.room.JourneyWithDetails // Add this
 import kotlinx.coroutines.flow.Flow
 
 interface TrucksJourneyRepositoryInterface {
@@ -11,4 +12,5 @@ interface TrucksJourneyRepositoryInterface {
     suspend fun getCamionesRegistroStream(id: Int): Flow<CamionesRegistro?>
     fun getLastTripByCamionId(camionId: Int): Flow<CamionesRegistro?>
     fun getCamionesRegistroByCamionIdStream(camionId: Int): Flow<List<CamionesRegistro>>
+    fun getAllJourneysWithDetails(): Flow<List<JourneyWithDetails>>
 }

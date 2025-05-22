@@ -5,8 +5,10 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import com.example.fletes.data.room.CamionesRegistro
+import com.example.fletes.data.room.JourneyWithDetails // Add this import
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -43,4 +45,8 @@ interface TrucksRegistrationDao {
 
     @Query("SELECT * FROM camiones_registro")
     fun getAllRegistrations(): Flow<List<CamionesRegistro>>
+
+    @Transaction // Important for @Relation to work correctly
+    @Query("SELECT * FROM camiones_registro")
+    fun getAllJourneysWithDetails(): Flow<List<JourneyWithDetails>>
 }

@@ -9,6 +9,7 @@ import com.example.fletes.data.model.truckJourneyData.TruckJourneyData
 import com.example.fletes.data.room.Camion
 import com.example.fletes.data.room.CamionesRegistro
 import com.example.fletes.data.room.Destino
+import com.example.fletes.data.room.JourneyWithDetails // Add this
 import com.example.fletes.domain.GetAllJourneyUseCase
 import com.example.fletes.domain.GetDestinationByIdUseCase
 import com.example.fletes.domain.GetTruckByIdUseCase
@@ -245,8 +246,8 @@ class TruckJourneyViewModel(
         }
     }
 
-    private val _allJourneys = MutableStateFlow<List<CamionesRegistro>>(emptyList())
-    val allJourneys: StateFlow<List<CamionesRegistro>> = _allJourneys.stateIn(
+    private val _allJourneys = MutableStateFlow<List<JourneyWithDetails>>(emptyList()) // Type changed
+    val allJourneys: StateFlow<List<JourneyWithDetails>> = _allJourneys.stateIn( // Type changed
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = emptyList()

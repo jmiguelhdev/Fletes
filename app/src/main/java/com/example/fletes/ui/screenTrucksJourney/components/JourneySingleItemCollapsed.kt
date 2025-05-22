@@ -15,14 +15,13 @@ import androidx.compose.ui.unit.dp
 import com.example.fletes.data.room.Camion
 import com.example.fletes.data.room.CamionesRegistro
 import com.example.fletes.data.room.Destino
+import com.example.fletes.data.room.JourneyWithAllDetails
 import java.time.LocalDate
 
 @Composable
 fun SingleDestinationCard(
     modifier: Modifier = Modifier,
-    journey: CamionesRegistro,
-    camion: Camion,
-    destino: Destino,
+    camionesRegistro: JourneyWithAllDetails,
     onClickCard: (journey: CamionesRegistro) -> Unit
 ) {
 
@@ -31,7 +30,7 @@ fun SingleDestinationCard(
             .fillMaxWidth()
             .padding(4.dp)
             .clickable {
-                onClickCard(journey)
+                onClickCard(camionesRegistro.journey)
             },
 
         ) {
@@ -47,15 +46,15 @@ fun SingleDestinationCard(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "Created At: ${journey.createdAt}",
+                    text = "Created At: ${camionesRegistro.journey.createdAt}",
                     modifier = Modifier.padding(bottom = 4.dp)
                 )
                 Text(
-                    text = "Destino: ${destino.localidad}",
+                    text = "Destino: ${camionesRegistro.destino.localidad}",
                     modifier = Modifier.padding(bottom = 4.dp)
                 )
                 Text(
-                    text = "Chofer: ${camion.choferName}",
+                    text = "Chofer: ${camionesRegistro.camion.choferName}",
                     modifier = Modifier.padding(bottom = 4.dp)
                 )
             }
@@ -66,7 +65,7 @@ fun SingleDestinationCard(
 @Preview(showBackground = true)
 @Composable
 fun SingleDestinationCardPreview() {
-    val mockJourney = CamionesRegistro(
+    val mockJourneyRegistro = CamionesRegistro(
         id = 1,
         camionId = 1,
         destinoId = 1,
@@ -94,11 +93,14 @@ fun SingleDestinationCardPreview() {
         localidad = "Tucuman",
         isActive = true
     )
+    val mockJourneyWithAllDetails = JourneyWithAllDetails(
+        journey = mockJourneyRegistro,
+        camion = mockCamion,
+        destino = mockDestino
+    )
 
     SingleDestinationCard(
-        journey = mockJourney,
-        camion = mockCamion,
-        destino = mockDestino,
+        camionesRegistro = mockJourneyWithAllDetails,
         onClickCard = {}
     )
 }

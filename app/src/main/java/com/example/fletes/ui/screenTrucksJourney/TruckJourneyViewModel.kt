@@ -9,7 +9,9 @@ import com.example.fletes.data.model.truckJourneyData.TruckJourneyData
 import com.example.fletes.data.room.Camion
 import com.example.fletes.data.room.CamionesRegistro
 import com.example.fletes.data.room.Destino
+import com.example.fletes.data.room.JourneyWithAllDetails
 import com.example.fletes.domain.GetAllJourneyUseCase
+import com.example.fletes.domain.GetAllJourneysWithAllDetailsUseCase
 import com.example.fletes.domain.GetDestinationByIdUseCase
 import com.example.fletes.domain.GetTruckByIdUseCase
 import com.example.fletes.domain.GetTruckJourneyByIdUseCase
@@ -61,6 +63,7 @@ data class TruckJourneyUiState(
 class TruckJourneyViewModel(
     private val savedStateHandle: SavedStateHandle,
     private val getAllJourneyUseCase: GetAllJourneyUseCase,
+    private val getAllJourneysWithAllDetails: GetAllJourneysWithAllDetailsUseCase,
     private val getTruckByIdUseCase: GetTruckByIdUseCase,
     private val getDestinationByIdUseCase: GetDestinationByIdUseCase,
     private val getTruckJourneyByIdUseCase: GetTruckJourneyByIdUseCase,
@@ -245,8 +248,8 @@ class TruckJourneyViewModel(
         }
     }
 
-    private val _allJourneys = MutableStateFlow<List<CamionesRegistro>>(emptyList())
-    val allJourneys: StateFlow<List<CamionesRegistro>> = _allJourneys.stateIn(
+    private val _allJourneys = MutableStateFlow<List<JourneyWithAllDetails>>(emptyList())
+    val allJourneys: StateFlow<List<JourneyWithAllDetails>> = _allJourneys.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = emptyList()
@@ -259,7 +262,7 @@ class TruckJourneyViewModel(
             _truckJourneyUiState.update { it.copy(isLoading = true, isError = false) }
             try {
                 Log.d("TruckJourneyViewModel", "Attempting to collect from getAllJourneyUseCase")
-                getAllJourneyUseCase()
+                getAllJourneysWithAllDetails()
                     .onStart {
                         Log.d("TruckJourneyViewModel", "getAllJourneyUseCase Flow started")
                     }

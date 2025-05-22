@@ -2,6 +2,7 @@ package com.example.fletes.data.repositories.implementations
 
 import com.example.fletes.data.repositories.interfaces.TrucksJourneyRepositoryInterface
 import com.example.fletes.data.room.CamionesRegistro
+import com.example.fletes.data.room.JourneyWithAllDetails
 import com.example.fletes.data.room.interfacesDao.TrucksRegistrationDao
 import kotlinx.coroutines.flow.Flow
 
@@ -32,5 +33,9 @@ class TrucksJourneyRepositoryImp(private val trucksRegistrationDao: TrucksRegist
 
     override fun getCamionesRegistroByCamionIdStream(camionId: Int): Flow<List<CamionesRegistro>> {
        return trucksRegistrationDao.getRegistrationsForTruck(camionId)
+    }
+
+    override fun getAllJourneysWithDetails(): Flow<List<JourneyWithAllDetails>> {
+        return trucksRegistrationDao.getAllJourneysWithDetails()
     }
 }

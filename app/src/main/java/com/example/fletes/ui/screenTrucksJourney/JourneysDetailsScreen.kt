@@ -23,13 +23,14 @@ import com.example.fletes.data.model.truckJourneyData.TruckJourneyData
 import com.example.fletes.data.room.Camion
 import com.example.fletes.data.room.CamionesRegistro
 import com.example.fletes.data.room.Destino
+import com.example.fletes.data.room.JourneyWithAllDetails
 import com.example.fletes.ui.screenTrucksJourney.components.JourneyCardItems
 import java.time.format.DateTimeFormatter
 
 @Composable
 fun JourneyRegistrationScreen(
     truckJourneyViewModel: TruckJourneyViewModel,
-    allJourneys: List<CamionesRegistro>,
+    allJourneys: List<JourneyWithAllDetails>,
     ) {
     val uiState = truckJourneyViewModel.truckJourneyUiState.collectAsState()
 
@@ -40,22 +41,22 @@ fun JourneyRegistrationScreen(
         Text("Error loading journeys.")
     } else {
         LazyColumn {
-            items(allJourneys, key = { journey -> journey.id }) { journeySummary ->
-                val isCurrentJourneyExpanded = uiState.value.expandedJourneyId == journeySummary.id
+            items(allJourneys, key = { journey -> journey.journey.id }) { journeySummary ->
+                val isCurrentJourneyExpanded = uiState.value.expandedJourneyId == journeySummary.journey.id
                 Log.d("JourneyRegScreen",
-                    "Journey: ${journeySummary.id}, IsExpanded: $isCurrentJourneyExpanded, ExpandedID: ${uiState.value.expandedJourneyId}")
+                    "Journey: ${journeySummary.journey.id}, IsExpanded: $isCurrentJourneyExpanded, ExpandedID: ${uiState.value.expandedJourneyId}")
                 JourneyCard(
-                    journeySummary = journeySummary,
+                    journeySummary = journeySummary.journey,
                     // Pass the Camion and Destino specific to the expanded journey
-                    camion = if (isCurrentJourneyExpanded) uiState.value.expandedJourneyTruck else null,
-                    destino = if (isCurrentJourneyExpanded) uiState.value.expandedJourneyDestination else null,
+                    camion = journeySummary.camion,
+                    destino = journeySummary.destino,
                     isExpanded = isCurrentJourneyExpanded,
                     truckJourneyDataForDisplayOrEdit = if (isCurrentJourneyExpanded) uiState.value.editableExpandedJourneyData else null,
                     isLoadingDetails = uiState.value.isLoading && isCurrentJourneyExpanded,
                     // For JourneyCardItems, we'll derive data from expandedDetails
                     onClick = {
-                        Log.d("JourneyRegScreen", "onClick for ${journeySummary.id}")
-                        truckJourneyViewModel.onClickJourneyCard(journeySummary.id)
+                        Log.d("JourneyRegScreen", "onClick for ${journeySummary.journey.id}")
+                        truckJourneyViewModel.onClickJourneyCard(journeySummary.journey.id)
                     },
                     onSaveClick = {
                         truckJourneyViewModel.saveExpandedJourneyDetails()

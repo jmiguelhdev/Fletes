@@ -62,7 +62,6 @@ data class TruckJourneyUiState(
 
 class TruckJourneyViewModel(
     private val savedStateHandle: SavedStateHandle,
-    private val getAllJourneyUseCase: GetAllJourneyUseCase,
     private val getAllJourneysWithAllDetails: GetAllJourneysWithAllDetailsUseCase,
     private val getTruckByIdUseCase: GetTruckByIdUseCase,
     private val getDestinationByIdUseCase: GetDestinationByIdUseCase,

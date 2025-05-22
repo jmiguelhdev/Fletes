@@ -123,7 +123,7 @@ val journeyModule = module {
         val savedStateHandle = parameters.get<SavedStateHandle>()
         TruckJourneyViewModel(
             savedStateHandle = savedStateHandle,
-            getAllJourneyUseCase = get(),
+          //  getAllJourneyUseCase = get(),
             getTruckByIdUseCase = get(),
             getDestinationByIdUseCase = get(),
             getTruckJourneyByIdUseCase = get(),

@@ -281,6 +281,4 @@ class TruckViewModel(
         }
     }
 
-
-
 }

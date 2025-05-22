@@ -35,12 +35,6 @@ interface TrucksRegistrationDao {
     @Query("SELECT * FROM camiones_registro")
     fun getAllCamionesRegistros(): Flow<List<CamionesRegistro>>
 
-    @Query("SELECT * FROM camiones_registro WHERE is_active = 1")
-    fun getAllActiveCamionesRegistros(): Flow<List<CamionesRegistro>>
-
-    @Query("SELECT * FROM camiones_registro WHERE is_active = 0")
-    fun getAllUnActiveCamionesRegistros(): Flow<List<CamionesRegistro>>
-
     @Query("SELECT * FROM camiones_registro WHERE camion_id = :camionId")
     fun getRegistrationsForTruck(camionId: Int): Flow<List<CamionesRegistro>>
 

@@ -12,10 +12,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.material3.DrawerState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import kotlinx.coroutines.CoroutineScope
 import com.example.fletes.R
 import com.example.fletes.data.room.Camion
 import com.example.fletes.data.room.Destino
@@ -41,6 +43,8 @@ fun ActiveDispatchDetailsScreen(
     alltrucks: List<Camion>,
     activeDispatch: List<Destino>,
     unActiveDestinations: List<Destino>,
+    drawerState: DrawerState, // Add this
+    scope: CoroutineScope,    // Add this
     onClickFab: () -> Unit = {},
     onClickAction: () -> Unit = {}
 ) {
@@ -48,11 +52,13 @@ fun ActiveDispatchDetailsScreen(
     val activeDispatchCount by newDispatchViewModel.activeDispatchCount.collectAsState(0)
 
     val snackBarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
+    // Use a local scope for snackbar if the passed scope is specifically for the drawer
+    val localSnackbarScope = rememberCoroutineScope()
+
 
     LaunchedEffect(uiState.showSnackbar) {
         if (uiState.showSnackbar) {
-            scope.launch {
+            localSnackbarScope.launch {
                 snackBarHostState.showSnackbar(
                     message = uiState.snackbarMessage,
                     withDismissAction = true
@@ -68,7 +74,9 @@ fun ActiveDispatchDetailsScreen(
         topBar = {
             ActiveDispatchTopAppBar(
                 count = activeDispatchCount,
-                onClick = onClickAction
+                onClick = onClickAction,
+                drawerState = drawerState, // Pass drawerState
+                scope = scope              // Pass scope
             )
         },
         floatingActionButton = {
@@ -84,7 +92,7 @@ fun ActiveDispatchDetailsScreen(
         ) {
             TrucksDropdown(
                 onClickTruck = {
-                    truckViewModel.activateTruck(it)
+                    truckViewModel.selectTruck(it)
                     newDispatchViewModel.selectTruck(it)
                 },
                 list = alltrucks,
@@ -94,7 +102,7 @@ fun ActiveDispatchDetailsScreen(
                 CardSelectedTruck(
                     truck = uiState.selectedTruck,
                     unSelectTruck = {
-                        truckViewModel.deactivateTruck(it)
+                        truckViewModel.unSelectTruck(it)
                         newDispatchViewModel.unSelectTruck(it)
                     },
                     modifier = Modifier

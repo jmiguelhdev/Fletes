@@ -43,7 +43,7 @@ fun BottomNavigationBar(navController: NavHostController) {
     val items = listOf(
         BottomNavItem.TrucksDetail,
         BottomNavItem.Dispatch,
-        BottomNavItem.Trucks,
+        // BottomNavItem.Trucks, // Removed as per task
         BottomNavItem.ActiveJourneys
     )
     val navBackStackEntry by navController.currentBackStackEntryAsState()

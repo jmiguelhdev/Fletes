@@ -9,20 +9,26 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DrawerState
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Switch
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.fletes.data.model.truckJourneyData.TruckJourneyData
 import com.example.fletes.data.room.Camion
 import com.example.fletes.data.room.CamionesRegistro
@@ -30,41 +36,48 @@ import com.example.fletes.data.room.Destino
 import com.example.fletes.ui.screenTrucksJourney.components.JourneyCardItems
 import java.time.format.DateTimeFormatter
 
+@OptIn(ExperimentalMaterial3Api::class) // May be needed for TopAppBar
 @Composable
 fun JourneyRegistrationScreen(
     truckJourneyViewModel: TruckJourneyViewModel,
     allJourneys: List<CamionesRegistro>,
-    ) {
+    drawerState: DrawerState,
+    scope: CoroutineScope
+) {
     val uiState = truckJourneyViewModel.truckJourneyUiState.collectAsState()
 
-    if (uiState.value.isLoading && allJourneys.isEmpty()) { // Overall loading for the list
-        CircularProgressIndicator()
-    } else if (uiState.value.isError) {
-        Text("Error loading journeys.")
-    } else {
-        Column {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = if (uiState.value.activeJourney) "Showing Active Journeys" else "Showing all Journeys",
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.weight(1f)
-                )
-                Switch(
-                    checked = uiState.value.activeJourney,
-                    onCheckedChange = {
-                        truckJourneyViewModel.toggleActiveJourneys(it)
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Active Journeys") },
+                navigationIcon = {
+                    IconButton(onClick = {
+                        scope.launch {
+                            drawerState.open()
+                        }
+                    }) {
+                        Icon(
+                            imageVector = Icons.Filled.Menu,
+                            contentDescription = "Open Navigation Drawer"
+                        )
                     }
-                )
+                }
+            )
+        }
+    ) { innerPadding ->
+        if (uiState.value.isLoading && allJourneys.isEmpty()) { // Overall loading for the list
+            Column(modifier = Modifier.padding(innerPadding).fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+                CircularProgressIndicator()
             }
-        LazyColumn {
-            items(allJourneys, key = { journey -> journey.id }) { journeySummary ->
-                val isCurrentJourneyExpanded = uiState.value.expandedJourneyId == journeySummary.id
-                Log.d("JourneyRegScreen",
+        } else if (uiState.value.isError) {
+            Column(modifier = Modifier.padding(innerPadding).fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+                Text("Error loading journeys.")
+            }
+        } else {
+            LazyColumn(modifier = Modifier.padding(innerPadding)) {
+                items(allJourneys, key = { journey -> journey.id }) { journeySummary ->
+                    val isCurrentJourneyExpanded = uiState.value.expandedJourneyId == journeySummary.id
+                    Log.d("JourneyRegScreen",
                     "Journey: ${journeySummary.id}, IsExpanded: $isCurrentJourneyExpanded, ExpandedID: ${uiState.value.expandedJourneyId}")
                 JourneyCard(
                     journeySummary = journeySummary,
@@ -88,11 +101,8 @@ fun JourneyRegistrationScreen(
                 )
             }
         }
-        }
     }
 }
-
-
 
 @Composable
 fun JourneyCard(

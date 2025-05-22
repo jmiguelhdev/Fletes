@@ -24,11 +24,7 @@ class GetAllJourneyUseCase(private val repository: TrucksJourneyRepositoryInterf
     operator fun invoke(): Flow<List<CamionesRegistro>> {
         return repository.getAllCamionesRegistrosStream()
     }
-}
-class GetAllActiveJourneyUseCase(private val repository: TrucksJourneyRepositoryInterface) {
-    operator fun invoke(): Flow<List<CamionesRegistro>> {
-        return repository.getAllActiveCamionesRegistrosStream()
-    }
+
 }
 
 class GetTruckByIdUseCase(private val repository: TruckRepositoryInterface) {

@@ -10,7 +10,7 @@ import com.example.fletes.data.room.Camion
 import com.example.fletes.data.room.CamionesRegistro
 import com.example.fletes.data.room.Destino
 import com.example.fletes.data.room.JourneyWithAllDetails
-import com.example.fletes.domain.GetAllJourneyUseCase
+import com.example.fletes.domain.GetActiveJourneysWithAllDetailsUseCase
 import com.example.fletes.domain.GetAllJourneysWithAllDetailsUseCase
 import com.example.fletes.domain.GetDestinationByIdUseCase
 import com.example.fletes.domain.GetTruckByIdUseCase
@@ -20,11 +20,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 
@@ -63,6 +63,7 @@ data class TruckJourneyUiState(
 class TruckJourneyViewModel(
     private val savedStateHandle: SavedStateHandle,
     private val getAllJourneysWithAllDetails: GetAllJourneysWithAllDetailsUseCase,
+    private val getActiveJourneysWithAllDetails: GetActiveJourneysWithAllDetailsUseCase,
     private val getTruckByIdUseCase: GetTruckByIdUseCase,
     private val getDestinationByIdUseCase: GetDestinationByIdUseCase,
     private val getTruckJourneyByIdUseCase: GetTruckJourneyByIdUseCase,
@@ -435,7 +436,7 @@ class TruckJourneyViewModel(
             try {
                 newValue.toDouble() // Basic validation
             } catch (e: NumberFormatException) {
-                error = "Debe ser un número"
+                error = "Debe ser un número $e"
             }
 
             _truckJourneyUiState.update { currentState ->
@@ -467,7 +468,7 @@ class TruckJourneyViewModel(
             try {
                 newValue.toDouble()
             } catch (e: NumberFormatException) {
-                error = "Debe ser un número"
+                error = "Debe ser un número $e"
             }
             _truckJourneyUiState.update { currentState ->
                 val updatedEditableData = currentEditableData.copy(
@@ -498,7 +499,7 @@ class TruckJourneyViewModel(
             try {
                 newValue.toDouble()
             } catch (e: NumberFormatException) {
-                error = "Debe ser un número"
+                error = "Debe ser un número $e"
             }
             _truckJourneyUiState.update { currentState ->
                 val updatedEditableData = currentEditableData.copy(
@@ -529,7 +530,7 @@ class TruckJourneyViewModel(
             try {
                 newValue.toDouble()
             } catch (e: NumberFormatException) {
-                error = "Debe ser un número"
+                error = "Debe ser un número $e"
             }
             _truckJourneyUiState.update { currentState ->
                 val updatedEditableData = currentEditableData.copy(

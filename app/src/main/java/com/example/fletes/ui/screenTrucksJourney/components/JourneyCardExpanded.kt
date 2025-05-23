@@ -33,12 +33,7 @@ fun JourneyCardItems(
     truckJourneyData: TruckJourneyData,
     onIsActiveChange: (Boolean) -> Unit,
 ) {
-    // Handle cases where data might be null, common when nothing is expanded
-    if (truckJourneyData == null || camion == null || destino == null) {
-        // Optionally show a loading indicator or an empty state
-        // Text("Loading details or no journey selected...")
-        return
-    }
+
     Card(modifier = Modifier.padding(8.dp)) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,

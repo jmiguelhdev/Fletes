@@ -49,4 +49,8 @@ interface TrucksRegistrationDao {
     @Transaction // Important for @Relation
     @Query("SELECT * FROM camiones_registro")
     fun getAllJourneysWithDetails(): Flow<List<JourneyWithAllDetails>>
+
+    @Transaction // Important for @Relation
+    @Query("SELECT * FROM camiones_registro where is_active = 1")
+    fun getActiveJourneysWithDetails(): Flow<List<JourneyWithAllDetails>>
 }

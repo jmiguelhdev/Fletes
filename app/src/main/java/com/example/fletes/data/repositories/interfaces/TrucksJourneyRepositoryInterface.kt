@@ -13,4 +13,5 @@ interface TrucksJourneyRepositoryInterface {
     fun getLastTripByCamionId(camionId: Int): Flow<CamionesRegistro?>
     fun getCamionesRegistroByCamionIdStream(camionId: Int): Flow<List<CamionesRegistro>>
     fun getAllJourneysWithDetails(): Flow<List<JourneyWithAllDetails>>
+    fun getActiveJourneysWithDetails(): Flow<List<JourneyWithAllDetails>>
 }

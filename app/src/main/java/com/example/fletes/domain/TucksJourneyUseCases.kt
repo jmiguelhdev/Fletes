@@ -51,4 +51,9 @@ class GetAllJourneysWithAllDetailsUseCase(private val repository: TrucksJourneyR
         return repository.getAllJourneysWithDetails()
     }
 }
+class GetActiveJourneysWithAllDetailsUseCase(private val repository: TrucksJourneyRepositoryInterface) {
+    operator fun invoke(): Flow<List<JourneyWithAllDetails>> {
+        return repository.getActiveJourneysWithDetails()
+    }
+}
 

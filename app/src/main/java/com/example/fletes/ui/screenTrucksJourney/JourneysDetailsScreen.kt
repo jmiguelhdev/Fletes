@@ -34,14 +34,15 @@ import java.time.format.DateTimeFormatter
 fun JourneyRegistrationScreen(
     truckJourneyViewModel: TruckJourneyViewModel,
     allJourneys: List<JourneyWithAllDetails>,
+    onCheckedChange: (Boolean) -> Unit,
     ) {
     val uiState = truckJourneyViewModel.truckJourneyUiState.collectAsState()
 
     Scaffold(
         topBar = {
             TopAppBarSwitch(
-                checked = true,
-                onCheckedChange = {},
+                checked = uiState.value.checkedSwitch,
+                onCheckedChange = onCheckedChange,
                 modifier = Modifier.padding(horizontal = 8.dp)
             )
         }

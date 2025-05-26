@@ -3,7 +3,6 @@ package com.example.fletes.ui.navigation
 import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
@@ -37,6 +36,8 @@ fun MyNavHost(
 
     val allJourneys by truckJourneyViewModel.allJourneys.collectAsState(emptyList())
     val activeJourneys by truckJourneyViewModel.activeJourneys.collectAsState(emptyList())
+    val truckJourneyUiState by truckJourneyViewModel.truckJourneyUiState.collectAsState()
+    val listToShowJourney = if (truckJourneyUiState.checkedSwitch) activeJourneys else allJourneys
 
     val unActiveDestinations by newDispatchViewModel.unActiveDestinations.collectAsState(emptyList())
     val initialActiveDipatch = listOf(
@@ -113,7 +114,12 @@ fun MyNavHost(
                 if (allJourneys.isNotEmpty()){
                     JourneyRegistrationScreen(
                         truckJourneyViewModel = truckJourneyViewModel,
-                        allJourneys = allJourneys
+                        allJourneys = listToShowJourney,
+                        onCheckedChange = {
+                            truckJourneyViewModel.onSwitchToggled(
+                                it
+                            )
+                        },
                     )
                 } else {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

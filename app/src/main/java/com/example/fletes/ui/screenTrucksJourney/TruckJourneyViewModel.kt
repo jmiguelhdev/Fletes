@@ -56,7 +56,8 @@ data class TruckJourneyUiState(
     val expandedJourneyDetails: CamionesRegistro? = null,
     val expandedJourneyTruck: Camion? = null,
     val expandedJourneyDestination: Destino? = null,
-    val editableExpandedJourneyData: TruckJourneyData? = null
+    val editableExpandedJourneyData: TruckJourneyData? = null,
+    val checkedSwitch: Boolean = false
 )
 
 
@@ -337,7 +338,13 @@ class TruckJourneyViewModel(
         }
     }
 
-
+    fun onSwitchToggled(isChecked: Boolean){
+        _truckJourneyUiState.update {
+            it.copy(
+                checkedSwitch = isChecked
+            )
+        }
+    }
     // In TruckJourneyViewModel
     fun onClickJourneyCard(journeyId: Int) {
         Log.d(

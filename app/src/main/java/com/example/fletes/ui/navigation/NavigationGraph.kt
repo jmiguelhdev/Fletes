@@ -38,6 +38,9 @@ fun MyNavHost(
     val activeJourneys by truckJourneyViewModel.activeJourneys.collectAsState(emptyList())
     val truckJourneyUiState by truckJourneyViewModel.truckJourneyUiState.collectAsState()
     val listToShowJourney = if (truckJourneyUiState.checkedSwitch) activeJourneys else allJourneys
+    Log.d("MyNavHost", "Active journeys: $activeJourneys")
+    Log.d("MyNavHost", "All Journeys: $allJourneys")
+    Log.d("MyNavHost", "list to show: $listToShowJourney")
 
     val unActiveDestinations by newDispatchViewModel.unActiveDestinations.collectAsState(emptyList())
     val initialActiveDipatch = listOf(
@@ -59,8 +62,7 @@ fun MyNavHost(
         newDispatchViewModel.loadDestinations()
     }
 
-    Log.d("MyNavHost", "Active Trucks: $activeTrucks")
-    Log.d("MyNavHost", "All Journeys: $allJourneys")
+
 
     Scaffold(
         bottomBar = {

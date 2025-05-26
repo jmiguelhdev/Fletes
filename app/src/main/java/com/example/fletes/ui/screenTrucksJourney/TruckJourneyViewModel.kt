@@ -57,7 +57,7 @@ data class TruckJourneyUiState(
     val expandedJourneyTruck: Camion? = null,
     val expandedJourneyDestination: Destino? = null,
     val editableExpandedJourneyData: TruckJourneyData? = null,
-    val checkedSwitch: Boolean = false
+    val checkedSwitch: Boolean = true
 )
 
 
@@ -322,7 +322,7 @@ class TruckJourneyViewModel(
                     }
                     .collect { journeys ->
                         Log.d("TruckJourneyViewModel", "Collected journeys: $journeys")
-                        _allJourneys.value = journeys
+                        _activeJourneys.value = journeys
                         _truckJourneyUiState.update { it.copy(isLoading = false) }
                         Log.d(
                             "TruckJourneyViewModel",

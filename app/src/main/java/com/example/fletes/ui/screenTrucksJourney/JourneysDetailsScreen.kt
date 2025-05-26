@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.Scaffold
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
@@ -25,6 +26,8 @@ import com.example.fletes.data.room.CamionesRegistro
 import com.example.fletes.data.room.Destino
 import com.example.fletes.data.room.JourneyWithAllDetails
 import com.example.fletes.ui.screenTrucksJourney.components.JourneyCardItems
+import com.example.fletes.ui.screenTrucksJourney.components.TopAppBarSwitch
+import java.nio.file.WatchEvent
 import java.time.format.DateTimeFormatter
 
 @Composable
@@ -34,40 +37,57 @@ fun JourneyRegistrationScreen(
     ) {
     val uiState = truckJourneyViewModel.truckJourneyUiState.collectAsState()
 
-
-    if (uiState.value.isLoading && allJourneys.isEmpty()) { // Overall loading for the list
-        CircularProgressIndicator()
-    } else if (uiState.value.isError) {
-        Text("Error loading journeys.")
-    } else {
-        LazyColumn {
-            items(allJourneys, key = { journey -> journey.journey.id }) { journeySummary ->
-                val isCurrentJourneyExpanded = uiState.value.expandedJourneyId == journeySummary.journey.id
-                Log.d("JourneyRegScreen",
-                    "Journey: ${journeySummary.journey.id}, IsExpanded: $isCurrentJourneyExpanded, ExpandedID: ${uiState.value.expandedJourneyId}")
-                JourneyCard(
-                    journeySummary = journeySummary.journey,
-                    // Pass the Camion and Destino specific to the expanded journey
-                    camion = journeySummary.camion,
-                    destino = journeySummary.destino,
-                    isExpanded = isCurrentJourneyExpanded,
-                    truckJourneyDataForDisplayOrEdit = if (isCurrentJourneyExpanded) uiState.value.editableExpandedJourneyData else null,
-                    isLoadingDetails = uiState.value.isLoading && isCurrentJourneyExpanded,
-                    // For JourneyCardItems, we'll derive data from expandedDetails
-                    onClick = {
-                        Log.d("JourneyRegScreen", "onClick for ${journeySummary.journey.id}")
-                        truckJourneyViewModel.onClickJourneyCard(journeySummary.journey.id)
-                    },
-                    onSaveClick = {
-                        truckJourneyViewModel.saveExpandedJourneyDetails()
-                                  },
-                    onCheckedChange = {
-                        truckJourneyViewModel.updateExpandedIsActiveValue(it)
-                    }
+    Scaffold(
+        topBar = {
+            TopAppBarSwitch(
+                checked = true,
+                onCheckedChange = {},
+                modifier = Modifier.padding(horizontal = 8.dp)
+            )
+        }
+    ) {paddingValues ->
+        if (uiState.value.isLoading && allJourneys.isEmpty()) { // Overall loading for the list
+            CircularProgressIndicator(
+                modifier = Modifier.padding(paddingValues)
+            )
+        } else if (uiState.value.isError) {
+            Text("Error loading journeys.",
+                modifier = Modifier.padding(paddingValues)
                 )
+        } else {
+            LazyColumn(
+                modifier = Modifier.padding(paddingValues)
+            ) {
+                items(allJourneys, key = { journey -> journey.journey.id }) { journeySummary ->
+                    val isCurrentJourneyExpanded = uiState.value.expandedJourneyId == journeySummary.journey.id
+                    Log.d("JourneyRegScreen",
+                        "Journey: ${journeySummary.journey.id}, IsExpanded: $isCurrentJourneyExpanded, ExpandedID: ${uiState.value.expandedJourneyId}")
+                    JourneyCard(
+                        journeySummary = journeySummary.journey,
+                        // Pass the Camion and Destino specific to the expanded journey
+                        camion = journeySummary.camion,
+                        destino = journeySummary.destino,
+                        isExpanded = isCurrentJourneyExpanded,
+                        truckJourneyDataForDisplayOrEdit = if (isCurrentJourneyExpanded) uiState.value.editableExpandedJourneyData else null,
+                        isLoadingDetails = uiState.value.isLoading && isCurrentJourneyExpanded,
+                        // For JourneyCardItems, we'll derive data from expandedDetails
+                        onClick = {
+                            Log.d("JourneyRegScreen", "onClick for ${journeySummary.journey.id}")
+                            truckJourneyViewModel.onClickJourneyCard(journeySummary.journey.id)
+                        },
+                        onSaveClick = {
+                            truckJourneyViewModel.saveExpandedJourneyDetails()
+                        },
+                        onCheckedChange = {
+                            truckJourneyViewModel.updateExpandedIsActiveValue(it)
+                        },
+                    )
+                }
             }
         }
     }
+
+
 }
 
 @Composable
@@ -80,7 +100,8 @@ fun JourneyCard(
     isLoadingDetails: Boolean,
     onSaveClick: () -> Unit,
     onClick: () -> Unit,
-    onCheckedChange: (Boolean) -> Unit
+    onCheckedChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Card(
         modifier = Modifier
@@ -88,7 +109,7 @@ fun JourneyCard(
             .padding(8.dp)
             .clickable(onClick = onClick)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(4.dp)) {
             // AnimatedVisibility for the collapsed state
             AnimatedVisibility(visible = !isExpanded) {
                 SingleDestinationCardFromDetails(

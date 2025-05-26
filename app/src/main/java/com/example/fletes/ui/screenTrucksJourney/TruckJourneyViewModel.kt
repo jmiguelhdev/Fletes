@@ -292,6 +292,50 @@ class TruckJourneyViewModel(
             }
         }
     }
+    private val _activeJourneys = MutableStateFlow<List<JourneyWithAllDetails>>(emptyList())
+    val activeJourneys: StateFlow<List<JourneyWithAllDetails>> = _activeJourneys.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
+
+
+    fun loadActiveJourneys() {
+        Log.d("TruckJourneyViewModel", "loadJourneys called")
+        viewModelScope.launch {
+            _truckJourneyUiState.update { it.copy(isLoading = true, isError = false) }
+            try {
+                Log.d("TruckJourneyViewModel", "Attempting to collect from getAllJourneyUseCase")
+                getActiveJourneysWithAllDetails()
+                    .onStart {
+                        Log.d("TruckJourneyViewModel", "getAllJourneyUseCase Flow started")
+                    }
+                    .onCompletion { cause ->
+                        if (cause != null && cause !is kotlinx.coroutines.CancellationException) {
+                            Log.e("TruckJourneyViewModel", "Flow completed with error", cause)
+                        } else if (cause is kotlinx.coroutines.CancellationException) {
+                            Log.w("TruckJourneyViewModel", "Flow collection was cancelled", cause)
+                        } else {
+                            Log.d("TruckJourneyViewModel", "Flow collection completed successfully")
+                        }
+                    }
+                    .collect { journeys ->
+                        Log.d("TruckJourneyViewModel", "Collected journeys: $journeys")
+                        _allJourneys.value = journeys
+                        _truckJourneyUiState.update { it.copy(isLoading = false) }
+                        Log.d(
+                            "TruckJourneyViewModel",
+                            "isLoading set to false. Current _allJourneys: ${_allJourneys.value}"
+                        )
+                    }
+            } catch (e: Exception) {
+                Log.e("TruckJourneyViewModel", "Error loading journeys in try-catch", e)
+                _truckJourneyUiState.update { it.copy(isLoading = false, isError = true) }
+            } finally {
+                Log.d("TruckJourneyViewModel", "Coroutine in loadJourneys finished.")
+            }
+        }
+    }
 
 
     // In TruckJourneyViewModel

@@ -145,6 +145,7 @@ fun JourneyCard(
                     }
                 }
             }
+            //quiero agregar el calculo de distacincia cuando esta completo el viaje
         }
     }
 }

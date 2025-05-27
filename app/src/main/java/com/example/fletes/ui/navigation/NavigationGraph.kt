@@ -34,13 +34,7 @@ fun MyNavHost(
     val truckJourneyViewModel: TruckJourneyViewModel = koinViewModel()
     val activeTrucks by truckViewModel.camiones.collectAsState(emptyList())
 
-    val allJourneys by truckJourneyViewModel.allJourneys.collectAsState(emptyList())
-    val activeJourneys by truckJourneyViewModel.activeJourneys.collectAsState(emptyList())
     val truckJourneyUiState by truckJourneyViewModel.truckJourneyUiState.collectAsState()
-    val listToShowJourney = if (truckJourneyUiState.checkedSwitch) activeJourneys else allJourneys
-    Log.d("MyNavHost", "Active journeys: $activeJourneys")
-    Log.d("MyNavHost", "All Journeys: $allJourneys")
-    Log.d("MyNavHost", "list to show: $listToShowJourney")
 
     val unActiveDestinations by newDispatchViewModel.unActiveDestinations.collectAsState(emptyList())
     val initialActiveDipatch = listOf(
@@ -57,8 +51,6 @@ fun MyNavHost(
 
     LaunchedEffect(key1 = true) {
         truckViewModel.loadCamiones()  // Load the camiones when the parent composable is launched
-        truckJourneyViewModel.loadJourneys()
-        truckJourneyViewModel.loadActiveJourneys()
         newDispatchViewModel.loadDestinations()
     }
 
@@ -113,21 +105,12 @@ fun MyNavHost(
                 }
             }
             composable<ActiveJourneysRoute> {
-                if (allJourneys.isNotEmpty()){
-                    JourneyRegistrationScreen(
-                        truckJourneyViewModel = truckJourneyViewModel,
-                        allJourneys = listToShowJourney,
-                        onCheckedChange = {
-                            truckJourneyViewModel.onSwitchToggled(
-                                it
-                            )
-                        },
-                    )
-                } else {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator()
-                    }
-                }
+                // JourneyRegistrationScreen internally handles its loading/empty/error states
+                // based on truckJourneyUiState, which is collected above.
+                JourneyRegistrationScreen(
+                    truckJourneyViewModel = truckJourneyViewModel,
+                    onCheckedChange = truckJourneyViewModel::onSwitchToggled // Use stable reference
+                )
             }
         }
     }

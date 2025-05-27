@@ -139,27 +139,35 @@ class TruckJourneyViewModel(
 
     fun onTruckSelected(camion: Camion) {
         savedStateHandle[TRUCK_SELECTED_ID] = camion.id
+        _truckJourneyUiState.update { currentState ->
+            currentState.copy(
+                newJourneyFormData = currentState.newJourneyFormData.copy(camionId = camion.id)
+            )
+        }
         viewModelScope.launch {
             updateTruckIsActive(camion)
         }
     }
 
+    private fun validateDecimalInput(value: String): Pair<String, String> {
+        return try {
+            value.toDouble()
+            Pair(value, "") // Valid number, no error
+        } catch (e: NumberFormatException) {
+            Pair(value, "Debe ser un número") // Invalid number, return error message
+        }
+    }
+
     // Funciones para actualizar cada valor y guardar en SavedStateHandle
     private fun updateKmCargaValue(newValue: String) {
-        // Validacion
-        var error = ""
-        try {
-            newValue.toDouble()
-        } catch (e: NumberFormatException) {
-            error = "debe ser un numero $e"
-        }
-        savedStateHandle[KM_CARGA_VALUE] = newValue
+        val (value, error) = validateDecimalInput(newValue)
+        savedStateHandle[KM_CARGA_VALUE] = value
         savedStateHandle[KM_CARGA_ERROR] = error
         _truckJourneyUiState.update {
             it.copy(
                 newJourneyFormData = it.newJourneyFormData.copy(
                     kmCargaData = it.newJourneyFormData.kmCargaData.copy(
-                        value = newValue,
+                        value = value,
                         errorMessage = error
                     )
                 )
@@ -168,20 +176,14 @@ class TruckJourneyViewModel(
     }
 
     private fun updateKmDescargaValue(newValue: String) {
-        // Validacion
-        var error = ""
-        try {
-            newValue.toDouble()
-        } catch (e: NumberFormatException) {
-            error = "debe ser un numero $e"
-        }
-        savedStateHandle[KM_DESCARGA_VALUE] = newValue
+        val (value, error) = validateDecimalInput(newValue)
+        savedStateHandle[KM_DESCARGA_VALUE] = value
         savedStateHandle[KM_DESCARGA_ERROR] = error
         _truckJourneyUiState.update {
             it.copy(
                 newJourneyFormData = it.newJourneyFormData.copy(
                     kmDescargaData = it.newJourneyFormData.kmDescargaData.copy(
-                        value = newValue,
+                        value = value,
                         errorMessage = error
                     )
                 )
@@ -190,20 +192,14 @@ class TruckJourneyViewModel(
     }
 
     private fun updateKmSurtidorValue(newValue: String) {
-        // Validacion
-        var error = ""
-        try {
-            newValue.toDouble()
-        } catch (e: NumberFormatException) {
-            error = "debe ser un numero $e"
-        }
-        savedStateHandle[KM_SURTIDOR_VALUE] = newValue
+        val (value, error) = validateDecimalInput(newValue)
+        savedStateHandle[KM_SURTIDOR_VALUE] = value
         savedStateHandle[KM_SURTIDOR_ERROR] = error
         _truckJourneyUiState.update {
             it.copy(
                 newJourneyFormData = it.newJourneyFormData.copy(
                     kmSurtidorData = it.newJourneyFormData.kmSurtidorData.copy(
-                        value = newValue,
+                        value = value,
                         errorMessage = error
                     )
                 )
@@ -212,20 +208,14 @@ class TruckJourneyViewModel(
     }
 
     private fun updateLitrosValue(newValue: String) {
-        // Validacion
-        var error = ""
-        try {
-            newValue.toDouble()
-        } catch (e: NumberFormatException) {
-            error = "debe ser un numero $e"
-        }
-        savedStateHandle[LITROS_VALUE] = newValue
+        val (value, error) = validateDecimalInput(newValue)
+        savedStateHandle[LITROS_VALUE] = value
         savedStateHandle[LITROS_ERROR] = error
         _truckJourneyUiState.update {
             it.copy(
                 newJourneyFormData = it.newJourneyFormData.copy(
                     litrosData = it.newJourneyFormData.litrosData.copy(
-                        value = newValue,
+                        value = value,
                         errorMessage = error
                     )
                 )
@@ -242,7 +232,7 @@ class TruckJourneyViewModel(
 
     fun updateTruckIsActive(truck: Camion) {
         viewModelScope.launch {
-            Log.d("DispatchViewModel", "updateTruckIsActive: $truck")
+            Log.d("TruckJourneyVM", "updateTruckIsActive: $truck")
             _truckJourneyUiState.update { currentState ->
                 currentState.copy(
                     newJourneyTruckSelected = truck.copy(
@@ -254,56 +244,50 @@ class TruckJourneyViewModel(
         }
     }
 
-    private val _allJourneys = MutableStateFlow<List<JourneyWithAllDetails>>(emptyList())
-    val allJourneys: StateFlow<List<JourneyWithAllDetails>> = _allJourneys.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = emptyList()
-    )
-
-
     //distancia debe ser unico para cada registro
 // This function will be called by onCheckedChange and init
     fun observeJourneys() {
         viewModelScope.launch {
             _truckJourneyUiState.update { it.copy(isLoading = true, isError = false) }
+            val showActive = _truckJourneyUiState.value.checkedSwitch
+            Log.d("TruckJourneyVM", "observeJourneys called. showActive: $showActive")
+
+            val journeysFlow = if (showActive) {
+                getActiveJourneysWithAllDetails()
+            } else {
+                getAllJourneysWithAllDetails()
+            }
+
             try {
-                // Assuming getAllJourneysWithAllDetailsUseCase can filter by active status
-                // or you have a different use case for active/inactive.
-                // For this example, let's assume it returns all and we might filter later if needed,
-                // or better, the use case handles it.
-                getAllJourneysWithAllDetails() // Or a specific use case for active/all
+                journeysFlow
                     .map { journeysList ->
                         journeysList.map { journeyWithDetails ->
-                            // Calculate distance for each journey
-                            val individualDistance =
-                                journeyWithDetails.journey.getDistancia() // Your existing method
-                            // Create a new instance or update the existing one with the distance
+                            val individualDistance = journeyWithDetails.journey.getDistancia()
                             journeyWithDetails.copy(calculatedDistance = individualDistance)
                         }
                     }
-                    .onStart { Log.d("TruckJourneyVM", "Starting to load journeys...") }
-                    .onCompletion {
-                        if (it == null) Log.d(
-                            "TruckJourneyVM",
-                            "Journey loading completed."
-                        )
+                    .onStart { Log.d("TruckJourneyVM", "Starting to load journeys based on switch: $showActive") }
+                    .onCompletion { throwable ->
+                        if (throwable == null) {
+                            Log.d("TruckJourneyVM", "Journey loading completed for showActive: $showActive")
+                        } else if (throwable is kotlinx.coroutines.CancellationException) {
+                            Log.w("TruckJourneyVM", "Journey loading cancelled for showActive: $showActive", throwable)
+                        }
+                        else {
+                            Log.e("TruckJourneyVM", "Journey loading failed for showActive: $showActive", throwable)
+                        }
                     }
-
                     .collect { journeysWithDistance ->
-                        Log.d(
-                            "TruckJourneyVM",
-                            "Journeys with distance: ${journeysWithDistance.size}"
-                        )
+                        Log.d("TruckJourneyVM", "Journeys with distance for showActive ($showActive): ${journeysWithDistance.size}")
                         _truckJourneyUiState.update {
                             it.copy(
                                 isLoading = false,
-                                journeysForDisplay = journeysWithDistance // Update the UI state
+                                journeysForDisplay = journeysWithDistance
                             )
                         }
                     }
-            } catch (e: Exception) { // Catch exceptions from launching the flow collection itself
-                Log.e("TruckJourneyVM", "Error launching journey observation", e)
+            } catch (e: Exception) {
+                Log.e("TruckJourneyVM", "Error in observeJourneys's try-catch block for showActive: $showActive", e)
                 _truckJourneyUiState.update { it.copy(isLoading = false, isError = true) }
             }
         }
@@ -311,90 +295,6 @@ class TruckJourneyViewModel(
 
     init {
         observeJourneys()
-    }
-
-    fun loadJourneys() {
-        Log.d("TruckJourneyViewModel", "loadJourneys called")
-        viewModelScope.launch {
-            _truckJourneyUiState.update { it.copy(isLoading = true, isError = false) }
-            try {
-                Log.d("TruckJourneyViewModel", "Attempting to collect from getAllJourneyUseCase")
-                getAllJourneysWithAllDetails()
-                    .onStart {
-                        Log.d("TruckJourneyViewModel", "getAllJourneyUseCase Flow started")
-                    }
-                    .onCompletion { cause ->
-                        if (cause != null && cause !is kotlinx.coroutines.CancellationException) {
-                            Log.e("TruckJourneyViewModel", "Flow completed with error", cause)
-                        } else if (cause is kotlinx.coroutines.CancellationException) {
-                            Log.w("TruckJourneyViewModel", "Flow collection was cancelled", cause)
-                        } else {
-                            Log.d("TruckJourneyViewModel", "Flow collection completed successfully")
-                        }
-                    }
-                    .collect { journeys ->
-                        Log.d("TruckJourneyViewModel", "Collected journeys: $journeys")
-                        _allJourneys.value = journeys
-                        _truckJourneyUiState.update { it.copy(isLoading = false) }
-                        Log.d(
-                            "TruckJourneyViewModel",
-                            "isLoading set to false. Current _allJourneys: ${_allJourneys.value}"
-                        )
-                    }
-            } catch (e: Exception) {
-                Log.e("TruckJourneyViewModel", "Error loading journeys in try-catch", e)
-                _truckJourneyUiState.update { it.copy(isLoading = false, isError = true) }
-            } finally {
-                Log.d("TruckJourneyViewModel", "Coroutine in loadJourneys finished.")
-
-            }
-        }
-    }
-
-    private val _activeJourneys = MutableStateFlow<List<JourneyWithAllDetails>>(emptyList())
-    val activeJourneys: StateFlow<List<JourneyWithAllDetails>> = _activeJourneys.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = emptyList()
-    )
-
-
-    fun loadActiveJourneys() {
-        Log.d("TruckJourneyViewModel", "loadJourneys called")
-        viewModelScope.launch {
-            _truckJourneyUiState.update { it.copy(isLoading = true, isError = false) }
-            try {
-                Log.d("TruckJourneyViewModel", "Attempting to collect from getAllJourneyUseCase")
-                getActiveJourneysWithAllDetails()
-                    .onStart {
-                        Log.d("TruckJourneyViewModel", "getAllJourneyUseCase Flow started")
-                    }
-                    .onCompletion { cause ->
-                        if (cause != null && cause !is kotlinx.coroutines.CancellationException) {
-                            Log.e("TruckJourneyViewModel", "Flow completed with error", cause)
-                        } else if (cause is kotlinx.coroutines.CancellationException) {
-                            Log.w("TruckJourneyViewModel", "Flow collection was cancelled", cause)
-                        } else {
-                            Log.d("TruckJourneyViewModel", "Flow collection completed successfully")
-                        }
-                    }
-                    .collect { journeys ->
-                        Log.d("TruckJourneyViewModel", "Collected journeys: $journeys")
-                        _activeJourneys.value = journeys
-                        _truckJourneyUiState.update { it.copy(isLoading = false) }
-                        Log.d(
-                            "TruckJourneyViewModel",
-                            "isLoading set to false. Current _allJourneys: ${_allJourneys.value}"
-                        )
-                    }
-            } catch (e: Exception) {
-                Log.e("TruckJourneyViewModel", "Error loading journeys in try-catch", e)
-                _truckJourneyUiState.update { it.copy(isLoading = false, isError = true) }
-            } finally {
-                Log.d("TruckJourneyViewModel", "Coroutine in loadJourneys finished.")
-
-            }
-        }
     }
 
     fun onSwitchToggled(isChecked: Boolean) {
@@ -516,10 +416,6 @@ class TruckJourneyViewModel(
 
     // In TruckJourneyViewModel
 
-    // For NEW JOURNEY (existing functions - no change needed to their internals)
-// private fun updateKmCargaValue(newValue: String) { ... }
-// private fun updateKmDescargaValue(newValue: String) { ... }
-// ... and so on
     fun updateExpandedIsActiveValue(newValue: Boolean) { // Removed 'id' as it's implicit
         _truckJourneyUiState.value.editableExpandedJourneyData?.let { currentEditableData ->
             // Only update if the new value is different, to avoid unnecessary recompositions (optional optimization)
@@ -544,27 +440,15 @@ class TruckJourneyViewModel(
     // For EXPANDED JOURNEY
     fun updateExpandedKmCargaValue(newValue: String) {
         _truckJourneyUiState.value.editableExpandedJourneyData?.let { currentEditableData ->
-            var error = ""
-            try {
-                newValue.toDouble() // Basic validation
-            } catch (e: NumberFormatException) {
-                error = "Debe ser un número $e"
-            }
-
+            val (value, error) = validateDecimalInput(newValue)
             _truckJourneyUiState.update { currentState ->
                 val updatedEditableData = currentEditableData.copy(
                     kmCargaData = currentEditableData.kmCargaData.copy(
-                        value = newValue,
+                        value = value,
                         errorMessage = error
                     )
                 )
-
-                // Automatically update isActive based on completeness
-                // If you want isActive to be FALSE when complete:
                 val newIsActiveState = !isEditableExpandedJourneyComplete(updatedEditableData)
-                // If you want isActive to be TRUE when complete:
-                // val newIsActiveState = isEditableExpandedJourneyComplete(updatedEditableData)
-
                 currentState.copy(
                     editableExpandedJourneyData = updatedEditableData.copy(
                         isActive = newIsActiveState
@@ -576,26 +460,15 @@ class TruckJourneyViewModel(
 
     fun updateExpandedKmDescargaValue(newValue: String) {
         _truckJourneyUiState.value.editableExpandedJourneyData?.let { currentEditableData ->
-            var error = ""
-            try {
-                newValue.toDouble()
-            } catch (e: NumberFormatException) {
-                error = "Debe ser un número $e"
-            }
+            val (value, error) = validateDecimalInput(newValue)
             _truckJourneyUiState.update { currentState ->
                 val updatedEditableData = currentEditableData.copy(
                     kmDescargaData = currentEditableData.kmDescargaData.copy(
-                        value = newValue,
+                        value = value,
                         errorMessage = error
                     )
                 )
-
-                // Automatically update isActive based on completeness
-                // If you want isActive to be FALSE when complete:
                 val newIsActiveState = !isEditableExpandedJourneyComplete(updatedEditableData)
-                // If you want isActive to be TRUE when complete:
-                // val newIsActiveState = isEditableExpandedJourneyComplete(updatedEditableData)
-
                 currentState.copy(
                     editableExpandedJourneyData = updatedEditableData.copy(
                         isActive = newIsActiveState
@@ -607,26 +480,15 @@ class TruckJourneyViewModel(
 
     fun updateExpandedKmSurtidorValue(newValue: String) {
         _truckJourneyUiState.value.editableExpandedJourneyData?.let { currentEditableData ->
-            var error = ""
-            try {
-                newValue.toDouble()
-            } catch (e: NumberFormatException) {
-                error = "Debe ser un número $e"
-            }
+            val (value, error) = validateDecimalInput(newValue)
             _truckJourneyUiState.update { currentState ->
                 val updatedEditableData = currentEditableData.copy(
                     kmSurtidorData = currentEditableData.kmSurtidorData.copy(
-                        value = newValue,
+                        value = value,
                         errorMessage = error
                     )
                 )
-
-                // Automatically update isActive based on completeness
-                // If you want isActive to be FALSE when complete:
                 val newIsActiveState = !isEditableExpandedJourneyComplete(updatedEditableData)
-                // If you want isActive to be TRUE when complete:
-                // val newIsActiveState = isEditableExpandedJourneyComplete(updatedEditableData)
-
                 currentState.copy(
                     editableExpandedJourneyData = updatedEditableData.copy(
                         isActive = newIsActiveState
@@ -638,26 +500,15 @@ class TruckJourneyViewModel(
 
     fun updateExpandedLitrosValue(newValue: String) {
         _truckJourneyUiState.value.editableExpandedJourneyData?.let { currentEditableData ->
-            var error = ""
-            try {
-                newValue.toDouble()
-            } catch (e: NumberFormatException) {
-                error = "Debe ser un número $e"
-            }
+            val (value, error) = validateDecimalInput(newValue)
             _truckJourneyUiState.update { currentState ->
                 val updatedEditableData = currentEditableData.copy(
                     litrosData = currentEditableData.litrosData.copy(
-                        value = newValue,
+                        value = value,
                         errorMessage = error
                     )
                 )
-
-                // Automatically update isActive based on completeness
-                // If you want isActive to be FALSE when complete:
                 val newIsActiveState = !isEditableExpandedJourneyComplete(updatedEditableData)
-                // If you want isActive to be TRUE when complete:
-                // val newIsActiveState = isEditableExpandedJourneyComplete(updatedEditableData)
-
                 currentState.copy(
                     editableExpandedJourneyData = updatedEditableData.copy(
                         isActive = newIsActiveState
@@ -747,7 +598,7 @@ class TruckJourneyViewModel(
                             expandedJourneyId = null // Collapse card after save (optional)
                         )
                     }
-                    loadJourneys() // Refresh the list to show updated data
+                    observeJourneys() // Refresh the list to show updated data based on the current switch state
                 }
             } catch (e: NumberFormatException) {
                 Log.e("TruckJourneyVM", "Error parsing numbers during save", e)

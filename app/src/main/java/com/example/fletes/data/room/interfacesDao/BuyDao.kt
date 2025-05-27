@@ -16,6 +16,6 @@ interface BuyDao {
     @Update
     suspend fun update(buy: Buy)
 
-    @Query("SELECT * FROM buy_records WHERE camion_registro_id = :camionRegistroId")
-    fun getBuyByCamionRegistroId(camionRegistroId: Int): Flow<Buy?>
+    @Query("SELECT * FROM buy_records WHERE camion_registro_id = :idOfCamionRegistro")
+    fun getBuyByCamionRegistroId(idOfCamionRegistro: Int): Flow<Buy?>
 }

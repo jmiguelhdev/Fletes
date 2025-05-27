@@ -4,7 +4,6 @@ import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
-import androidx.room.Ignore // Added import
 import androidx.room.PrimaryKey
 import androidx.room.Relation
 import androidx.room.TypeConverter
@@ -116,6 +115,6 @@ data class JourneyWithAllDetails(
         entityColumn = "id"
     )
     val destino: Destino,
-    @Ignore val calculatedDistance: Int = 0,
-    @Ignore val calculatedRateKmLiters: Double = 0.0 // New field
+    val calculatedDistance: Int = 0,
+    val calculatedRateKmLiters: Double = 0.0 // New field
 )

@@ -259,17 +259,7 @@ class TruckJourneyViewModel(
             }
 
             try {
-                journeysFlow
-                    .map { journeysList ->
-                        journeysList.map { journeyWithDetails ->
-                            val individualDistance = journeyWithDetails.journey.getDistancia()
-                            val individualRate = journeyWithDetails.journey.getRateKmTimesLiters() // New calculation
-                            journeyWithDetails.copy(
-                                calculatedDistance = individualDistance,
-                                calculatedRateKmLiters = individualRate // Include new rate
-                            )
-                        }
-                    }
+                journeysFlow // Directly use journeysFlow
                     .onStart { Log.d("TruckJourneyVM", "Starting to load journeys based on switch: $showActive") }
                     .onCompletion { throwable ->
                         if (throwable == null) {
@@ -281,12 +271,12 @@ class TruckJourneyViewModel(
                             Log.e("TruckJourneyVM", "Journey loading failed for showActive: $showActive", throwable)
                         }
                     }
-                    .collect { journeysWithDistance ->
-                        Log.d("TruckJourneyVM", "Journeys with distance for showActive ($showActive): ${journeysWithDistance.size}")
+                    .collect { loadedJourneys -> // Renamed variable
+                        Log.d("TruckJourneyVM", "Loaded journeys for showActive ($showActive): ${loadedJourneys.size}") // Updated log
                         _truckJourneyUiState.update {
                             it.copy(
                                 isLoading = false,
-                                journeysForDisplay = journeysWithDistance
+                                journeysForDisplay = loadedJourneys // Use renamed variable
                             )
                         }
                     }

@@ -47,11 +47,11 @@ interface TrucksRegistrationDao {
     fun getAllRegistrations(): Flow<List<CamionesRegistro>>
 
     @Transaction // Important for @Relation
-    @Query("SELECT id, camion_id, destino_id, created_at, km_carga, km_descarga, km_surtidor, litros, is_active, (km_descarga - km_carga) AS calculatedDistance FROM camiones_registro")
+    @Query("SELECT id, camion_id, destino_id, created_at, km_carga, km_descarga, km_surtidor, litros, is_active, (km_descarga - km_carga) AS calculatedDistance, CASE WHEN litros > 0 THEN CAST((km_descarga - km_carga) AS REAL) / litros ELSE 0.0 END AS calculatedRateKmLiters FROM camiones_registro")
     fun getAllJourneysWithDetails(): Flow<List<JourneyWithAllDetails>>
 
     @Transaction // Important for @Relation
-    @Query("SELECT id, camion_id, destino_id, created_at, km_carga, km_descarga, km_surtidor, litros, is_active, (km_descarga - km_carga) AS calculatedDistance FROM camiones_registro where is_active = 1")
+    @Query("SELECT id, camion_id, destino_id, created_at, km_carga, km_descarga, km_surtidor, litros, is_active, (km_descarga - km_carga) AS calculatedDistance, CASE WHEN litros > 0 THEN CAST((km_descarga - km_carga) AS REAL) / litros ELSE 0.0 END AS calculatedRateKmLiters FROM camiones_registro where is_active = 1")
     fun getActiveJourneysWithDetails(): Flow<List<JourneyWithAllDetails>>
 }
 

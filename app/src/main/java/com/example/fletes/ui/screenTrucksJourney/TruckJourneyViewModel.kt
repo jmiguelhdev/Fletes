@@ -1,6 +1,8 @@
 package com.example.fletes.ui.screenTrucksJourney
 
 import android.util.Log
+import androidx.compose.animation.core.copy
+import androidx.compose.foundation.layout.size
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -21,6 +23,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
@@ -35,7 +38,7 @@ data class TruckJourneyUiState(
         kmDescargaData = DecimalTextFieldData("km descarga", "", {}, ""),
         kmSurtidorData = DecimalTextFieldData("km surtidor", "", {}, ""),
         litrosData = DecimalTextFieldData("litros surtidos", "", {}, ""),
-        isActive = false
+        isActive = false,
     ),
     val newJourneyTruckSelected: Camion = Camion(
         choferName = "",
@@ -57,7 +60,8 @@ data class TruckJourneyUiState(
     val expandedJourneyTruck: Camion? = null,
     val expandedJourneyDestination: Destino? = null,
     val editableExpandedJourneyData: TruckJourneyData? = null,
-    val checkedSwitch: Boolean = true
+    val checkedSwitch: Boolean = true,
+    val journeysForDisplay: List<JourneyWithAllDetails> = emptyList()
 )
 
 
@@ -85,6 +89,7 @@ class TruckJourneyViewModel(
         const val LITROS_ERROR = "litrosError"
 
     }
+
 
     // Inicializar el estado con los valores de SavedStateHandle o valores predeterminados
     private val _truckJourneyUiState = MutableStateFlow(
@@ -257,6 +262,57 @@ class TruckJourneyViewModel(
     )
 
 
+    //distancia debe ser unico para cada registro
+// This function will be called by onCheckedChange and init
+    fun observeJourneys() {
+        viewModelScope.launch {
+            _truckJourneyUiState.update { it.copy(isLoading = true, isError = false) }
+            try {
+                // Assuming getAllJourneysWithAllDetailsUseCase can filter by active status
+                // or you have a different use case for active/inactive.
+                // For this example, let's assume it returns all and we might filter later if needed,
+                // or better, the use case handles it.
+                getAllJourneysWithAllDetails() // Or a specific use case for active/all
+                    .map { journeysList ->
+                        journeysList.map { journeyWithDetails ->
+                            // Calculate distance for each journey
+                            val individualDistance =
+                                journeyWithDetails.journey.getDistancia() // Your existing method
+                            // Create a new instance or update the existing one with the distance
+                            journeyWithDetails.copy(calculatedDistance = individualDistance)
+                        }
+                    }
+                    .onStart { Log.d("TruckJourneyVM", "Starting to load journeys...") }
+                    .onCompletion {
+                        if (it == null) Log.d(
+                            "TruckJourneyVM",
+                            "Journey loading completed."
+                        )
+                    }
+
+                    .collect { journeysWithDistance ->
+                        Log.d(
+                            "TruckJourneyVM",
+                            "Journeys with distance: ${journeysWithDistance.size}"
+                        )
+                        _truckJourneyUiState.update {
+                            it.copy(
+                                isLoading = false,
+                                journeysForDisplay = journeysWithDistance // Update the UI state
+                            )
+                        }
+                    }
+            } catch (e: Exception) { // Catch exceptions from launching the flow collection itself
+                Log.e("TruckJourneyVM", "Error launching journey observation", e)
+                _truckJourneyUiState.update { it.copy(isLoading = false, isError = true) }
+            }
+        }
+    }
+
+    init {
+        observeJourneys()
+    }
+
     fun loadJourneys() {
         Log.d("TruckJourneyViewModel", "loadJourneys called")
         viewModelScope.launch {
@@ -290,9 +346,11 @@ class TruckJourneyViewModel(
                 _truckJourneyUiState.update { it.copy(isLoading = false, isError = true) }
             } finally {
                 Log.d("TruckJourneyViewModel", "Coroutine in loadJourneys finished.")
+
             }
         }
     }
+
     private val _activeJourneys = MutableStateFlow<List<JourneyWithAllDetails>>(emptyList())
     val activeJourneys: StateFlow<List<JourneyWithAllDetails>> = _activeJourneys.stateIn(
         scope = viewModelScope,
@@ -334,17 +392,20 @@ class TruckJourneyViewModel(
                 _truckJourneyUiState.update { it.copy(isLoading = false, isError = true) }
             } finally {
                 Log.d("TruckJourneyViewModel", "Coroutine in loadJourneys finished.")
+
             }
         }
     }
 
-    fun onSwitchToggled(isChecked: Boolean){
+    fun onSwitchToggled(isChecked: Boolean) {
         _truckJourneyUiState.update {
             it.copy(
                 checkedSwitch = isChecked
             )
         }
+        observeJourneys()
     }
+
     // In TruckJourneyViewModel
     fun onClickJourneyCard(journeyId: Int) {
         Log.d(

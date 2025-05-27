@@ -114,5 +114,6 @@ data class JourneyWithAllDetails(
         parentColumn = "destino_id",
         entityColumn = "id"
     )
-    val destino: Destino
+    val destino: Destino,
+    val calculatedDistance: Int = 0
 )

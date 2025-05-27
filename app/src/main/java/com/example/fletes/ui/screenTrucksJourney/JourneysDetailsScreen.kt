@@ -35,7 +35,7 @@ fun JourneyRegistrationScreen(
     truckJourneyViewModel: TruckJourneyViewModel,
     allJourneys: List<JourneyWithAllDetails>,
     onCheckedChange: (Boolean) -> Unit,
-    ) {
+) {
     val uiState = truckJourneyViewModel.truckJourneyUiState.collectAsState()
 
     Scaffold(
@@ -46,28 +46,35 @@ fun JourneyRegistrationScreen(
                 modifier = Modifier.padding(horizontal = 8.dp)
             )
         }
-    ) {paddingValues ->
+    ) { paddingValues ->
+        val journeyToDisplayDistance = uiState.value.journeysForDisplay
         if (uiState.value.isLoading && allJourneys.isEmpty()) { // Overall loading for the list
             CircularProgressIndicator(
                 modifier = Modifier.padding(paddingValues)
             )
         } else if (uiState.value.isError) {
-            Text("Error loading journeys.",
+            Text(
+                "Error loading journeys.",
                 modifier = Modifier.padding(paddingValues)
-                )
+            )
         } else {
             LazyColumn(
                 modifier = Modifier.padding(paddingValues)
             ) {
                 items(allJourneys, key = { journey -> journey.journey.id }) { journeySummary ->
-                    val isCurrentJourneyExpanded = uiState.value.expandedJourneyId == journeySummary.journey.id
-                    Log.d("JourneyRegScreen",
-                        "Journey: ${journeySummary.journey.id}, IsExpanded: $isCurrentJourneyExpanded, ExpandedID: ${uiState.value.expandedJourneyId}")
+                    val isCurrentJourneyExpanded =
+                        uiState.value.expandedJourneyId == journeySummary.journey.id
+                    Log.d(
+                        "JourneyRegScreen",
+                        "Journey: ${journeySummary.journey.id}, IsExpanded: $isCurrentJourneyExpanded, ExpandedID: ${uiState.value.expandedJourneyId}"
+                    )
                     JourneyCard(
                         journeySummary = journeySummary.journey,
+                        //uiState.value.distance
                         // Pass the Camion and Destino specific to the expanded journey
                         camion = journeySummary.camion,
                         destino = journeySummary.destino,
+                        distance = journeySummary.calculatedDistance,
                         isExpanded = isCurrentJourneyExpanded,
                         truckJourneyDataForDisplayOrEdit = if (isCurrentJourneyExpanded) uiState.value.editableExpandedJourneyData else null,
                         isLoadingDetails = uiState.value.isLoading && isCurrentJourneyExpanded,
@@ -96,6 +103,7 @@ fun JourneyCard(
     journeySummary: CamionesRegistro,
     camion: Camion?, // Now nullable, represents the camion of expandedDetails
     destino: Destino?, // Now nullable, represents the destino of expandedDetails
+    distance: Int,
     isExpanded: Boolean,
     truckJourneyDataForDisplayOrEdit: TruckJourneyData?, // Renamed for clarity
     isLoadingDetails: Boolean,
@@ -116,8 +124,9 @@ fun JourneyCard(
                 SingleDestinationCardFromDetails(
                     journey = journeySummary, // Or pass expandedDetails if it's the source of truth for display
                     camion = camion,     // This is the camion of the expanded item
-                    destino = destino    // This is the destino of the expanded item
-                )
+                    destino = destino,   // This is the destino of the expanded item
+                    distance = distance
+                    )
             }
             // AnimatedVisibility for the expanded state
             AnimatedVisibility(visible = isExpanded) {
@@ -132,7 +141,7 @@ fun JourneyCard(
                             destino = destino, // Pass the correct destino
                             truckJourneyData = truckJourneyDataForDisplayOrEdit, // Pass data derived from expandedDetails
                             onIsActiveChange = onCheckedChange
-                            )
+                        )
                         SaveOrUpdateTripButton(
                             modifier = Modifier,
                             isActive = true,
@@ -157,6 +166,7 @@ fun SingleDestinationCardFromDetails(
     journey: CamionesRegistro, // Still useful for things like createdAt
     camion: Camion?, // Nullable, as it might not be loaded yet or if not expanded
     destino: Destino?, // Nullable
+    distance: Int,
     onClickCard: ((journey: CamionesRegistro) -> Unit)? = null // Make optional if not always used
 ) {
     Card(
@@ -188,6 +198,7 @@ fun SingleDestinationCardFromDetails(
                     text = "Chofer: ${camion?.choferName ?: journey.camionId}", // Or "Loading..."
                     modifier = Modifier.padding(bottom = 4.dp)
                 )
+                Text(text = "Distancia: $distance km")
             }
         }
     }

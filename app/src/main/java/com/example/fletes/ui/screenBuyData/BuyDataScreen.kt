@@ -9,6 +9,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.foundation.layout.Arrangement // New import
 import androidx.compose.foundation.layout.Box // New import
 import androidx.compose.foundation.layout.Column // New import
+import androidx.compose.foundation.layout.Row // Added import
 import androidx.compose.foundation.layout.fillMaxSize // New import
 import androidx.compose.foundation.layout.padding // New import
 import androidx.compose.foundation.lazy.LazyColumn // New import

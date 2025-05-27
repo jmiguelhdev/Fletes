@@ -121,7 +121,7 @@ data class JourneyWithAllDetails(
 )
 
 @Entity(
-    tableName = "buy_records", // Choose a table name
+    tableName = "buy_records",
     foreignKeys = [
         ForeignKey(
             entity = CamionesRegistro::class,
@@ -130,14 +130,14 @@ data class JourneyWithAllDetails(
             onDelete = ForeignKey.CASCADE
         )
     ],
-    indices = [Index(value = ["camion_registro_id"], unique = true)] // Assuming one-to-one, so camion_registro_id should be unique
+    indices = [androidx.room.Index(value = ["camion_registro_id"], unique = true)] // Use fully qualified Index or ensure import
 )
 data class Buy(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     @ColumnInfo(name = "camion_registro_id") val camionRegistroId: Int,
     val kg: Double = 0.0,
     val price: Double = 0.0,
-    val kgFaena: Double = 0.0, // Column name will be kgFaena by default
+    val kgFaena: Double = 0.0,
     @ColumnInfo(name = "is_active") val isActive: Boolean = true
 )
 

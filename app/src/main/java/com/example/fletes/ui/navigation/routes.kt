@@ -14,3 +14,6 @@ object CreateDispatchRoute
 @Serializable
 object ActiveJourneysRoute
 
+@Serializable
+data object BuyDataRoute : java.io.Serializable // New route, ensure java.io.Serializable for objects
+

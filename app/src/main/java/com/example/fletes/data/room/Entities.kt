@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index // Added import
 import androidx.room.PrimaryKey
 import androidx.room.Relation
 import androidx.room.TypeConverter
@@ -117,4 +118,48 @@ data class JourneyWithAllDetails(
     val destino: Destino,
     val calculatedDistance: Int = 0,
     val calculatedRateKmLiters: Double = 0.0 // New field
+)
+
+@Entity(
+    tableName = "buy_records", // Choose a table name
+    foreignKeys = [
+        ForeignKey(
+            entity = CamionesRegistro::class,
+            parentColumns = ["id"],
+            childColumns = ["camion_registro_id"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ],
+    indices = [Index(value = ["camion_registro_id"], unique = true)] // Assuming one-to-one, so camion_registro_id should be unique
+)
+data class Buy(
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    @ColumnInfo(name = "camion_registro_id") val camionRegistroId: Int,
+    val kg: Double = 0.0,
+    val price: Double = 0.0,
+    val kgFaena: Double = 0.0, // Column name will be kgFaena by default
+    @ColumnInfo(name = "is_active") val isActive: Boolean = true
+)
+
+data class JourneyWithBuyDetails(
+    @Embedded val journey: CamionesRegistro, // Embeds the main journey record
+    @Relation(
+        parentColumn = "camion_id", // This refers to journey.camionId
+        entityColumn = "id"
+    )
+    val camion: Camion,
+    @Relation(
+        parentColumn = "destino_id", // This refers to journey.destinoId
+        entityColumn = "id"
+    )
+    val destino: Destino,
+    @Relation(
+        parentColumn = "id", // This refers to journey.id (CamionesRegistro.id)
+        entityColumn = "camion_registro_id"
+    )
+    val buy: Buy?, // Buy is nullable as a journey might not have a buy record yet
+
+    // Fields to be populated by DAO query calculations
+    @ColumnInfo(name = "calculatedDistance") val calculatedDistance: Int = 0,
+    @ColumnInfo(name = "calculatedRateKmLiters") val calculatedRateKmLiters: Double = 0.0
 )

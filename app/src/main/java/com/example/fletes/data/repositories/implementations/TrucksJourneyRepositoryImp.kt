@@ -3,6 +3,7 @@ package com.example.fletes.data.repositories.implementations
 import com.example.fletes.data.repositories.interfaces.TrucksJourneyRepositoryInterface
 import com.example.fletes.data.room.CamionesRegistro
 import com.example.fletes.data.room.JourneyWithAllDetails
+import com.example.fletes.data.room.JourneyWithBuyDetails // Added import
 import com.example.fletes.data.room.interfacesDao.TrucksRegistrationDao
 import kotlinx.coroutines.flow.Flow
 
@@ -41,5 +42,9 @@ class TrucksJourneyRepositoryImp(private val trucksRegistrationDao: TrucksRegist
 
     override fun getActiveJourneysWithDetails(): Flow<List<JourneyWithAllDetails>> {
         return trucksRegistrationDao.getActiveJourneysWithDetails()
+    }
+
+    override fun getActiveJourneysForBuyScreen(): Flow<List<JourneyWithBuyDetails>> {
+        return trucksRegistrationDao.getActiveJourneysForBuyScreen()
     }
 }

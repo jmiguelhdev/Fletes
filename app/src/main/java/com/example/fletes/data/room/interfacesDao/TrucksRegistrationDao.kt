@@ -9,6 +9,7 @@ import androidx.room.Transaction
 import androidx.room.Update
 import com.example.fletes.data.room.CamionesRegistro
 import com.example.fletes.data.room.JourneyWithAllDetails
+import com.example.fletes.data.room.JourneyWithBuyDetails // Added import
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -53,5 +54,9 @@ interface TrucksRegistrationDao {
     @Transaction // Important for @Relation
     @Query("SELECT id, camion_id, destino_id, created_at, km_carga, km_descarga, km_surtidor, litros, is_active, (km_descarga - km_carga) AS calculatedDistance, CASE WHEN litros > 0 THEN CAST((km_descarga - km_carga) AS REAL) / litros ELSE 0.0 END AS calculatedRateKmLiters FROM camiones_registro where is_active = 1")
     fun getActiveJourneysWithDetails(): Flow<List<JourneyWithAllDetails>>
+
+    @Transaction // Important for @Relation fields in JourneyWithBuyDetails
+    @Query("SELECT id, camion_id, destino_id, created_at, km_carga, km_descarga, km_surtidor, litros, is_active, (km_descarga - km_carga) AS calculatedDistance, CASE WHEN litros > 0 THEN CAST((km_descarga - km_carga) AS REAL) / litros ELSE 0.0 END AS calculatedRateKmLiters FROM camiones_registro WHERE is_active = 1")
+    fun getActiveJourneysForBuyScreen(): Flow<List<JourneyWithBuyDetails>>
 }
 

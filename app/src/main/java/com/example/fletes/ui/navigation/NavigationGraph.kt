@@ -12,11 +12,21 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.material.icons.Icons // New import
+import androidx.compose.material.icons.filled.ShoppingCart // New import
+import androidx.compose.material3.Icon // New import
+import androidx.compose.material3.NavigationBar // New import
+import androidx.compose.material3.NavigationBarItem // New import
+import androidx.compose.material3.Text // New import
+import androidx.navigation.NavDestination.Companion.hierarchy // New import
+import androidx.navigation.NavGraph.Companion.findStartDestination // New import
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState // New import
 import com.example.fletes.data.room.Destino
 import com.example.fletes.ui.screenActiveDispatch.ActiveDispatchDetailsScreen
+import com.example.fletes.ui.screenBuyData.BuyDataScreen // New import
 import com.example.fletes.ui.screenDispatch.NewDispatchScreen
 import com.example.fletes.ui.screenDispatch.NewDispatchViewModel
 import com.example.fletes.ui.screenTruck.TruckScreen
@@ -112,6 +122,62 @@ fun MyNavHost(
                     onCheckedChange = truckJourneyViewModel::onSwitchToggled // Use stable reference
                 )
             }
+            composable<BuyDataRoute> { // New composable for BuyDataScreen
+                BuyDataScreen(navController = navController)
+            }
+        }
+    }
+}
+
+@Composable
+fun BottomNavigationBar(navController: NavHostController) {
+    val navItems = listOf(
+        CreateJourneyRoute,
+        ActiveJourneysRoute,
+        BuyDataRoute, // Added BuyDataRoute to the list
+        CreateTruckRoute,
+        CreateDispatchRoute
+    )
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
+
+    NavigationBar {
+        navItems.forEach { screen ->
+            val selected = currentDestination?.hierarchy?.any { it.route == screen::class.qualifiedName } == true
+            NavigationBarItem(
+                icon = {
+                    when (screen) {
+                        CreateJourneyRoute -> Icon(Icons.Filled.Home, contentDescription = "Home") // Assuming Home for CreateJourney
+                        ActiveJourneysRoute -> Icon(Icons.Filled.List, contentDescription = "Active Journeys") // Assuming List for ActiveJourneys
+                        BuyDataRoute -> Icon(Icons.Filled.ShoppingCart, contentDescription = "Buy Data") // New Icon
+                        CreateTruckRoute -> Icon(Icons.Filled.LocalShipping, contentDescription = "Trucks") // Assuming LocalShipping for Trucks
+                        CreateDispatchRoute -> Icon(Icons.Filled.Edit, contentDescription = "Dispatch") // Assuming Edit for Dispatch
+                        else -> Icon(Icons.Filled.Error, contentDescription = "Unknown") // Fallback
+                    }
+                },
+                label = {
+                    Text(
+                        when (screen) {
+                            CreateJourneyRoute -> "Home"
+                            ActiveJourneysRoute -> "Journeys"
+                            BuyDataRoute -> "Buy Data" // New Label
+                            CreateTruckRoute -> "Trucks"
+                            CreateDispatchRoute -> "Dispatch"
+                            else -> "Unknown"
+                        }
+                    )
+                },
+                selected = selected,
+                onClick = {
+                    navController.navigate(screen) {
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                }
+            )
         }
     }
 }

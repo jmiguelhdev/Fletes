@@ -65,6 +65,12 @@ val appDatabaseModule = module {
     single<TrucksJourneyRepositoryInterface> {
         TrucksJourneyRepositoryImp(get())
     }
+    single { // New Dao provider for BuyDao
+        get<AppDatabase>().buyDao()
+    }
+    single<com.example.fletes.data.repositories.interfaces.BuyRepositoryInterface> { // Provider for BuyRepositoryInterface
+        com.example.fletes.data.repositories.implementations.BuyRepositoryImpl(get())
+    }
 }
 
 val camionModule = module {
@@ -73,6 +79,16 @@ val camionModule = module {
             camionRepository = get(),
             dniValidator = get(),
             licenseStringValidatorResult = get()
+        )
+    }
+}
+
+val buyDataModule = module { // New module for BuyData feature
+    viewModel {
+        com.example.fletes.ui.screenBuyData.BuyDataViewModel( // Use fully qualified name or add import
+            addOrUpdateBuyDataUseCase = get(),
+            getBuyForJourneyUseCase = get(),
+            getActiveJourneysForBuyScreenUseCase = get()
         )
     }
 }
@@ -97,6 +113,9 @@ val domainModule = module {
     single { GetTruckByIdUseCase(get()) }
     single { GetDestinationByIdUseCase(get()) }
     single { GetTruckJourneyByIdUseCase(get()) }
+    single { com.example.fletes.domain.GetActiveJourneysForBuyScreenUseCase(get()) } // Provider for GetActiveJourneysForBuyScreenUseCase
+    single { com.example.fletes.domain.GetBuyForJourneyUseCase(get()) } // Provider for GetBuyForJourneyUseCase
+    single { com.example.fletes.domain.AddOrUpdateBuyDataUseCase(get(), get()) } // Provider for AddOrUpdateBuyDataUseCase
 
 
 }

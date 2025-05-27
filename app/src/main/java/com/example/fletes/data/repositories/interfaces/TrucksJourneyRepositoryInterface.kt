@@ -2,6 +2,7 @@ package com.example.fletes.data.repositories.interfaces
 
 import com.example.fletes.data.room.CamionesRegistro
 import com.example.fletes.data.room.JourneyWithAllDetails
+import com.example.fletes.data.room.JourneyWithBuyDetails // Added import
 import kotlinx.coroutines.flow.Flow
 
 interface TrucksJourneyRepositoryInterface {
@@ -14,4 +15,5 @@ interface TrucksJourneyRepositoryInterface {
     fun getCamionesRegistroByCamionIdStream(camionId: Int): Flow<List<CamionesRegistro>>
     fun getAllJourneysWithDetails(): Flow<List<JourneyWithAllDetails>>
     fun getActiveJourneysWithDetails(): Flow<List<JourneyWithAllDetails>>
+    fun getActiveJourneysForBuyScreen(): Flow<List<JourneyWithBuyDetails>> // New method
 }

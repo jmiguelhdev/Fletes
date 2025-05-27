@@ -3,14 +3,16 @@ package com.example.fletes.data.room
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import com.example.fletes.data.room.Buy // Added import
+import com.example.fletes.data.room.interfacesDao.BuyDao // Added import
 import com.example.fletes.data.room.interfacesDao.DestinationDao
 import com.example.fletes.data.room.interfacesDao.TruckDao
 import com.example.fletes.data.room.interfacesDao.TrucksRegistrationDao
 
 // Database
 @Database(
-    entities = [Camion::class, Destino::class, CamionesRegistro::class],
-    version = 10,
+    entities = [Camion::class, Destino::class, CamionesRegistro::class, Buy::class], // Added Buy::class
+    version = 11, // Incremented version
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -18,6 +20,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun truckDao(): TruckDao
     abstract fun destinationDao(): DestinationDao
     abstract fun trucksRegistrationDao(): TrucksRegistrationDao
+    abstract fun buyDao(): BuyDao // New abstract fun
 }
 
 // DAOs

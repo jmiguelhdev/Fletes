@@ -81,7 +81,7 @@ fun JourneyCardItems(
                         value = truckJourneyData.kmSurtidorData.value,
                         onValueChange = truckJourneyData.kmSurtidorData.onValueChange,
                         label = "km surtidor",
-                        errorMessage = truckJourneyData.kmDescargaData.errorMessage,
+                        errorMessage = truckJourneyData.kmSurtidorData.errorMessage,
                     )
                 }
             }

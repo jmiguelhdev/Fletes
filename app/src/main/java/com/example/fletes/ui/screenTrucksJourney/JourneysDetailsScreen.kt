@@ -33,7 +33,6 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun JourneyRegistrationScreen(
     truckJourneyViewModel: TruckJourneyViewModel,
-    allJourneys: List<JourneyWithAllDetails>,
     onCheckedChange: (Boolean) -> Unit,
 ) {
     val uiState = truckJourneyViewModel.truckJourneyUiState.collectAsState()
@@ -48,7 +47,7 @@ fun JourneyRegistrationScreen(
         }
     ) { paddingValues ->
         val journeyToDisplayDistance = uiState.value.journeysForDisplay
-        if (uiState.value.isLoading && allJourneys.isEmpty()) { // Overall loading for the list
+        if (uiState.value.isLoading && uiState.value.journeysForDisplay.isEmpty()) { // Overall loading for the list
             CircularProgressIndicator(
                 modifier = Modifier.padding(paddingValues)
             )
@@ -61,7 +60,7 @@ fun JourneyRegistrationScreen(
             LazyColumn(
                 modifier = Modifier.padding(paddingValues)
             ) {
-                items(allJourneys, key = { journey -> journey.journey.id }) { journeySummary ->
+                items(uiState.value.journeysForDisplay, key = { journey -> journey.journey.id }) { journeySummary ->
                     val isCurrentJourneyExpanded =
                         uiState.value.expandedJourneyId == journeySummary.journey.id
                     Log.d(
@@ -83,12 +82,8 @@ fun JourneyRegistrationScreen(
                             Log.d("JourneyRegScreen", "onClick for ${journeySummary.journey.id}")
                             truckJourneyViewModel.onClickJourneyCard(journeySummary.journey.id)
                         },
-                        onSaveClick = {
-                            truckJourneyViewModel.saveExpandedJourneyDetails()
-                        },
-                        onCheckedChange = {
-                            truckJourneyViewModel.updateExpandedIsActiveValue(it)
-                        },
+                        onSaveClick = truckJourneyViewModel::saveExpandedJourneyDetails,
+                        onCheckedChange = truckJourneyViewModel::updateExpandedIsActiveValue,
                     )
                 }
             }
@@ -142,9 +137,15 @@ fun JourneyCard(
                             truckJourneyData = truckJourneyDataForDisplayOrEdit, // Pass data derived from expandedDetails
                             onIsActiveChange = onCheckedChange
                         )
+                        val isFormValid = truckJourneyDataForDisplayOrEdit.let { data ->
+                            data.kmCargaData.errorMessage.isEmpty() &&
+                            data.kmDescargaData.errorMessage.isEmpty() &&
+                            data.kmSurtidorData.errorMessage.isEmpty() &&
+                            data.litrosData.errorMessage.isEmpty()
+                        }
                         SaveOrUpdateTripButton(
                             modifier = Modifier,
-                            isActive = true,
+                            isActive = isFormValid,
                             onClickSaveOrUpdateTrip = {
                                 onSaveClick()
                             }

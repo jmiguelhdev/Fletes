@@ -74,6 +74,7 @@ fun JourneyRegistrationScreen(
                         camion = journeySummary.camion,
                         destino = journeySummary.destino,
                         distance = journeySummary.calculatedDistance,
+                        rateKmLiters = journeySummary.calculatedRateKmLiters, // Pass the rate
                         isExpanded = isCurrentJourneyExpanded,
                         truckJourneyDataForDisplayOrEdit = if (isCurrentJourneyExpanded) uiState.value.editableExpandedJourneyData else null,
                         isLoadingDetails = uiState.value.isLoading && isCurrentJourneyExpanded,
@@ -99,6 +100,7 @@ fun JourneyCard(
     camion: Camion?, // Now nullable, represents the camion of expandedDetails
     destino: Destino?, // Now nullable, represents the destino of expandedDetails
     distance: Int,
+    rateKmLiters: Double, // New parameter for JourneyCard
     isExpanded: Boolean,
     truckJourneyDataForDisplayOrEdit: TruckJourneyData?, // Renamed for clarity
     isLoadingDetails: Boolean,
@@ -120,7 +122,8 @@ fun JourneyCard(
                     journey = journeySummary, // Or pass expandedDetails if it's the source of truth for display
                     camion = camion,     // This is the camion of the expanded item
                     destino = destino,   // This is the destino of the expanded item
-                    distance = distance
+                    distance = distance,
+                    rateKmLiters = rateKmLiters // Pass down to SingleDestinationCardFromDetails
                     )
             }
             // AnimatedVisibility for the expanded state
@@ -168,6 +171,7 @@ fun SingleDestinationCardFromDetails(
     camion: Camion?, // Nullable, as it might not be loaded yet or if not expanded
     destino: Destino?, // Nullable
     distance: Int,
+    rateKmLiters: Double, // New parameter
     onClickCard: ((journey: CamionesRegistro) -> Unit)? = null // Make optional if not always used
 ) {
     Card(
@@ -200,6 +204,7 @@ fun SingleDestinationCardFromDetails(
                     modifier = Modifier.padding(bottom = 4.dp)
                 )
                 Text(text = "Distancia: $distance km")
+                Text(text = "Km/L Rate: ${String.format("%.2f", rateKmLiters)}")
             }
         }
     }

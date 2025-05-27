@@ -115,5 +115,6 @@ data class JourneyWithAllDetails(
         entityColumn = "id"
     )
     val destino: Destino,
-    val calculatedDistance: Int = 0
+    val calculatedDistance: Int = 0,
+    val calculatedRateKmLiters: Double = 0.0 // New field
 )

@@ -263,7 +263,11 @@ class TruckJourneyViewModel(
                     .map { journeysList ->
                         journeysList.map { journeyWithDetails ->
                             val individualDistance = journeyWithDetails.journey.getDistancia()
-                            journeyWithDetails.copy(calculatedDistance = individualDistance)
+                            val individualRate = journeyWithDetails.journey.getRateKmTimesLiters() // New calculation
+                            journeyWithDetails.copy(
+                                calculatedDistance = individualDistance,
+                                calculatedRateKmLiters = individualRate // Include new rate
+                            )
                         }
                     }
                     .onStart { Log.d("TruckJourneyVM", "Starting to load journeys based on switch: $showActive") }

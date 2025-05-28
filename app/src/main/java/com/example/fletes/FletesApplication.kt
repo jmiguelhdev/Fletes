@@ -3,6 +3,7 @@ package com.example.fletes
 
 import android.app.Application
 import com.example.fletes.di.appDatabaseModule
+import com.example.fletes.di.buyDataModule
 import com.example.fletes.di.camionModule
 import com.example.fletes.di.dispatchModule
 import com.example.fletes.di.domainModule
@@ -26,7 +27,9 @@ class FletesApplication : Application() {
                 domainModule,
                 dispatchModule,
                 journeyModule,
-                journeySummaryModule // Added the new module to the list
+                journeySummaryModule,
+                buyDataModule
+                // Added the new module to the list
             ) // Your module with database
             // ... other modules
         }

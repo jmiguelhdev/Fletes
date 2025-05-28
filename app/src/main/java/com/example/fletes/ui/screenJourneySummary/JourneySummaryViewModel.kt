@@ -2,8 +2,8 @@ package com.example.fletes.ui.screenJourneySummary
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.fletes.data.room.JourneyWithBuyDetails // Corrected import as per specific task requirement
-import com.example.fletes.data.repositories.interfaces.TruckJourneyRepository
+import com.example.fletes.data.repositories.interfaces.TrucksJourneyRepositoryInterface
+import com.example.fletes.data.room.JourneyWithBuyDetails
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
 class JourneySummaryViewModel(
-    private val repository: TruckJourneyRepository
+    private val repository: TrucksJourneyRepositoryInterface
 ) : ViewModel() {
 
     private val _journeys = MutableStateFlow<List<JourneyWithBuyDetails>>(emptyList())

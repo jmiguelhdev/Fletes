@@ -38,50 +38,50 @@ sealed class BottomNavItem(val route: Any, val iconResourceId: Int, val label: S
     )
     object JourneySummary : BottomNavItem(
         JourneySummaryRoute, // Route from routes.kt
-        R.drawable.ic_summary_24, // Placeholder for an icon
+        R.drawable.icl_shipping_24, // Placeholder for an icon
         "Summary"
     )
 }
 
-@Composable
-fun BottomNavigationBar(navController: NavHostController) {
-    val items = listOf(
-        BottomNavItem.TrucksDetail,
-        BottomNavItem.Dispatch,
-        BottomNavItem.Trucks,
-        BottomNavItem.ActiveJourneys,
-        BottomNavItem.JourneySummary // Added new item to the list
-    )
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry?.destination?.route
-
-    NavigationBar {
-        items.forEach { item ->
-            val isSelected = currentRoute == item.route.toString()
-            NavigationBarItem(
-                icon = {
-                    Icon(
-                        // Load ImageVector using the resource ID
-                        ImageVector.vectorResource(id = item.iconResourceId),
-                        contentDescription = item.label,
-                        tint = if(isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceTint
-                    )
-                },
-                label = { Text(item.label) },
-                selected = currentRoute == item.route.toString(),
-                onClick = {
-                    navController.navigate(item.route) {
-                        // Avoid building up a large stack of destinations on the back stack as users select items
-                        popUpTo(navController.graph.startDestinationRoute!!) {
-                            saveState = true
-                        }
-                        // Restore state when reselecting a previously selected item
-                        restoreState = true
-                        // Launch as a single top level destination to avoid duplicates
-                        launchSingleTop = true
-                    }
-                }
-            )
-        }
-    }
-}
+//@Composable
+//fun BottomNavigationBar(navController: NavHostController) {
+//    val items = listOf(
+//        BottomNavItem.TrucksDetail,
+//        BottomNavItem.Dispatch,
+//        BottomNavItem.Trucks,
+//        BottomNavItem.ActiveJourneys,
+//        BottomNavItem.JourneySummary // Added new item to the list
+//    )
+//    val navBackStackEntry by navController.currentBackStackEntryAsState()
+//    val currentRoute = navBackStackEntry?.destination?.route
+//
+//    NavigationBar {
+//        items.forEach { item ->
+//            val isSelected = currentRoute == item.route.toString()
+//            NavigationBarItem(
+//                icon = {
+//                    Icon(
+//                        // Load ImageVector using the resource ID
+//                        ImageVector.vectorResource(id = item.iconResourceId),
+//                        contentDescription = item.label,
+//                        tint = if(isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceTint
+//                    )
+//                },
+//                label = { Text(item.label) },
+//                selected = currentRoute == item.route.toString(),
+//                onClick = {
+//                    navController.navigate(item.route) {
+//                        // Avoid building up a large stack of destinations on the back stack as users select items
+//                        popUpTo(navController.graph.startDestinationRoute!!) {
+//                            saveState = true
+//                        }
+//                        // Restore state when reselecting a previously selected item
+//                        restoreState = true
+//                        // Launch as a single top level destination to avoid duplicates
+//                        launchSingleTop = true
+//                    }
+//                }
+//            )
+//        }
+//    }
+//}

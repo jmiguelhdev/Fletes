@@ -1,32 +1,31 @@
 package com.example.fletes.ui.navigation
 
-import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.material.icons.Icons // New import
-import androidx.compose.material.icons.filled.ShoppingCart // New import
-import androidx.compose.material3.Icon // New import
-import androidx.compose.material3.NavigationBar // New import
-import androidx.compose.material3.NavigationBarItem // New import
-import androidx.compose.material3.Text // New import
-import androidx.navigation.NavDestination.Companion.hierarchy // New import
-import androidx.navigation.NavGraph.Companion.findStartDestination // New import
+import androidx.compose.ui.res.painterResource
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState // New import
+import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.fletes.R
 import com.example.fletes.data.room.Destino
 import com.example.fletes.ui.screenActiveDispatch.ActiveDispatchDetailsScreen
-import com.example.fletes.ui.screenBuyData.BuyDataScreen // New import
+import com.example.fletes.ui.screenBuyData.BuyDataScreen
 import com.example.fletes.ui.screenDispatch.NewDispatchScreen
 import com.example.fletes.ui.screenDispatch.NewDispatchViewModel
 import com.example.fletes.ui.screenTruck.TruckScreen
@@ -143,16 +142,35 @@ fun BottomNavigationBar(navController: NavHostController) {
 
     NavigationBar {
         navItems.forEach { screen ->
-            val selected = currentDestination?.hierarchy?.any { it.route == screen::class.qualifiedName } == true
+            val selected =
+                currentDestination?.hierarchy?.any { it.route == screen::class.qualifiedName } == true
             NavigationBarItem(
                 icon = {
                     when (screen) {
-                        CreateJourneyRoute -> Icon(Icons.Filled.Home, contentDescription = "Home") // Assuming Home for CreateJourney
-                        ActiveJourneysRoute -> Icon(Icons.Filled.List, contentDescription = "Active Journeys") // Assuming List for ActiveJourneys
-                        BuyDataRoute -> Icon(Icons.Filled.ShoppingCart, contentDescription = "Buy Data") // New Icon
-                        CreateTruckRoute -> Icon(Icons.Filled.LocalShipping, contentDescription = "Trucks") // Assuming LocalShipping for Trucks
-                        CreateDispatchRoute -> Icon(Icons.Filled.Edit, contentDescription = "Dispatch") // Assuming Edit for Dispatch
-                        else -> Icon(Icons.Filled.Error, contentDescription = "Unknown") // Fallback
+                        CreateJourneyRoute -> Icon(
+                            painter = painterResource(R.drawable.ic_add_24),
+                            contentDescription = "Home"
+                        ) // Assuming Home for CreateJourney
+                        ActiveJourneysRoute -> Icon(
+                            painter = painterResource(R.drawable.ic_add_24),
+                            contentDescription = "Active Journeys"
+                        ) // Assuming List for ActiveJourneys
+                        BuyDataRoute -> Icon(
+                            painter = painterResource(R.drawable.ic_add_24),
+                            contentDescription = "Buy Data"
+                        ) // New Icon
+                        CreateTruckRoute -> Icon(
+                            painter = painterResource(R.drawable.ic_add_24),
+                            contentDescription = "Trucks"
+                        ) // Assuming LocalShipping for Trucks
+                        CreateDispatchRoute -> Icon(
+                            painter = painterResource(R.drawable.ic_add_24),
+                            contentDescription = "Dispatch"
+                        ) // Assuming Edit for Dispatch
+                        else -> Icon(
+                            painter = painterResource(R.drawable.ic_add_24),
+                            contentDescription = "Unknown"
+                        ) // Fallback
                     }
                 },
                 label = {

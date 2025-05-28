@@ -51,6 +51,16 @@ fun BuyJourneyListItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier // Added modifier
 ) {
+    val rendimientoValue: Double? = journeyWithDetails.buy?.let { buyDetails ->
+        val kg = buyDetails.kg
+        val kgFaena = buyDetails.kgFaena
+        if (kg != null && kg != 0.0 && kgFaena != null) {
+            kgFaena / kg
+        } else {
+            null
+        }
+    }
+
     Card(
         modifier = modifier // Use the passed modifier
             .fillMaxWidth()
@@ -71,6 +81,10 @@ fun BuyJourneyListItem(
             Text(text = "Distance: ${journeyWithDetails.calculatedDistance} km", style = MaterialTheme.typography.bodySmall)
             Text(text = "Comisionista: ${journeyWithDetails.destino.comisionista}", style = MaterialTheme.typography.bodySmall)
             Text(text = "Despacho: ${journeyWithDetails.destino.despacho}", style = MaterialTheme.typography.bodySmall)
+            Text(
+                text = if (rendimientoValue == null) "Rendimiento: N/A" else "Rendimiento: ${String.format("%.2f", rendimientoValue)}",
+                style = MaterialTheme.typography.bodySmall
+            )
             // Note: calculatedRateKmLiters is not requested for this list item display yet.
         }
     }

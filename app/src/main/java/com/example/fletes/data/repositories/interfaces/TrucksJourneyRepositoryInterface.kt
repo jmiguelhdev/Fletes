@@ -16,4 +16,5 @@ interface TrucksJourneyRepositoryInterface {
     fun getAllJourneysWithDetails(): Flow<List<JourneyWithAllDetails>>
     fun getActiveJourneysWithDetails(): Flow<List<JourneyWithAllDetails>>
     fun getActiveJourneysForBuyScreen(): Flow<List<JourneyWithBuyDetails>> // New method
+    fun getAllJourneyWithBuyDetails(): Flow<List<JourneyWithBuyDetails>>
 }

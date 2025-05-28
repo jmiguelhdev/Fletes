@@ -30,6 +30,7 @@ import com.example.fletes.domain.validators.DniValidator
 import com.example.fletes.domain.validators.PatenteValidator
 import com.example.fletes.ui.screenTruck.TruckViewModel
 import com.example.fletes.ui.screenDispatch.NewDispatchViewModel
+import com.example.fletes.ui.screenJourneySummary.JourneySummaryViewModel // Added import
 import com.example.fletes.ui.screenTrucksJourney.TruckJourneyViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -80,6 +81,12 @@ val camionModule = module {
             dniValidator = get(),
             licenseStringValidatorResult = get()
         )
+    }
+}
+
+val journeySummaryModule = module {
+    viewModel {
+        JourneySummaryViewModel(get()) // Assumes TruckJourneyRepositoryInterface is provided elsewhere
     }
 }
 

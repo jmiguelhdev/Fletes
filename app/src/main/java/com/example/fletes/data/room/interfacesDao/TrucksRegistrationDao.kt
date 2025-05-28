@@ -58,5 +58,9 @@ interface TrucksRegistrationDao {
     @Transaction // Important for @Relation fields in JourneyWithBuyDetails
     @Query("SELECT id, camion_id, destino_id, created_at, km_carga, km_descarga, km_surtidor, litros, is_active, (km_descarga - km_carga) AS calculatedDistance, CASE WHEN litros > 0 THEN CAST((km_descarga - km_carga) AS REAL) / litros ELSE 0.0 END AS calculatedRateKmLiters FROM camiones_registro WHERE is_active = 1")
     fun getActiveJourneysForBuyScreen(): Flow<List<JourneyWithBuyDetails>>
+
+    @Transaction
+    @Query("SELECT cr.*, (cr.km_descarga - cr.km_carga) AS calculatedDistance, CASE WHEN cr.litros > 0 THEN CAST((cr.km_descarga - cr.km_carga) AS REAL) / cr.litros ELSE 0.0 END AS calculatedRateKmLiters FROM camiones_registro cr")
+    fun getJourneysWithBuyDetails(): Flow<List<JourneyWithBuyDetails>>
 }
 

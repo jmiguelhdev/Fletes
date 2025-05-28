@@ -47,4 +47,8 @@ class TrucksJourneyRepositoryImp(private val trucksRegistrationDao: TrucksRegist
     override fun getActiveJourneysForBuyScreen(): Flow<List<JourneyWithBuyDetails>> {
         return trucksRegistrationDao.getActiveJourneysForBuyScreen()
     }
+
+    override fun getAllJourneyWithBuyDetails(): Flow<List<JourneyWithBuyDetails>> {
+        return trucksRegistrationDao.getJourneysWithBuyDetails()
+    }
 }

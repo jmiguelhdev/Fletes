@@ -36,6 +36,11 @@ sealed class BottomNavItem(val route: Any, val iconResourceId: Int, val label: S
         R.drawable.ic_format_list_numbered_24,
         "Active Journeys"
     )
+    object JourneySummary : BottomNavItem(
+        JourneySummaryRoute, // Route from routes.kt
+        R.drawable.ic_summary_24, // Placeholder for an icon
+        "Summary"
+    )
 }
 
 @Composable
@@ -44,7 +49,8 @@ fun BottomNavigationBar(navController: NavHostController) {
         BottomNavItem.TrucksDetail,
         BottomNavItem.Dispatch,
         BottomNavItem.Trucks,
-        BottomNavItem.ActiveJourneys
+        BottomNavItem.ActiveJourneys,
+        BottomNavItem.JourneySummary // Added new item to the list
     )
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route

@@ -7,6 +7,7 @@ import com.example.fletes.di.camionModule
 import com.example.fletes.di.dispatchModule
 import com.example.fletes.di.domainModule
 import com.example.fletes.di.journeyModule
+import com.example.fletes.di.journeySummaryModule // Added import for the new module
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -24,8 +25,8 @@ class FletesApplication : Application() {
                 camionModule,
                 domainModule,
                 dispatchModule,
-                journeyModule
-
+                journeyModule,
+                journeySummaryModule // Added the new module to the list
             ) // Your module with database
             // ... other modules
         }

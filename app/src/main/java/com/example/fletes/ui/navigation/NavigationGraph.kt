@@ -13,6 +13,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.material.icons.Icons // New import
+import androidx.compose.material.icons.filled.Analytics // Placeholder for Summary icon
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Error
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.LocalShipping
 import androidx.compose.material.icons.filled.ShoppingCart // New import
 import androidx.compose.material3.Icon // New import
 import androidx.compose.material3.NavigationBar // New import
@@ -28,9 +34,11 @@ import com.example.fletes.data.room.Destino
 import com.example.fletes.ui.screenActiveDispatch.ActiveDispatchDetailsScreen
 import com.example.fletes.ui.screenBuyData.BuyDataScreen // New import
 import com.example.fletes.ui.screenDispatch.NewDispatchScreen
-import com.example.fletes.ui.screenDispatch.NewDispatchViewModel
+// Removed duplicate NewDispatchViewModel import if present, ensure single import
 import com.example.fletes.ui.screenTruck.TruckScreen
 import com.example.fletes.ui.screenTruck.TruckViewModel
+// Added JourneySummaryScreen import
+import com.example.fletes.ui.screenJourneySummary.JourneySummaryScreen
 import com.example.fletes.ui.screenTrucksJourney.JourneyRegistrationScreen
 import com.example.fletes.ui.screenTrucksJourney.TruckJourneyViewModel
 import org.koin.androidx.compose.koinViewModel
@@ -125,6 +133,9 @@ fun MyNavHost(
             composable<BuyDataRoute> { // New composable for BuyDataScreen
                 BuyDataScreen(navController = navController)
             }
+            composable<JourneySummaryRoute> { // New composable for JourneySummaryScreen
+                JourneySummaryScreen(navController = navController)
+            }
         }
     }
 }
@@ -135,6 +146,7 @@ fun BottomNavigationBar(navController: NavHostController) {
         CreateJourneyRoute,
         ActiveJourneysRoute,
         BuyDataRoute, // Added BuyDataRoute to the list
+        JourneySummaryRoute, // Added JourneySummaryRoute to the list
         CreateTruckRoute,
         CreateDispatchRoute
     )
@@ -150,6 +162,7 @@ fun BottomNavigationBar(navController: NavHostController) {
                         CreateJourneyRoute -> Icon(Icons.Filled.Home, contentDescription = "Home") // Assuming Home for CreateJourney
                         ActiveJourneysRoute -> Icon(Icons.Filled.List, contentDescription = "Active Journeys") // Assuming List for ActiveJourneys
                         BuyDataRoute -> Icon(Icons.Filled.ShoppingCart, contentDescription = "Buy Data") // New Icon
+                        JourneySummaryRoute -> Icon(Icons.Filled.Analytics, contentDescription = "Summary") // New Icon for Summary
                         CreateTruckRoute -> Icon(Icons.Filled.LocalShipping, contentDescription = "Trucks") // Assuming LocalShipping for Trucks
                         CreateDispatchRoute -> Icon(Icons.Filled.Edit, contentDescription = "Dispatch") // Assuming Edit for Dispatch
                         else -> Icon(Icons.Filled.Error, contentDescription = "Unknown") // Fallback
@@ -161,6 +174,7 @@ fun BottomNavigationBar(navController: NavHostController) {
                             CreateJourneyRoute -> "Home"
                             ActiveJourneysRoute -> "Journeys"
                             BuyDataRoute -> "Buy Data" // New Label
+                            JourneySummaryRoute -> "Summary" // New Label for Summary
                             CreateTruckRoute -> "Trucks"
                             CreateDispatchRoute -> "Dispatch"
                             else -> "Unknown"
